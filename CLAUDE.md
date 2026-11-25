@@ -17,7 +17,7 @@ Murat'ın meyve temalı 3'lü eşleştirme oyunu (Kasım 2026). Geçici ad "Meyv
 - Murat'ın Expo derleme dakikası yok. main'e her gönderimde `.github/workflows/expo-guncelleme.yml` GitHub Actions'ta
   `eas update --branch main` çalıştırır (depo açık: Actions dakikası ücretsiz). EXPO_TOKEN gizli anahtarı gerekir.
 - app.json'da proje kimliği yoksa iş akışı `eas init` ile bağlar, app.json'u kendisi gönderir (önce `git pull` yap).
-- Sonuç ve Expo Go bağlantısı `yayin-kaydi` dalındaki yayin-kaydi.txt'de: `git fetch origin yayin-kaydi && git show origin/yayin-kaydi:yayin-kaydi.txt`.
+- Sonuç ve Expo Go bağlantısı `yayin-kaydi` dalındaki yayin-kaydi.txt'de: `git fetch origin +yayin-kaydi:refs/remotes/origin/yayin-kaydi && git show origin/yayin-kaydi:yayin-kaydi.txt` (dal her seferinde baştan yazılır; + şart). Çalışma listesi: `gh api repos/tiryakimurat5555-ton/meyve-oyunu/actions/runs`.
 - Expo derlemesi (build) Murat'a sormadan başlatılmaz.
 
 ## Dosyalar
