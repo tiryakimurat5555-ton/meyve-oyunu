@@ -5,7 +5,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { AccessibilityInfo, Animated, Easing, View } from 'react-native';
 
-export const bolumNo = (seviyeNo) => Math.min(8, Math.floor((seviyeNo - 1) / 10));
+export const bolumNo = (seviyeNo) => Math.min(9, Math.floor((seviyeNo - 1) / 10));
 
 const RENKLER = [
   // 0: İlkbahar
@@ -189,6 +189,27 @@ const RENKLER = [
       { tip: 'atesbocegi' },
     ],
   },
+  // 9: Kristal Bahçe (açık turkuaz-lila gök, cam gibi pastel ağaçlar, yükselen parıltılar)
+  {
+    gok: ['#8fd8f0', '#f3e8ff'],
+    gunes: '#fff6a8',
+    gunesKenar: '#ffd86b',
+    tepeArka: ['#a7e3e0', '#8fd3d0'],
+    tepeArka2: ['#c4d9ff', '#a9c4f5'],
+    tepeOn: ['#d9f3ee', '#c2e9e2'],
+    tac: ['#9fe6f2', '#7fd0e6', '#d6f7ff'],
+    nokta: ['#ffffff', '#ffb3e6', '#c9b8ff'],
+    cicek: ['#ffb3e6', '#9fe6f2', '#c9b8ff'],
+    parca: [
+      { tip: 'parilti', renk: '#ffffff' },
+      { tip: 'parilti', renk: '#bff4ff' },
+      { tip: 'parilti', renk: '#ffd6f4' },
+      { tip: 'parilti', renk: '#ffffff' },
+      { tip: 'parilti', renk: '#e2d6ff' },
+      { tip: 'parilti', renk: '#bff4ff' },
+      { tip: 'kelebek', renk: '#9fe6f2' },
+    ],
+  },
 ];
 export const geceMi = (bolum) => !!(RENKLER[bolum] && RENKLER[bolum].gece);
 
@@ -321,6 +342,21 @@ function AtesBocegi({ x, y, sure, bas, EG, hareket }) {
       <View style={{ position: 'absolute', width: 18, height: 18, borderRadius: 9, backgroundColor: 'rgba(255,236,80,0.5)' }} />
       <View style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: '#fff59a' }} />
     </Animated.View>
+  );
+}
+
+// ---------- parıltı (Kristal Bahçe): aşağıdan yukarı süzülen, dönerek parlayan küçük yıldız ----------
+function Parilti({ x, sure, bas, renk, EY, hareket }) {
+  const v = useDongu(sure, hareket);
+  const t = Animated.modulo(Animated.add(v, bas), 1);
+  const ty = t.interpolate({ inputRange: [0, 1], outputRange: [EY * 0.95, -20] });
+  const tx = t.interpolate({ inputRange: [0, 0.25, 0.5, 0.75, 1], outputRange: [0, 10, 0, -10, 0] });
+  const op = t.interpolate({ inputRange: [0, 0.1, 0.3, 0.5, 0.7, 0.9, 1], outputRange: [0, 1, 0.4, 1, 0.4, 1, 0] });
+  const donus = t.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '360deg'] });
+  return (
+    <Animated.Text style={{ position: 'absolute', left: x, top: 0, fontSize: 14, lineHeight: 16, color: renk, textShadowColor: 'rgba(120,180,255,0.8)', textShadowRadius: 4, opacity: op, transform: [{ translateY: ty }, { translateX: tx }, { rotate: donus }] }}>
+      ✦
+    </Animated.Text>
   );
 }
 
@@ -531,7 +567,9 @@ function Sahne({ bolum = 0, EG, EY, gunesX, gunesY, gunesBoy = 58 }) {
       <Bulut y={EY * 0.6} olcek={0.7} sure={60000} bas={0.85} EG={EG} saydam={renk.gece ? 0.16 : 0.8} hareket={hareket} />
       {durgun}
       {renk.parca.map((p, i) =>
-        p.tip === 'atesbocegi' ? (
+        p.tip === 'parilti' ? (
+          <Parilti key={i} x={EG * ((i * 0.27 + 0.06) % 1)} sure={12000 + i * 1600} bas={(i * 0.19) % 1} renk={p.renk} EY={EY} hareket={hareket} />
+        ) : p.tip === 'atesbocegi' ? (
           <AtesBocegi key={i} x={EG * ((i * 0.29 + 0.1) % 1)} y={EY * (0.7 + (i % 3) * 0.08)} sure={9000 + i * 1300} bas={(i * 0.23) % 1} EG={EG} hareket={hareket} />
         ) : p.tip === 'kar' ? (
           <KarTanesi key={i} x={EG * ((i * 0.17 + 0.05) % 1)} sure={14000 + i * 1900} bas={(i * 0.31) % 1} buyuk={p.buyuk} EY={EY} hareket={hareket} />

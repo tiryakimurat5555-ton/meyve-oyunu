@@ -165,5 +165,22 @@ for (let i = 0; i < 30; i++) {
   dogru(g[6][0] >= 100 && g[5][0] === t[5][0], 'görünür tahtada sis gizli');
   dogru(M.duzenliTahta(['........', '........', '..g.....', '........', '........', '........', '........', '........']).engel[2][2] === 'sis', 'düzen g');
 }
-console.log(hata ? `${hata} HATA` : 'ENGEL TESTLERİ GEÇTİ (kar, tohum sarmaşık, fıçı ve sis dahil)');
+{
+  // Delik: meyveler deliğin üstünden atlayarak düşer; delik yerinde kalır; özel parça deliği atlar
+  const d = M.duzenliTahta(['........', '........', '........', '...x....', '........', '........', '........', 'x.......']);
+  dogru(d.t[3][3] === M.DELIK && d.t[7][0] === M.DELIK, 'düzen x');
+  const t = d.t.map((s) => s.slice());
+  t[4][3] = -1; // deliğin altı boşaldı
+  const y = M.yercekimi(t, () => 0.1);
+  dogru(y.tahta[3][3] === M.DELIK, 'delik yerinde kalmalı');
+  dogru(y.kaymalar.some((k) => k.eski[0] === 2 && k.yeni[0] === 4 && k.eski[1] === 3), '2. satırdaki meyve deliği atlayıp 4. satıra düşmeli: ' + JSON.stringify(y.kaymalar));
+  const oz = t.map((s) => s.map(() => null));
+  const g = M.genislet(d.t, oz.map((s, r) => s.map((_, c) => (r === 3 && c === 0 ? 'satir' : null))), [[3, 0]]);
+  dogru(!g.hucreler.some(([r, c]) => r === 3 && c === 3), 'çizgili deliği atlamalı');
+  dogru(M.enAltSatir(d.t, 0) === 6, 'en alt satır deliğin üstü');
+  const k = M.karistir(d.t, () => 0.3);
+  dogru(k[3][3] === M.DELIK && k[7][0] === M.DELIK, 'karıştırmada delik yerinde');
+  dogru(!M.tumHamleler(d.t, oz, d.engel).some(([a, b]) => d.t[a[0]][a[1]] === M.DELIK || d.t[b[0]][b[1]] === M.DELIK), 'delikle takas yok');
+}
+console.log(hata ? `${hata} HATA` : 'ENGEL TESTLERİ GEÇTİ (kar, tohum sarmaşık, fıçı, sis ve delik dahil)');
 process.exit(hata ? 1 : 0);

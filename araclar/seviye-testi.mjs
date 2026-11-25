@@ -24,7 +24,7 @@ function hamleler(t, oz, engel) {
     for (let c = 0; c < 8; c++)
       for (const b of [[r, c + 1], [r + 1, c]]) {
         if (b[0] > 7 || b[1] > 7) continue;
-        if (k[r][c] || k[b[0]][b[1]] || M.kasaMi(t[r][c]) || M.kasaMi(t[b[0]][b[1]])) continue;
+        if (k[r][c] || k[b[0]][b[1]] || M.kasaMi(t[r][c]) || M.kasaMi(t[b[0]][b[1]]) || M.delikMi(t[r][c]) || M.delikMi(t[b[0]][b[1]])) continue;
         if (M.birlesim(t, oz, [r, c], b) || M.eslesmeleriBul(M.takasla(t, [r, c], b)).length) l.push([[r, c], b]);
       }
   return l;

@@ -18,6 +18,15 @@ export const ficiMi = (v) => v === FICI || v === FICI_ODUL;
 // Tohum (4. bölüm sonrası, Çiçek Bahçesi): meyve değil; eşleşmez, patlamaz, takas edilebilir, yerçekimiyle düşer.
 // En alt sıraya inince toplanır (çiçek açar). Özel parçalar ona işlemez.
 export const TOHUM = 21;
+// Delik (Kristal Bahçe, şekilli tahtalar): tahtada olmayan kare. Hiç değişmez, eşleşmez, takas edilmez, özel parçalar
+// onu atlar; meyveler sütunda deliğin üstünden atlayarak düşer. Düzende 'x'.
+export const DELIK = 30;
+export const delikMi = (v) => v === DELIK;
+// Bir sütunda meyvelerin inebileceği en alt satır (tohum oraya inince toplanır)
+export function enAltSatir(t, c) {
+  for (let r = SATIR - 1; r >= 0; r--) if (t[r][c] !== DELIK) return r;
+  return -1;
+}
 // Sis (Gece Bahçesi): engel 'sis'. Buz gibi meyveyi örter (takas edilemez; eşleşmeye katılınca, yanında eşleşme olunca, özel parça
 // ya da çekiç değince dağılır, meyve kalır) ama üstelik altındaki meyveyi GİZLER: oyuncu (ve bot/ipucu) onu göremez.
 export const ortuMu = (e) => e === 'buz' || e === 'sarmasik' || e === 'sis';
@@ -154,7 +163,7 @@ export function takasla(t, a, b) {
 // Eşleşme oluşturan ilk takası bulur (ipucu ve "hamle kaldı mı" denetimi için). Yoksa null.
 // kilit: takas edilemeyen hücreler (buzlu meyve, kasa). Verilmezse kasalar yine de kilitli sayılır.
 export function hamleBul(t, oz, kilit) {
-  const kilitli = (r, c) => kasaMi(t[r][c]) || (kilit && kilit[r][c]);
+  const kilitli = (r, c) => kasaMi(t[r][c]) || t[r][c] === DELIK || (kilit && kilit[r][c]);
   // Gökkuşağı her komşusuyla takas edilebilir; iki özel parça yan yanaysa birleşim de bir hamledir
   for (let r = 0; r < SATIR; r++)
     for (let c = 0; c < SUTUN; c++) {
@@ -193,19 +202,24 @@ export function yercekimi(t, rnd = Math.random) {
   const kaymalar = [];
   const yeniler = [];
   for (let c = 0; c < SUTUN; c++) {
-    let yaz = SATIR - 1;
-    for (let r = SATIR - 1; r >= 0; r--) {
+    // Delikler sabittir: sütun, deliksiz hücrelerin aşağıdan yukarı sırası gibi düşünülür
+    const yerler = [];
+    for (let r = SATIR - 1; r >= 0; r--) if (y[r][c] !== DELIK) yerler.push(r);
+    let yaz = 0;
+    for (const r of yerler) {
       if (y[r][c] >= 0) {
-        if (r !== yaz) {
-          y[yaz][c] = y[r][c];
+        const hedef = yerler[yaz];
+        if (r !== hedef) {
+          y[hedef][c] = y[r][c];
           y[r][c] = -1;
-          kaymalar.push({ eski: [r, c], yeni: [yaz, c] });
+          kaymalar.push({ eski: [r, c], yeni: [hedef, c] });
         }
-        yaz--;
+        yaz++;
       }
     }
     let kacinci = 1;
-    for (let r = yaz; r >= 0; r--) {
+    for (let i = yaz; i < yerler.length; i++) {
+      const r = yerler[i];
       const tur = rastgeleTur(rnd);
       y[r][c] = tur;
       yeniler.push({ yeni: [r, c], tur, kacinci });
@@ -217,15 +231,28 @@ export function yercekimi(t, rnd = Math.random) {
 
 // Meyveleri karıştırır: eşleşmesiz ve hamlesi olan bir düzen bulana kadar.
 export function karistir(t, rnd = Math.random) {
+  // Yalnız renkli meyveler karışır; delik, kasa, tohum gibi parçalar yerinde kalır
+  const yerler = [];
   const hepsi = [];
-  for (let r = 0; r < SATIR; r++) for (let c = 0; c < SUTUN; c++) hepsi.push(t[r][c]);
+  for (let r = 0; r < SATIR; r++)
+    for (let c = 0; c < SUTUN; c++)
+      if (renkli(t[r][c])) {
+        yerler.push([r, c]);
+        hepsi.push(t[r][c]);
+      }
   for (let deneme = 0; deneme < 500; deneme++) {
     for (let i = hepsi.length - 1; i > 0; i--) {
       const j = Math.floor(rnd() * (i + 1));
       [hepsi[i], hepsi[j]] = [hepsi[j], hepsi[i]];
     }
-    const y = [];
-    for (let r = 0; r < SATIR; r++) y.push(hepsi.slice(r * SUTUN, r * SUTUN + SUTUN));
+    const y = kopya(t);
+    yerler.forEach(([r, c], i) => (y[r][c] = hepsi[i]));
+    if (eslesmeleriBul(y).length === 0 && hamleBul(y)) return y;
+  }
+  // Olmazsa renkli yerlere yeni meyveler
+  for (let deneme = 0; deneme < 500; deneme++) {
+    const y = kopya(t);
+    for (const [r, c] of yerler) y[r][c] = rastgeleTur(rnd);
     if (eslesmeleriBul(y).length === 0 && hamleBul(y)) return y;
   }
   return yeniTahta(rnd);
@@ -368,7 +395,7 @@ export function genislet(t, oz, baslangic, korunan = []) {
   const tetiklenen = [];
   const ekle = ([r, c]) => {
     const k = anahtar(r, c);
-    if (gor.has(k) || kor.has(k)) return;
+    if (gor.has(k) || kor.has(k) || t[r][c] === DELIK) return;
     gor.add(k);
     liste.push([r, c]);
     if (oz[r][c]) sira.push([r, c]);
@@ -422,7 +449,10 @@ export function cozumAdimi(t, oz, { hamle = null, ek = [], izinli = null, engel 
   }
   // En alt sıraya inmiş tohumlar toplanır
   const tohumlar = [];
-  for (let c = 0; c < SUTUN; c++) if (t[SATIR - 1][c] === TOHUM) tohumlar.push([SATIR - 1, c]);
+  for (let c = 0; c < SUTUN; c++) {
+    const a = enAltSatir(t, c);
+    if (a >= 0 && t[a][c] === TOHUM) tohumlar.push([a, c]);
+  }
   return { gruplar, olusan, hucreler, tetiklenen: g.tetiklenen, kasaVurus: [...vur.values()], tohumlar };
 }
 
@@ -522,7 +552,7 @@ export function adimUygula(t, oz, engel, adim, rnd = Math.random, zemin = null) 
 const ODUL_OZEL = ['satir', 'sutun', 'bomba'];
 
 // Seviye düzeninden (8 satırlık metin: '.' boş, 'b' buz, 'k' kasa, 'K' iki katlı kasa, 's' kar, 'S' iki katlı kar,
-// 't' tohum, 'v' sarmaşık, 'g' sis, 'f' fıçı, 'F' ödüllü fıçı) başlangıç tahtası kurar. Dönüş: { t, oz, engel, zemin } — eşleşmesiz ve en az bir hamlesi olan.
+// 't' tohum, 'v' sarmaşık, 'g' sis, 'x' delik, 'f' fıçı, 'F' ödüllü fıçı) başlangıç tahtası kurar. Dönüş: { t, oz, engel, zemin } — eşleşmesiz ve en az bir hamlesi olan.
 export function duzenliTahta(duzen, rnd = Math.random) {
   for (let d = 0; d < 300; d++) {
     const t = yeniTahta(rnd);
@@ -541,6 +571,7 @@ export function duzenliTahta(duzen, rnd = Math.random) {
           else if (h === 't') t[r][c] = TOHUM;
           else if (h === 'v') engel[r][c] = 'sarmasik';
           else if (h === 'g') engel[r][c] = 'sis';
+          else if (h === 'x') t[r][c] = DELIK;
           else if (h === 'f' || h === 'F') {
             t[r][c] = h === 'F' ? FICI_ODUL : FICI;
             engel[r][c] = 3;
@@ -583,7 +614,7 @@ export function sarmasikYay(t, oz, engel, rnd = Math.random) {
 // Bütün geçerli hamleler (kilitli hücreler ve kasalar hariç)
 export function tumHamleler(t, oz, engel) {
   const l = [];
-  const kilitli = (r, c) => kasaMi(t[r][c]) || (engel && engel[r][c] != null);
+  const kilitli = (r, c) => kasaMi(t[r][c]) || t[r][c] === DELIK || (engel && engel[r][c] != null);
   for (let r = 0; r < SATIR; r++)
     for (let c = 0; c < SUTUN; c++)
       for (const b of [[r, c + 1], [r + 1, c]]) {

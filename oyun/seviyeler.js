@@ -2,7 +2,7 @@
 // (ilke: uzun soluklu oyun, ilk seviyelerde oyuncu zorlanmaz; bot ilk 10 seviyeyi en az ~%88 geçmeli).
 // meyve numaraları: 0 çilek, 1 limon, 2 üzüm, 3 portakal, 4 elma, 5 erik
 // hedef: { topla: { tur: adet }, buz: n, kasa: n } ya da { puan: n }; yildiz: [2 yıldız, 3 yıldız] puan eşikleri
-// duzen: 8 satır; '.' boş, 'b' buzlu meyve, 'k' kasa, 'K' iki katlı kasa, 's' kar, 'S' iki katlı kar, 't' tohum, 'v' sarmaşık, 'g' sis, 'f' fıçı (3 kat), 'F' ödüllü fıçı
+// duzen: 8 satır; '.' boş, 'b' buzlu meyve, 'k' kasa, 'K' iki katlı kasa, 's' kar, 'S' iki katlı kar, 't' tohum, 'v' sarmaşık, 'g' sis, 'x' delik, 'f' fıçı (3 kat), 'F' ödüllü fıçı
 // (hedefteki buz/kasa/kar katı/tohum sayısı düzendekiyle aynı olmalı)
 // ozel: hangi özel parçalar oluşabilir; yeni: bu seviyede tanıtılan özel parça
 export const SEVIYELER = [
@@ -105,9 +105,21 @@ export const SEVIYELER = [
   { no: 88, hamle: 20, tur: 6, hedef: { sis: 6, sarmasik: 6 }, yildiz: [4000, 4750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', 'vv....vv', 'v......v', '..gggg..', '..g..g..', '........', '........', '........'] },
   { no: 89, hamle: 18, tur: 6, hedef: { topla: { 1: 26, 3: 26 } }, yildiz: [4750, 6000], ozel: { cizgili: true, bomba: true, gokkusagi: true } },
   { no: 90, hamle: 40, tur: 6, hedef: { sis: 12, fici: 4, kar: 8 }, yildiz: [7750, 9250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['gg....gg', 'gg....gg', '........', '..gggg..', '........', '........', '.fFFf...', 'ssssssss'] },
+  // ---- 10. bölüm: Kristal Bahçe (şekilli tahtalar: 'x' delik; meyveler deliğin üstünden atlayarak düşer) ----
+  { no: 91, hamle: 22, tur: 6, hedef: { topla: { 0: 18, 2: 18 } }, yildiz: [4500, 5500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['xx....xx', 'x......x', '........', '........', '........', '........', 'x......x', 'xx....xx'], yeni: 'delik' },
+  { no: 92, hamle: 20, tur: 6, hedef: { buz: 8 }, yildiz: [3750, 4000], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['x..xx..x', '........', '..bbbb..', '..bbbb..', 'x......x', 'xx....xx', 'xxx..xxx', 'xxx..xxx'] },
+  { no: 93, hamle: 26, tur: 6, hedef: { kar: 12 }, yildiz: [4750, 5500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '........', '..ssss..', '.s.xx.s.', '.s.xx.s.', '..ssss..', '........', '........'] },
+  { no: 94, hamle: 22, tur: 6, hedef: { sarmasik: 6 }, yildiz: [4250, 4750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['xx....xx', 'xx.vv.xx', '........', 'v......v', 'v......v', '........', 'xx....xx', 'xx....xx'] },
+  { no: 95, hamle: 28, tur: 6, hedef: { puan: 3500 }, yildiz: [5000, 6250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['xxx..xxx', 'xx....xx', 'x......x', '........', '........', 'x......x', 'xx....xx', 'xxx..xxx'] },
+  { no: 96, hamle: 43, tur: 6, hedef: { tohum: 2 }, yildiz: [7000, 8000], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '........', '.t....t.', '........', '...xx...', '...xx...', '........', '........'] },
+  { no: 97, hamle: 36, tur: 6, hedef: { fici: 4, sis: 6 }, yildiz: [5500, 6250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '.gg..gg.', '..g..g..', 'x.xxxx.x', '........', '........', '..fFFf..', '........'] },
+  { no: 98, hamle: 28, tur: 6, hedef: { kar: 14 }, yildiz: [4750, 5750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['ssssssss', '.ssssss.', 'xx....xx', 'xx....xx', 'xx....xx', 'xx....xx', '........', '........'] },
+  { no: 99, hamle: 24, tur: 6, hedef: { topla: { 1: 18, 5: 18 } }, yildiz: [3000, 3750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['x......x', '.x....x.', '..x..x..', '........', '........', '..x..x..', '.x....x.', 'x......x'] },
+  { no: 100, hamle: 43, tur: 6, hedef: { buz: 5, sis: 5, kasa: 4, kar: 4 }, yildiz: [6750, 7750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['x..xx..x', '.bb..gg.', '.bb..gg.', '.b....g.', 'x......x', 'xx....xx', 'xxkkkkxx', 'xxssssxx'] },
 ];
 
 export const TANITIM = {
+  delik: { baslik: 'Yeni: Şekilli tahtalar', metin: 'Kristal Bahçe\'de tahtalar farklı şekillerde. Boş karelere meyve gidemez; meyveler boşlukların üstünden atlayarak aşağı düşer.' },
   sis: { baslik: 'Yeni: Sis', metin: 'Gece bahçeyi sis kapladı! Sisli karenin altında hangi meyve olduğu görünmez ve yer değiştiremez. Hemen yanında meyve eşleştir ya da özel parçayla vur, sis dağılsın.' },
   fici: { baslik: 'Yeni: Fıçı', metin: 'Fıçılar çok sağlam: kırmak için hemen yanında üç kez meyve eşleştir ya da özel parçayla vur. Her vuruşta biraz daha çatlar.' },
   fici_odul: { baslik: 'Yeni: Ödüllü fıçı', metin: 'Önünde altın yıldız olan fıçı kırılınca yerinde çizgili ya da bomba bir meyve çıkar!' },

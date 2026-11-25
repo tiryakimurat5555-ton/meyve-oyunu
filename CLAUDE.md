@@ -28,7 +28,15 @@ Murat'ın meyve temalı 3'lü eşleştirme oyunu (Kasım 2026). Geçici ad "Meyv
   VoiceOver "sisli" der), 10 Kristal Bahçe (final, hepsi). Bot geçme: 31-50 ≥%75, 51-80 ≥%70, 81-100 ≥%65; bölüm başı tanıtım,
   4-5 seviyede bir dinlenme. Parça parça: 4-5 (31-50), 6 (51-60), 7 Kiraz Çiçeği (61-70, dinlenme: karışık engeller, bot %74-100), 8 Bağ Bozumu (71-80, bot %73-95), 9 Gece Bahçesi (81-90, bot %72-100) YAPILDI (25 Kasım);
   25 Kasım Murat: SON BÖLÜM YOK. 100 seviye sınır değil; bölüm çeşitliliği olabildiğince artırılacak (her bölüm yeni bir mekanik/tema).
-  Sırada 10. bölüm (91-100); yeni bölüm planı Murat'a önerildi, onay bekleniyor.
+  Murat'ın onayladığı sıra (25 Kasım): 10 Kristal Bahçe (şekilli tahtalar) YAPILDI (91-100, bot %65-99); sırada 11 Arı Bahçesi (çiçek
+  tozu: üstünde eşleşme = tozlanır), 12 Saat Kulesi (geri sayımlı meyve, sıfırda kaybedilir), 13 Rüzgârlı Tepe (taşıyıcı bant),
+  14 Mantar Ormanı (her 3 hamlede çoğalır), 15 Kuş Yuvası (yumurta 2 vuruş → civciv, tohum gibi iner), 16 Göl Kıyısı (akıntı kapıları),
+  17 Kafes ve Anahtar, 18 Bukalemun Bahçesi (renk değiştiren meyve); sonra mevsim dönüşleri + yeni mekanikler. Her bölüm "Geç" ile.
+- DELİK (91-100, Kristal Bahçe): t[r][c] = M.DELIK (30), düzen 'x'. Sabit; eşleşmez, takas edilmez (hamleBul/tumHamleler kilitli),
+  genislet atlar (özel parçalar deliği temizlemez), yercekimi sütunda deliksiz hücreler üzerinden: meyve deliğin üstünden atlar.
+  karistir yalnız renkli meyveleri karıştırır (diğer her şey yerinde). Tohum sütunun en alt deliksiz satırında toplanır (M.enAltSatir).
+  Oyun.js: delik parçası çizilmez, karesi çerçeve ahşabı (#c88442) ile dolu; VO "Boş"; dokununca "Boş kare". Sahne 9: Kristal (Parilti).
+
 - KAR (31-40): zemin katmanı (Oyun.js zemin ref, mantik zemin[r][c]=kat), parçayla düşmez. Üstündeki parça temizlenince / orada özel
   parça oluşunca / üstündeki kasa kırılınca bir kat erir (karEriyen); buz kırılması eritmez; komşu eşleşme eritmez. Düzen 's'/'S'.
   Çizim: KarZemin (altta) + KarUst (meyvenin üstünde alt kenar kar yığını + mavi kenar). VO: "Karlı çilek", "İki kat karlı ...".

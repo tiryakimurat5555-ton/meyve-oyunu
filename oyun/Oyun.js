@@ -52,7 +52,7 @@ const oynat = (anim) => new Promise((r) => anim.start(() => r()));
 const anahtar = (r, c) => r * M.SUTUN + c;
 
 export function parcaAdi(p) {
-  if (!p) return 'Boş';
+  if (!p || p.tur === M.DELIK) return 'Boş';
   if (p.tur === M.KASA) return p.kat >= 2 ? 'İki katlı kasa' : 'Kasa';
   if (M.ficiMi(p.tur)) return (p.tur === M.FICI_ODUL ? 'Ödüllü fıçı' : 'Fıçı') + ', ' + p.kat + ' kat';
   if (p.tur === M.TOHUM) return 'Tohum';
@@ -209,7 +209,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
       })
     );
   const kilitIzgarasi = () => engelIzgarasi().map((s) => s.map((e) => e != null));
-  const kilitli = (p) => !p || p.buz || p.sarmasik || p.sis || M.kasaMi(p.tur);
+  const kilitli = (p) => !p || p.buz || p.sarmasik || p.sis || M.kasaMi(p.tur) || p.tur === M.DELIK;
   // Karıştırmada ve şenlikte yerinde kalanlar (tohum takas edilebilir ama meyveye dönüşmez)
   const sabit = (p) => kilitli(p) || p.tur === M.TOHUM;
 
@@ -869,7 +869,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
   };
   const cekicVur = async (h) => {
     const p = parcaAt(h[0], h[1]);
-    if (!p) return;
+    if (!p || p.tur === M.DELIK) return;
     if (p.tur === M.TOHUM) {
       cal('gecersiz');
       titret('hata');
@@ -955,7 +955,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
       cal('gecersiz');
       titret('hata');
       const k = kilitli(pa) ? pa : pb;
-      duyur(k.tur === M.KASA ? 'Kasa yer değiştiremez' : M.ficiMi(k.tur) ? 'Fıçı yer değiştiremez' : k.sarmasik ? 'Sarmaşıklı meyve yer değiştiremez' : k.sis ? 'Sisli kare yer değiştiremez' : 'Buzlu meyve yer değiştiremez');
+      duyur(k.tur === M.DELIK ? 'Orası boş, meyve gidemez' : k.tur === M.KASA ? 'Kasa yer değiştiremez' : M.ficiMi(k.tur) ? 'Fıçı yer değiştiremez' : k.sarmasik ? 'Sarmaşıklı meyve yer değiştiremez' : k.sis ? 'Sisli kare yer değiştiremez' : 'Buzlu meyve yer değiştiremez');
       await oynat(salla(k));
       mesgul.current = false;
       ipucuKur();
@@ -1049,6 +1049,10 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
     }
     const s = seciliRef.current;
     const p = parcaAt(h[0], h[1]);
+    if (!p || p.tur === M.DELIK) {
+      duyur('Boş kare');
+      return;
+    }
     if (!s) {
       seciliAyarla(h);
       cal('secim');
@@ -1110,7 +1114,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
 
   // ---------- çizim ----------
   if (!izgara.current) return <View style={st.kok} />;
-  const liste = Array.from(parcalar.current.values());
+  const liste = Array.from(parcalar.current.values()).filter((p) => p.tur !== M.DELIK);
   const N = M.SUTUN;
 
   return (
@@ -1138,7 +1142,13 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
         <View style={{ width: TAHTA, height: TAHTA, overflow: 'hidden', borderRadius: 12, backgroundColor: 'rgba(255,236,200,0.28)' }} {...(vo ? {} : pan.panHandlers)}>
           <View style={TAM} pointerEvents="none" importantForAccessibility="no-hide-descendants" accessibilityElementsHidden>
             {izgara.current.map((satir, r) =>
-              satir.map((_, c) => (
+              satir.map((id, c) => (parcalar.current.get(id) || {}).tur === M.DELIK ? (
+                // Delik: tahta orada yok; çerçevenin ahşabı görünür (komşu delikler birleşip tahtaya şekil verir)
+                <View key={`z${r}-${c}`} style={{ position: 'absolute', left: c * H - 0.5, top: r * H - 0.5, width: H + 1, height: H + 1, backgroundColor: '#c88442' }}>
+                  <View style={{ position: 'absolute', left: 0, right: 0, top: H * 0.33, height: 1.5, backgroundColor: 'rgba(140,80,30,0.35)' }} />
+                  <View style={{ position: 'absolute', left: 0, right: 0, top: H * 0.7, height: 1.5, backgroundColor: 'rgba(140,80,30,0.3)' }} />
+                </View>
+              ) : (
                 <View
                   key={`z${r}-${c}`}
                   style={{ position: 'absolute', left: c * H + 1.5, top: r * H + 1.5, width: H - 3, height: H - 3, borderRadius: H * 0.22, backgroundColor: (r + c) % 2 ? 'rgba(255,246,226,0.7)' : 'rgba(255,255,255,0.84)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.75)' }}
