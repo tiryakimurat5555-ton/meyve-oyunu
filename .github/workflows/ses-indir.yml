@@ -1,0 +1,28 @@
+# ElevenLabs'te üretilen ses adaylarını indirir ve bu dala adaylar/ klasörüne yazar (Murat onayladı, 25 Kasım).
+name: ses-indir
+on:
+  push:
+    branches: [ses-istek]
+    paths: [ses-adresleri.txt]
+permissions:
+  contents: write
+jobs:
+  indir:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Indir
+        run: |
+          mkdir -p adaylar
+          while read -r ad url; do
+            [ -z "$ad" ] && continue
+            curl -sSfL --retry 3 -o "adaylar/$ad.mp3" "$url" || echo "HATA $ad" >> adaylar/hatalar.txt
+          done < ses-adresleri.txt
+          ls adaylar | wc -l
+      - name: Gonder
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add adaylar
+          git commit -m "Ses adaylari indirildi" || exit 0
+          git push
