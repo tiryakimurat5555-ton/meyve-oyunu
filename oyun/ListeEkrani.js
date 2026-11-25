@@ -23,6 +23,7 @@ const BOLUMLER = [
   { ad: 'Rüzgârlı Tepe', ilk: 121, son: 130, renk: '#3f8fd6' },
   { ad: 'Mantar Ormanı', ilk: 131, son: 140, renk: '#d6453a' },
   { ad: 'Kuş Yuvası', ilk: 141, son: 150, renk: '#e6b800' },
+  { ad: 'Göl Kıyısı', ilk: 151, son: 160, renk: '#2f9fe0' },
 ];
 
 export default function ListeEkrani({ ilerleme, sec, ayarlarAc }) {

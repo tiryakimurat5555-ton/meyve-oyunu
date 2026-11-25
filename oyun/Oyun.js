@@ -17,6 +17,7 @@ import {
   CicekUst,
   CicekIkon,
   AriEfekt,
+  KapiIsareti,
   CivcivIkon,
   MantarIkon,
   BantSerit,
@@ -76,9 +77,14 @@ export function parcaAdi(p) {
 
 // Taşıyıcı bant satırı (rüzgâr) için hücre etiketine ek
 function bantYaziKur(seviye) {
-  return (r) => {
+  return (r, c) => {
     const b = (seviye.bant || []).find((x) => x.satir === r);
-    return b ? `, rüzgâr ${b.yon > 0 ? 'sağa' : 'sola'}` : '';
+    let y = b ? `, rüzgâr ${b.yon > 0 ? 'sağa' : 'sola'}` : '';
+    (seviye.kapilar || []).forEach((k, i) => {
+      if (k.giris[0] === r && k.giris[1] === c) y += `, ${i + 1}. akıntı kapısı girişi, meyveler ${k.cikis[1] + 1}. sütuna akar`;
+      if (k.cikis[0] === r && k.cikis[1] === c) y += `, ${i + 1}. akıntı kapısı çıkışı`;
+    });
+    return y;
   };
 }
 
@@ -744,7 +750,18 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
         yeniIzgara[k.yeni[0]][k.yeni[1]] = id;
       }
       const dusenler = [];
-      for (const k of s.kaymalar) dusenler.push([parcalar.current.get(yeniIzgara[k.yeni[0]][k.yeni[1]]), k.yeni[0], k.yeni[1], k.yeni[0] - k.eski[0], 0]);
+      let kapidan = 0;
+      for (const k of s.kaymalar) {
+        const p = parcalar.current.get(yeniIzgara[k.yeni[0]][k.yeni[1]]);
+        if (k.eski[1] !== k.yeni[1]) {
+          // Akıntı kapısından geçen parça: çıkış sütununun üstünden süzülerek iner
+          kapidan++;
+          const bas = -1 - kapidan * 0.6;
+          p.poz.setValue({ x: k.yeni[1], y: bas });
+          dusenler.push([p, k.yeni[0], k.yeni[1], k.yeni[0] - bas, 60 * kapidan]);
+        } else dusenler.push([p, k.yeni[0], k.yeni[1], k.yeni[0] - k.eski[0], 0]);
+      }
+      if (kapidan) cal('kapi', 0.7);
       for (const n of s.yeniler) {
         const p = yeniParca(n.tur, n.yeni[0], n.yeni[1], -n.kacinci);
         yeniIzgara[n.yeni[0]][n.yeni[1]] = p.id;
@@ -1350,6 +1367,9 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
             ))}
           </View>
           <View style={TAM} pointerEvents="none" importantForAccessibility="no-hide-descendants" accessibilityElementsHidden>
+            {(seviye.kapilar || []).map((k, i) => (
+              <KapiIsareti key={`kp${i}`} k={k} i={i} H={H} />
+            ))}
             {zemin.current.map((satir, r) => satir.map((k, c) => (k > 0 ? (M.cicekMi(k) ? <CicekUst key={`u${r}-${c}`} H={H} tur={k - M.CICEK} r={r} c={c} /> : <KarUst key={`u${r}-${c}`} H={H} kat={k} r={r} c={c} />) : null)))}
           </View>
           <View style={TAM} pointerEvents="none" importantForAccessibility="no-hide-descendants" accessibilityElementsHidden>
@@ -1377,7 +1397,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
                     key={`h${r}-${c}`}
                     accessible
                     accessibilityRole="button"
-                    accessibilityLabel={`${karliAd(zemin.current[r][c], parcaAdi(p))}${sec ? ' seçili' : ''}, ${r + 1}. satır ${c + 1}. sütun${bantYazi(r)}`}
+                    accessibilityLabel={`${karliAd(zemin.current[r][c], parcaAdi(p))}${sec ? ' seçili' : ''}, ${r + 1}. satır ${c + 1}. sütun${bantYazi(r, c)}`}
                     onPress={() => hucreDokun([r, c])}
                     style={{ position: 'absolute', left: c * H, top: r * H, width: H, height: H }}
                   />

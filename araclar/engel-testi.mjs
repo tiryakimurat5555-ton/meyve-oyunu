@@ -218,5 +218,21 @@ for (let i = 0; i < 30; i++) {
   const k = M.hamleSonrasiKurallar({ t, oz, engel: e2, zemin: null }, { hedef: { saat: 1 } }, { top: {}, puan: 0, hedefTamam: () => false }, () => 0.5);
   dogru(k.kaybetti, 'saat sıfırda kaybettirmeli');
 }
-console.log(hata ? `${hata} HATA` : 'ENGEL TESTLERİ GEÇTİ (kar, tohum sarmaşık, fıçı, sis, delik, çiçek, saat ve bant dahil)');
+{
+  // Akıntı kapısı: 0. sütunun en altı boşalınca o sütunun meyveleri 7. sütunun üstüne akar
+  M.seviyeKur({ kapilar: [{ giris: [7, 0], cikis: [0, 7] }] });
+  const t = [];
+  for (let r = 0; r < 8; r++) t.push(Array.from({ length: 8 }, (_, c) => (r * 3 + c * 2 + (r % 2)) % 6));
+  const zs = M.akisZincirleri(t);
+  dogru(zs.reduce((a, z) => a + z.length, 0) === 64, 'zincirler bütün hücreleri kapsamalı');
+  const z7 = zs.find((z) => z[0][0] === 7 && z[0][1] === 7);
+  dogru(z7 && z7.length === 16, '7. sütun zinciri 0. sütunla birleşmeli: ' + (z7 && z7.length));
+  const t2 = t.map((s) => s.slice());
+  t2[7][7] = -1;
+  const y = M.yercekimi(t2, () => 0.2);
+  dogru(y.kaymalar.some((k) => k.eski[0] === 7 && k.eski[1] === 0 && k.yeni[0] === 0 && k.yeni[1] === 7), '0. sütunun dibindeki meyve 7. sütunun üstüne akmalı');
+  dogru(y.yeniler.length === 1 && y.yeniler[0].yeni[1] === 0, 'yeni meyve 0. sütunun üstünden gelmeli');
+  M.seviyeKur(null);
+}
+console.log(hata ? `${hata} HATA` : 'ENGEL TESTLERİ GEÇTİ (kar, tohum sarmaşık, fıçı, sis, delik, çiçek, saat, bant ve akıntı kapısı dahil)');
 process.exit(hata ? 1 : 0);

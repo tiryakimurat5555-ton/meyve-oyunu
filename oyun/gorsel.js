@@ -735,6 +735,24 @@ export function BantSerit({ r, yon, H }) {
   );
 }
 
+// ---------- Akıntı kapıları (Göl Kıyısı) ----------
+// Giriş: hücrenin alt kenarında su girdabı; çıkış: hücrenin üst kenarında aynı renkte dalga. Her kapı çiftinin kendi rengi ve numarası var.
+const KAPI_RENK = ['#2f9fe0', '#22b39a', '#8a6be0', '#e07a2f'];
+export function KapiIsareti({ k, i, H }) {
+  const renk = KAPI_RENK[i % KAPI_RENK.length];
+  const isaret = (r, c, giris) => (
+    <View key={giris ? 'g' : 'c'} pointerEvents="none" style={{ position: 'absolute', left: c * H + H * 0.06, top: giris ? r * H + H * 0.74 : r * H + 1, width: H * 0.88, height: H * 0.25, borderRadius: H * 0.13, backgroundColor: renk, opacity: 0.92, borderWidth: 2, borderColor: '#ffffff', alignItems: 'center', justifyContent: 'center' }}>
+      <Text style={{ fontSize: H * 0.18, lineHeight: H * 0.22, fontWeight: '900', color: '#ffffff' }}>{giris ? `▼ ${i + 1}` : `${i + 1} ▼`}</Text>
+    </View>
+  );
+  return (
+    <>
+      {isaret(k.giris[0], k.giris[1], true)}
+      {isaret(k.cikis[0], k.cikis[1], false)}
+    </>
+  );
+}
+
 // ---------- Saat (Saat Kulesi) ----------
 // Meyvenin sağ üst köşesinde kalan hamleyi gösteren saat rozeti; 3 ve altında kırmızı
 export function SaatRozet({ H, n }) {

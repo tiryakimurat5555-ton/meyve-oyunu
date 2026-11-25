@@ -203,29 +203,66 @@ export function hamleBul(t, oz, kilit) {
 // Boş (-1) hücreleri yerçekimiyle doldurur.
 // Dönüş: { tahta, kaymalar: [{ eski:[r,c], yeni:[r,c] }], yeniler: [{ yeni:[r,c], tur, kacinci }] }
 // kacinci: o sütunda yukarıdan düşen kaçıncı yeni meyve (1 = en alttaki); başlangıç yüksekliği için.
+// Akış zincirleri: her zincir, parçaların düştüğü hücrelerin aşağıdan yukarı sırasıdır. Delikler atlanır; akıntı kapısının
+// girişindeki (sütunun en alt hücresi) parçalar çıkış hücresine (başka sütunun en üst hücresi) akar.
+export function akisZincirleri(t) {
+  const alt = new Map();
+  const ust = new Map();
+  for (let c = 0; c < SUTUN; c++) {
+    let onceki = null;
+    for (let r = 0; r < SATIR; r++) {
+      if (t[r][c] === DELIK) continue;
+      if (onceki) {
+        alt.set(anahtar(onceki[0], onceki[1]), [r, c]);
+        ust.set(anahtar(r, c), onceki);
+      }
+      onceki = [r, c];
+    }
+  }
+  for (const k of kapilar) {
+    const [gr, gc] = k.giris;
+    const [cr, cc] = k.cikis;
+    if (alt.has(anahtar(gr, gc)) || ust.has(anahtar(cr, cc))) continue; // geçersiz kapı (giriş en alt, çıkış en üst olmalı)
+    alt.set(anahtar(gr, gc), [cr, cc]);
+    ust.set(anahtar(cr, cc), [gr, gc]);
+  }
+  const zincirler = [];
+  for (let r = 0; r < SATIR; r++)
+    for (let c = 0; c < SUTUN; c++) {
+      if (t[r][c] === DELIK || alt.has(anahtar(r, c))) continue;
+      // Batak hücre (altında yer yok): yukarı doğru zinciri topla
+      const z = [];
+      let h = [r, c];
+      while (h) {
+        z.push(h);
+        h = ust.get(anahtar(h[0], h[1]));
+      }
+      zincirler.push(z);
+    }
+  return zincirler;
+}
+
+// Boş (-1) hücreleri yerçekimiyle doldurur.
 export function yercekimi(t, rnd = Math.random) {
   const y = kopya(t);
   const kaymalar = [];
   const yeniler = [];
-  for (let c = 0; c < SUTUN; c++) {
-    // Delikler sabittir: sütun, deliksiz hücrelerin aşağıdan yukarı sırası gibi düşünülür
-    const yerler = [];
-    for (let r = SATIR - 1; r >= 0; r--) if (y[r][c] !== DELIK) yerler.push(r);
+  for (const yerler of akisZincirleri(t)) {
     let yaz = 0;
-    for (const r of yerler) {
+    for (const [r, c] of yerler) {
       if (y[r][c] >= 0) {
-        const hedef = yerler[yaz];
-        if (r !== hedef) {
-          y[hedef][c] = y[r][c];
+        const [hr, hc] = yerler[yaz];
+        if (r !== hr || c !== hc) {
+          y[hr][hc] = y[r][c];
           y[r][c] = -1;
-          kaymalar.push({ eski: [r, c], yeni: [hedef, c] });
+          kaymalar.push({ eski: [r, c], yeni: [hr, hc] });
         }
         yaz++;
       }
     }
     let kacinci = 1;
     for (let i = yaz; i < yerler.length; i++) {
-      const r = yerler[i];
+      const [r, c] = yerler[i];
       const tur = rastgeleTur(rnd);
       y[r][c] = tur;
       yeniler.push({ yeni: [r, c], tur, kacinci });
@@ -455,9 +492,9 @@ export function cozumAdimi(t, oz, { hamle = null, ek = [], izinli = null, engel 
   }
   // En alt sıraya inmiş tohumlar toplanır
   const tohumlar = [];
-  for (let c = 0; c < SUTUN; c++) {
-    const a = enAltSatir(t, c);
-    if (a >= 0 && inenMi(t[a][c])) tohumlar.push([a, c]);
+  for (const z of akisZincirleri(t)) {
+    const [r, c] = z[0];
+    if (inenMi(t[r][c])) tohumlar.push([r, c]);
   }
   return { gruplar, olusan, hucreler, tetiklenen: g.tetiklenen, kasaVurus: [...vur.values()], tohumlar };
 }
@@ -832,9 +869,14 @@ export const serbestMi = (e) => e == null || saatMi(e);
 
 // Seviyeye özel ayarlar (ileride: kapılar)
 let etkinSeviye = null;
+// Akıntı kapıları (Göl Kıyısı): seviye.kapilar = [{ giris: [r, c], cikis: [r, c] }]
+let kapilar = [];
 export function seviyeKur(seviye) {
   etkinSeviye = seviye;
+  kapilar = (seviye && seviye.kapilar) || [];
 }
+export const kapiGirisMi = (r, c) => kapilar.some((k) => k.giris[0] === r && k.giris[1] === c);
+export const kapiCikisMi = (r, c) => kapilar.some((k) => k.cikis[0] === r && k.cikis[1] === c);
 
 // Hamle (ve zincirleri) bittikten sonra işleyen kurallar. ctx: { yapilan, kesilen (hamlenin sayacı), top, puan, hedefTamam }
 // Dönüş: { durum, sayac, puan, kaybetti, olaylar }

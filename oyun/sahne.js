@@ -304,6 +304,24 @@ const RENKLER = [
       { tip: 'kelebek', renk: '#ffb3c7' },
     ],
   },
+  // 15: Göl Kıyısı (göl mavisi gök, sazlık yeşili tepeler, su kabarcıkları)
+  {
+    gok: ['#6cc4f0', '#e6f8ff'],
+    gunes: '#fff4a0',
+    gunesKenar: '#ffd760',
+    tepeArka: ['#7fc6c0', '#6bb3ad'],
+    tepeArka2: ['#8fd0b0', '#78be9c'],
+    tepeOn: ['#9ad7e8', '#82c6da'],
+    tac: ['#4fa070', '#3f8a5e', '#6bbb88'],
+    nokta: ['#ffffff', '#9ad7e8', '#ffd93a'],
+    cicek: ['#ffffff', '#c9b8ff', '#9ad7e8'],
+    parca: [
+      { tip: 'parilti', renk: '#e6f8ff' },
+      { tip: 'parilti', renk: '#bfe8ff' },
+      { tip: 'parilti', renk: '#ffffff' },
+      { tip: 'kelebek', renk: '#2f9fe0' },
+    ],
+  },
 ];
 export const geceMi = (bolum) => !!(RENKLER[bolum] && RENKLER[bolum].gece);
 

@@ -55,6 +55,17 @@ for (const sv of DENENECEK) {
       }
     }
   }
+  // Akış zincirleri her deliksiz hücreyi bir kez içermeli (kapılar döngü kurmamalı)
+  {
+    const d = M.duzenliTahta(sv.duzen, rnd);
+    const zs = M.akisZincirleri(d.t);
+    const say = zs.reduce((a, z) => a + z.length, 0);
+    const delik = d.t.flat().filter((v) => v === M.DELIK).length;
+    if (say !== 64 - delik) {
+      hata++;
+      console.log(`HATA: seviye ${sv.no} akış zincirleri ${say} hücre, olması gereken ${64 - delik} (kapı döngüsü?)`);
+    }
+  }
   let gecen = 0;
   const puanlar = [];
   const kayipNeden = {};
