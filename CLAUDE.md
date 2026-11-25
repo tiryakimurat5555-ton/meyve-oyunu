@@ -28,10 +28,24 @@ Murat'ın meyve temalı 3'lü eşleştirme oyunu (Kasım 2026). Geçici ad "Meyv
   VoiceOver "sisli" der), 10 Kristal Bahçe (final, hepsi). Bot geçme: 31-50 ≥%75, 51-80 ≥%70, 81-100 ≥%65; bölüm başı tanıtım,
   4-5 seviyede bir dinlenme. Parça parça: 4-5 (31-50), 6 (51-60), 7 Kiraz Çiçeği (61-70, dinlenme: karışık engeller, bot %74-100), 8 Bağ Bozumu (71-80, bot %73-95), 9 Gece Bahçesi (81-90, bot %72-100) YAPILDI (25 Kasım);
   25 Kasım Murat: SON BÖLÜM YOK. 100 seviye sınır değil; bölüm çeşitliliği olabildiğince artırılacak (her bölüm yeni bir mekanik/tema).
-  Murat'ın onayladığı sıra (25 Kasım): 10 Kristal Bahçe (şekilli tahtalar) YAPILDI (91-100, bot %65-99); sırada 11 Arı Bahçesi (çiçek
+  Murat'ın onayladığı sıra (25 Kasım): 10 Kristal Bahçe (şekilli tahtalar) YAPILDI (91-100, bot %65-99); 11 Arı Bahçesi (101-110, %69-97) ve 12 Saat Kulesi (111-120, %70-98)
+  YAPILDI; sırada 13. Plan: 11 Arı Bahçesi (çiçek
   tozu: üstünde eşleşme = tozlanır), 12 Saat Kulesi (geri sayımlı meyve, sıfırda kaybedilir), 13 Rüzgârlı Tepe (taşıyıcı bant),
   14 Mantar Ormanı (her 3 hamlede çoğalır), 15 Kuş Yuvası (yumurta 2 vuruş → civciv, tohum gibi iner), 16 Göl Kıyısı (akıntı kapıları),
-  17 Kafes ve Anahtar, 18 Bukalemun Bahçesi (renk değiştiren meyve); sonra mevsim dönüşleri + yeni mekanikler. Her bölüm "Geç" ile.
+  17 Kafes ve Anahtar, 18 Bukalemun Bahçesi (renk değiştiren meyve); sonra mevsim dönüşleri + yeni mekanikler.
+  26 Kasım Murat: "Bütün bölümleri benden onay beklemeden yap" — bölümleri sırayla onay beklemeden yap, her biri bitince yayınla.
+- ORTAK ALTYAPI (26 Kasım): mantik.js'te hamleDegeri (bot puanı, HEDEF_AGIRLIK), sayacEkle, duzenSayilari (DUZEN_HEDEF: düzen harfi →
+  hedef), kalanlariYaz (KALAN_ENGEL: yayılan engellerde tahtada kalan), seviyeKur(seviye) (seviyeye özel ayar: saat başlangıcı vb.),
+  hamleSonrasiKurallar (sarmaşık yayılması, saat azalması; ileride bant/mantar/bukalemun) — seviye-testi bunları kullanır; Oyun.js
+  aynı kuralları animasyonlu uygular. serbestMi(e): takası engellemeyen engel (null, saat). seviyeler.hedefTamam genel (KALAN_HEDEF).
+  Oyun.js EK_HEDEF tablosu: yeni hedeflerin anlatımı/kalan/olay/simgesi tek yerde. Yeni sesler ElevenLabs'ta topluca üretildi
+  (cicek, saat_tik, saat_alarm, ruzgar, mantar, yumurta, civciv, kapi, anahtar, bukalemun; ham adaylar /tmp'de, seçilenler ham-sesler).
+- ÇİÇEK (101-110, Arı Bahçesi): zemin değeri M.CICEK(10)+tür; düzen '1'-'6' (çilek, limon, üzüm, portakal, elma, erik). Eşleşmede yalnız
+  kendi rengindeki meyve tozlar; özel parça patlaması her rengi tozlar (karEriyen t ile). Kasa kırılması tozlamaz. hedef.cicek.
+  Çizim CicekZemin + CicekUst (renk rozeti), AriEfekt. VO "Elma çiçeğinde çilek". Ses 'cicek'. Sahne 10 (UcanAri).
+- SAAT (111-120, Saat Kulesi): engel 'saat<n>' (Oyun.js p.saat), düzen 'z', başlangıç seviye.saat. Takas edilir (serbestMi), özel parça
+  saatli hücreye konmaz. Temizlenince hedef.saat sayılır. Her çekiçsiz hamlede bir azalır; 0 olursa kaybedilir ("Saat doldu", +5 teklifi yok).
+  SaatRozet (≤3 kırmızı). VO "Çilek, saatli, 5 hamle"; ≤3 iken duyuru. Sesler saat_tik / saat_alarm. Sahne 11 gün batımı.
 - DELİK (91-100, Kristal Bahçe): t[r][c] = M.DELIK (30), düzen 'x'. Sabit; eşleşmez, takas edilmez (hamleBul/tumHamleler kilitli),
   genislet atlar (özel parçalar deliği temizlemez), yercekimi sütunda deliksiz hücreler üzerinden: meyve deliğin üstünden atlar.
   karistir yalnız renkli meyveleri karıştırır (diğer her şey yerinde). Tohum sütunun en alt deliksiz satırında toplanır (M.enAltSatir).

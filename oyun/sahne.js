@@ -5,7 +5,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { AccessibilityInfo, Animated, Easing, View } from 'react-native';
 
-export const bolumNo = (seviyeNo) => Math.min(9, Math.floor((seviyeNo - 1) / 10));
+export const bolumNo = (seviyeNo) => Math.min(RENKLER.length - 1, Math.floor((seviyeNo - 1) / 10));
 
 const RENKLER = [
   // 0: İlkbahar
@@ -210,6 +210,43 @@ const RENKLER = [
       { tip: 'kelebek', renk: '#9fe6f2' },
     ],
   },
+  // 10: Arı Bahçesi (sıcak bal sarısı ışık, çiçekli çayır, uçuşan arılar)
+  {
+    gok: ['#7cc8f5', '#fff3c4'],
+    gunes: '#ffd93a',
+    gunesKenar: '#ffb31c',
+    tepeArka: ['#9ad468', '#86c454'],
+    tepeArka2: ['#a9dc74', '#92cb5e'],
+    tepeOn: ['#c2e88a', '#acd970'],
+    tac: ['#5fb84a', '#4a9e38', '#7ccc5e'],
+    nokta: ['#ffd23f', '#ff8fc7', '#ffffff'],
+    cicek: ['#ffd23f', '#ff8fc7', '#ffffff'],
+    parca: [
+      { tip: 'ari' },
+      { tip: 'ari' },
+      { tip: 'ari' },
+      { tip: 'yaprak', renk: '#ffd23f' },
+      { tip: 'yaprak', renk: '#ff8fc7' },
+    ],
+  },
+  // 11: Saat Kulesi (gün batımı: turuncu-pembe gök, taş rengi tepeler, altın yapraklar)
+  {
+    gok: ['#ff9a6b', '#ffe3c2'],
+    gunes: '#ffcf5a',
+    gunesKenar: '#ff9a3a',
+    tepeArka: ['#a8b98a', '#93a676'],
+    tepeArka2: ['#b7c595', '#9fb07f'],
+    tepeOn: ['#d6d0b8', '#c7bfa3'],
+    tac: ['#7aa35a', '#64894a', '#94bb72'],
+    nokta: ['#ffcf5a', '#ff9a6b', '#ffffff'],
+    cicek: ['#ffcf5a', '#ff9a6b', '#ffffff'],
+    parca: [
+      { tip: 'yaprak', renk: '#ffcf5a' },
+      { tip: 'yaprak', renk: '#ff9a3a' },
+      { tip: 'yaprak', renk: '#e0b050' },
+      { tip: 'kelebek', renk: '#ff9a6b' },
+    ],
+  },
 ];
 export const geceMi = (bolum) => !!(RENKLER[bolum] && RENKLER[bolum].gece);
 
@@ -357,6 +394,29 @@ function Parilti({ x, sure, bas, renk, EY, hareket }) {
     <Animated.Text style={{ position: 'absolute', left: x, top: 0, fontSize: 14, lineHeight: 16, color: renk, textShadowColor: 'rgba(120,180,255,0.8)', textShadowRadius: 4, opacity: op, transform: [{ translateY: ty }, { translateX: tx }, { rotate: donus }] }}>
       ✦
     </Animated.Text>
+  );
+}
+
+// ---------- uçan arı (Arı Bahçesi): dalgalı yolla süzülen, kanat çırpan küçük arı ----------
+function UcanAri({ y, sure, bas, EG, yon, hareket }) {
+  const v = useDongu(sure, hareket);
+  const kanat = useDongu(160, hareket);
+  const t = Animated.modulo(Animated.add(v, bas), 1);
+  const tx = t.interpolate({ inputRange: [0, 1], outputRange: yon > 0 ? [-30, EG + 30] : [EG + 30, -30] });
+  const ty = t.interpolate({ inputRange: [0, 0.15, 0.3, 0.45, 0.6, 0.75, 0.9, 1], outputRange: [0, -14, 6, -16, 4, -12, 8, 0] });
+  const cirp = kanat.interpolate({ inputRange: [0, 0.5, 1], outputRange: [1, 0.3, 1] });
+  return (
+    <Animated.View style={{ position: 'absolute', left: 0, top: y, width: 24, height: 20, transform: [{ translateX: tx }, { translateY: ty }, { scaleX: yon }] }}>
+      <Animated.View style={{ position: 'absolute', left: 6, top: 0, width: 12, height: 9, transform: [{ scaleY: cirp }] }}>
+        <View style={{ position: 'absolute', left: 0, top: 0, width: 7, height: 9, borderRadius: 5, backgroundColor: 'rgba(220,240,255,0.9)', borderWidth: 1, borderColor: '#9cc3e0' }} />
+        <View style={{ position: 'absolute', left: 6, top: 1, width: 6, height: 8, borderRadius: 4, backgroundColor: 'rgba(220,240,255,0.9)', borderWidth: 1, borderColor: '#9cc3e0' }} />
+      </Animated.View>
+      <View style={{ position: 'absolute', left: 2, top: 7, width: 20, height: 12, borderRadius: 6, backgroundColor: '#ffd23f', borderWidth: 1, borderColor: '#5a3a00', overflow: 'hidden' }}>
+        <View style={{ position: 'absolute', left: 6, top: 0, bottom: 0, width: 3, backgroundColor: '#3b2a10' }} />
+        <View style={{ position: 'absolute', left: 12, top: 0, bottom: 0, width: 3, backgroundColor: '#3b2a10' }} />
+      </View>
+      <View style={{ position: 'absolute', left: 17, top: 11, width: 2.5, height: 2.5, borderRadius: 2, backgroundColor: '#1a1a1a' }} />
+    </Animated.View>
   );
 }
 
@@ -567,7 +627,9 @@ function Sahne({ bolum = 0, EG, EY, gunesX, gunesY, gunesBoy = 58 }) {
       <Bulut y={EY * 0.6} olcek={0.7} sure={60000} bas={0.85} EG={EG} saydam={renk.gece ? 0.16 : 0.8} hareket={hareket} />
       {durgun}
       {renk.parca.map((p, i) =>
-        p.tip === 'parilti' ? (
+        p.tip === 'ari' ? (
+          <UcanAri key={i} y={EY * (0.6 + (i % 3) * 0.09)} sure={13000 + i * 2700} bas={(i * 0.41) % 1} EG={EG} yon={i % 2 ? -1 : 1} hareket={hareket} />
+        ) : p.tip === 'parilti' ? (
           <Parilti key={i} x={EG * ((i * 0.27 + 0.06) % 1)} sure={12000 + i * 1600} bas={(i * 0.19) % 1} renk={p.renk} EY={EY} hareket={hareket} />
         ) : p.tip === 'atesbocegi' ? (
           <AtesBocegi key={i} x={EG * ((i * 0.29 + 0.1) % 1)} y={EY * (0.7 + (i % 3) * 0.08)} sure={9000 + i * 1300} bas={(i * 0.23) % 1} EG={EG} hareket={hareket} />

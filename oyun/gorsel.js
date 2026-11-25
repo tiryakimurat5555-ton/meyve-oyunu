@@ -595,6 +595,122 @@ export function Tohum({ H }) {
 }
 
 // Tohum en alt sıraya inince açan çiçek (büyüyüp yukarı süzülür ve kaybolur)
+// ---------- Çiçek (Arı Bahçesi) ----------
+// Zemindeki çiçek: meyvenin arkasında, taç yaprakları meyvenin kenarlarından taşar (renk = tozlanması için gereken meyve)
+export function CicekZemin({ H, tur, r, c }) {
+  const m = MEYVELER[tur] || MEYVELER[0];
+  const b = H - 3;
+  const y = b * 0.4;
+  return (
+    <View pointerEvents="none" style={{ position: 'absolute', left: c * H + 1.5, top: r * H + 1.5, width: b, height: b, borderRadius: H * 0.22, overflow: 'hidden', backgroundColor: '#fff6d6' }}>
+      {[0, 60, 120, 180, 240, 300].map((a) => {
+        const rad = ((a + 30) * Math.PI) / 180;
+        return <View key={a} style={{ position: 'absolute', left: b / 2 + Math.cos(rad) * b * 0.36 - y / 2, top: b / 2 + Math.sin(rad) * b * 0.36 - y / 2, width: y, height: y, borderRadius: y, backgroundColor: m.renk, opacity: 0.85, borderWidth: 1.5, borderColor: '#ffffff' }} />;
+      })}
+    </View>
+  );
+}
+// Meyvenin üstünde sağ alt köşede küçük çiçek rozeti: hangi rengin gerektiği meyve üstündeyken de görünsün
+export function CicekUst({ H, tur, r, c }) {
+  const m = MEYVELER[tur] || MEYVELER[0];
+  const b = H * 0.34;
+  const y = b * 0.46;
+  return (
+    <View pointerEvents="none" style={{ position: 'absolute', left: c * H + H - b - 1, top: r * H + H - b - 1, width: b, height: b }}>
+      {[0, 72, 144, 216, 288].map((a) => {
+        const rad = ((a - 90) * Math.PI) / 180;
+        return <View key={a} style={{ position: 'absolute', left: b / 2 + Math.cos(rad) * b * 0.27 - y / 2, top: b / 2 + Math.sin(rad) * b * 0.27 - y / 2, width: y, height: y, borderRadius: y, backgroundColor: m.renk, borderWidth: 1, borderColor: '#ffffff' }} />;
+      })}
+      <View style={{ position: 'absolute', left: b * 0.36, top: b * 0.36, width: b * 0.28, height: b * 0.28, borderRadius: b, backgroundColor: '#ffd23f', borderWidth: 1, borderColor: '#c98a00' }} />
+    </View>
+  );
+}
+export function CicekIkon({ boy = 26, tur = null }) {
+  const renk = tur == null ? '#ff8fc7' : (MEYVELER[tur] || MEYVELER[0]).renk;
+  const y = boy * 0.46;
+  return (
+    <View style={{ width: boy, height: boy }}>
+      {[0, 72, 144, 216, 288].map((a) => {
+        const rad = ((a - 90) * Math.PI) / 180;
+        return <View key={a} style={{ position: 'absolute', left: boy / 2 + Math.cos(rad) * boy * 0.27 - y / 2, top: boy / 2 + Math.sin(rad) * boy * 0.27 - y / 2, width: y, height: y, borderRadius: y, backgroundColor: renk, borderWidth: 1, borderColor: '#ffffff' }} />;
+      })}
+      <View style={{ position: 'absolute', left: boy * 0.36, top: boy * 0.36, width: boy * 0.28, height: boy * 0.28, borderRadius: boy, backgroundColor: '#ffd23f', borderWidth: 1, borderColor: '#c98a00' }} />
+    </View>
+  );
+}
+// ---------- Saat (Saat Kulesi) ----------
+// Meyvenin sağ üst köşesinde kalan hamleyi gösteren saat rozeti; 3 ve altında kırmızı
+export function SaatRozet({ H, n }) {
+  const b = H * 0.42;
+  const acil = n <= 3;
+  return (
+    <View pointerEvents="none" style={{ position: 'absolute', right: H * 0.01, top: H * 0.01, width: b, height: b, borderRadius: b, backgroundColor: acil ? '#ff4d4d' : '#ffffff', borderWidth: 2, borderColor: acil ? '#a10f0f' : '#5b6b7a', alignItems: 'center', justifyContent: 'center' }}>
+      <View style={{ position: 'absolute', top: -b * 0.16, width: b * 0.3, height: b * 0.2, borderRadius: 2, backgroundColor: acil ? '#a10f0f' : '#5b6b7a' }} />
+      <Text style={{ fontSize: b * 0.56, lineHeight: b * 0.7, fontWeight: '900', color: acil ? '#ffffff' : '#24384a' }}>{n}</Text>
+    </View>
+  );
+}
+export function SaatIkon({ boy = 26 }) {
+  return (
+    <View style={{ width: boy, height: boy, borderRadius: boy, backgroundColor: '#ffffff', borderWidth: 2.5, borderColor: '#5b6b7a', alignItems: 'center', justifyContent: 'center' }}>
+      <View style={{ position: 'absolute', width: 2.5, height: boy * 0.34, top: boy * 0.16, backgroundColor: '#24384a', borderRadius: 2 }} />
+      <View style={{ position: 'absolute', width: boy * 0.28, height: 2.5, left: boy * 0.47, top: boy * 0.47, backgroundColor: '#ff4d4d', borderRadius: 2 }} />
+    </View>
+  );
+}
+
+// Arı: yukarıdan uçup çiçeğe konar, tozlar ve uçup gider
+export function AriEfekt({ e, H, bitti }) {
+  const t = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    Animated.timing(t, { toValue: 1, duration: 1000, easing: Easing.inOut(Easing.quad), useNativeDriver: true }).start(() => bitti(e.id));
+  }, []);
+  const cx = e.c * H + H / 2;
+  const cy = e.r * H + H / 2;
+  return (
+    <>
+      <Animated.Text
+        style={{
+          position: 'absolute',
+          left: cx - H * 0.28,
+          top: cy - H * 0.32,
+          fontSize: H * 0.5,
+          lineHeight: H * 0.62,
+          opacity: t.interpolate({ inputRange: [0, 0.1, 0.85, 1], outputRange: [0, 1, 1, 0] }),
+          transform: [
+            { translateX: t.interpolate({ inputRange: [0, 0.4, 0.6, 1], outputRange: [-H * 1.2, 0, 0, H * 1.4] }) },
+            { translateY: t.interpolate({ inputRange: [0, 0.4, 0.5, 0.6, 1], outputRange: [-H * 1.4, 0, -H * 0.08, 0, -H * 1.6] }) },
+          ],
+        }}
+      >
+        🐝
+      </Animated.Text>
+      {[0, 1, 2, 3, 4].map((i) => {
+        const a = (i / 5) * Math.PI * 2;
+        return (
+          <Animated.View
+            key={i}
+            style={{
+              position: 'absolute',
+              left: cx - 3,
+              top: cy - 3,
+              width: 6,
+              height: 6,
+              borderRadius: 3,
+              backgroundColor: '#ffd23f',
+              opacity: t.interpolate({ inputRange: [0, 0.45, 0.55, 1], outputRange: [0, 0, 1, 0] }),
+              transform: [
+                { translateX: t.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 0, Math.cos(a) * H * 0.6] }) },
+                { translateY: t.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 0, Math.sin(a) * H * 0.6] }) },
+              ],
+            }}
+          />
+        );
+      })}
+    </>
+  );
+}
+
 export function CicekAcma({ e, H, bitti }) {
   const t = useRef(new Animated.Value(0)).current;
   useEffect(() => {
@@ -732,6 +848,7 @@ export function Parca({ p, H }) {
       {p.buz && <BuzKatman H={H} />}
       {p.sarmasik && <SarmasikKatman H={H} />}
       {p.sis && <SisKatman H={H} />}
+      {p.saat ? <SaatRozet H={H} n={p.saat} /> : null}
     </Animated.View>
   );
 }

@@ -116,9 +116,33 @@ export const SEVIYELER = [
   { no: 98, hamle: 28, tur: 6, hedef: { kar: 14 }, yildiz: [4750, 5750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['ssssssss', '.ssssss.', 'xx....xx', 'xx....xx', 'xx....xx', 'xx....xx', '........', '........'] },
   { no: 99, hamle: 24, tur: 6, hedef: { topla: { 1: 18, 5: 18 } }, yildiz: [3000, 3750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['x......x', '.x....x.', '..x..x..', '........', '........', '..x..x..', '.x....x.', 'x......x'] },
   { no: 100, hamle: 43, tur: 6, hedef: { buz: 5, sis: 5, kasa: 4, kar: 4 }, yildiz: [6750, 7750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['x..xx..x', '.bb..gg.', '.bb..gg.', '.b....g.', 'x......x', 'xx....xx', 'xxkkkkxx', 'xxssssxx'] },
+  // ---- 11. bölüm: Arı Bahçesi (çiçek: üstünde kendi rengindeki meyve patlayınca tozlanır) ----
+  { no: 101, hamle: 27, tur: 6, hedef: { cicek: 4 }, yildiz: [6250, 7500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '........', '........', '...11...', '...11...', '........', '........', '........'], yeni: 'cicek' },
+  { no: 102, hamle: 31, tur: 6, hedef: { cicek: 6 }, yildiz: [7500, 9250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '........', '.1....2.', '.1....2.', '.1....2.', '........', '........', '........'] },
+  { no: 103, hamle: 33, tur: 6, hedef: { cicek: 8, topla: { 4: 15 } }, yildiz: [8500, 9750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '..3..3..', '........', '.5....5.', '.5....5.', '........', '..3..3..', '........'] },
+  { no: 104, hamle: 29, tur: 6, hedef: { cicek: 6, buz: 8 }, yildiz: [7250, 8750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '.bbbbbb.', '.b....b.', '..4..4..', '..2..2..', '..6..6..', '........', '........'] },
+  { no: 105, hamle: 26, tur: 6, hedef: { puan: 6500 }, yildiz: [8250, 9250], ozel: { cizgili: true, bomba: true, gokkusagi: true } },
+  { no: 106, hamle: 36, tur: 6, hedef: { cicek: 10 }, yildiz: [9000, 10500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '.1.2.3.4', '........', '........', '4.3.2.1.', '........', '..5..6..', '........'] },
+  { no: 107, hamle: 33, tur: 6, hedef: { cicek: 8, kar: 8 }, yildiz: [7500, 9250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '........', 'ssssssss', '........', '..1234..', '..5612..', '........', '........'] },
+  { no: 108, hamle: 30, tur: 6, hedef: { cicek: 8 }, yildiz: [6250, 7250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['xx....xx', 'x......x', '..1..2..', '..3..4..', '..5..6..', '..1..2..', 'x......x', 'xx....xx'] },
+  { no: 109, hamle: 22, tur: 6, hedef: { topla: { 0: 22, 2: 22 } }, yildiz: [5750, 7250], ozel: { cizgili: true, bomba: true, gokkusagi: true } },
+  { no: 110, hamle: 37, tur: 6, hedef: { cicek: 12, sis: 6, kasa: 4 }, yildiz: [8250, 9750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '.gg..gg.', '.g....g.', '.123456.', '.654321.', '........', '..kkkk..', '........'] },
+  // ---- 12. bölüm: Saat Kulesi (saatli meyve: her hamlede azalır; sıfıra inmeden patlat, yoksa seviye kaybedilir) ----
+  { no: 111, hamle: 20, tur: 6, hedef: { saat: 2 }, yildiz: [4000, 4500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, saat: 14, duzen: ['........', '........', '........', '..z..z..', '........', '........', '........', '........'], yeni: 'saat' },
+  { no: 112, hamle: 22, tur: 6, hedef: { saat: 3 }, yildiz: [4500, 5250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, saat: 12, duzen: ['........', '........', '.z..z..z', '........', '........', '........', '........', '........'] },
+  { no: 113, hamle: 24, tur: 6, hedef: { saat: 3, topla: { 1: 15 } }, yildiz: [5500, 6500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, saat: 12, duzen: ['........', 'z......z', '........', '........', '...z....', '........', '........', '........'] },
+  { no: 114, hamle: 26, tur: 6, hedef: { saat: 4, buz: 8 }, yildiz: [5250, 6000], ozel: { cizgili: true, bomba: true, gokkusagi: true }, saat: 14, duzen: ['........', '.z....z.', '..bbbb..', '..bbbb..', '.z....z.', '........', '........', '........'] },
+  { no: 115, hamle: 26, tur: 6, hedef: { puan: 6500 }, yildiz: [8000, 9000], ozel: { cizgili: true, bomba: true, gokkusagi: true } },
+  { no: 116, hamle: 28, tur: 6, hedef: { saat: 5 }, yildiz: [5500, 6500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, saat: 13, duzen: ['z.......', '........', '...z....', '.......z', '........', '..z...z.', '........', '........'] },
+  { no: 117, hamle: 30, tur: 6, hedef: { saat: 4, kar: 10 }, yildiz: [6000, 7250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, saat: 14, duzen: ['........', '..z..z..', '........', '........', '.z....z.', 'sssss...', '...sssss', '........'] },
+  { no: 118, hamle: 31, tur: 6, hedef: { saat: 4, cicek: 6 }, yildiz: [7250, 8500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, saat: 18, duzen: ['........', '.z....z.', '........', '..1..2..', '..3..4..', '..5..6..', '.z....z.', '........'] },
+  { no: 119, hamle: 20, tur: 6, hedef: { topla: { 3: 20, 4: 20 } }, yildiz: [5250, 6500], ozel: { cizgili: true, bomba: true, gokkusagi: true } },
+  { no: 120, hamle: 38, tur: 6, hedef: { saat: 6, kasa: 4, sis: 4 }, yildiz: [6750, 8000], ozel: { cizgili: true, bomba: true, gokkusagi: true }, saat: 20, duzen: ['z......z', '.gg..gg.', '........', '..z..z..', '........', 'z.kkkk.z', '........', '........'] },
 ];
 
 export const TANITIM = {
+  saat: { baslik: 'Yeni: Saatli meyve', metin: 'Saatli meyvenin köşesindeki sayı her hamlede bir azalır. Sıfıra inmeden o meyveyi patlat; yoksa seviye biter! Sayı 3 ve altına inince saat kırmızı olur.' },
+  cicek: { baslik: 'Yeni: Çiçekler', metin: 'Bazı karelerde renkli çiçekler var. Bir çiçeği tozlatmak için üstünde kendi rengindeki meyveyi eşleştir: kırmızı çiçeğe çilek, sarı çiçeğe limon. Çizgili, bomba ya da gökkuşağı patlaması ise her çiçeği tozlar!' },
   delik: { baslik: 'Yeni: Şekilli tahtalar', metin: 'Kristal Bahçe\'de tahtalar farklı şekillerde. Boş karelere meyve gidemez; meyveler boşlukların üstünden atlayarak aşağı düşer.' },
   sis: { baslik: 'Yeni: Sis', metin: 'Gece bahçeyi sis kapladı! Sisli karenin altında hangi meyve olduğu görünmez ve yer değiştiremez. Hemen yanında meyve eşleştir ya da özel parçayla vur, sis dağılsın.' },
   fici: { baslik: 'Yeni: Fıçı', metin: 'Fıçılar çok sağlam: kırmak için hemen yanında üç kez meyve eşleştir ya da özel parçayla vur. Her vuruşta biraz daha çatlar.' },
@@ -149,13 +173,14 @@ export function yildizHesapla(seviye, puan, basarili) {
 export function hedefTamam(seviye, toplanan, puan) {
   const h = seviye.hedef;
   if (h.puan) return puan >= h.puan;
-  if (h.buz && (toplanan.buz || 0) < h.buz) return false;
-  if (h.kasa && (toplanan.kasa || 0) < h.kasa) return false;
-  if (h.kar && (toplanan.kar || 0) < h.kar) return false;
-  if (h.tohum && (toplanan.tohum || 0) < h.tohum) return false;
-  if (h.fici && (toplanan.fici || 0) < h.fici) return false;
-  if (h.sis && (toplanan.sis || 0) < h.sis) return false;
-  // Sarmaşık yayılabildiği için tahtada kalan sayısına bakılır (oyun her hamleden sonra toplanan.sarmasikKalan'ı yazar)
-  if (h.sarmasik && (toplanan.sarmasikKalan == null ? h.sarmasik : toplanan.sarmasikKalan) > 0) return false;
+  for (const [k, n] of Object.entries(h)) {
+    if (k === 'topla') continue;
+    if (KALAN_HEDEF.includes(k)) {
+      // Yayılabilen engeller: tahtada kalan sayısına bakılır (oyun her hamleden sonra toplanan.<ad>Kalan'ı yazar)
+      const v = toplanan[k + 'Kalan'];
+      if ((v == null ? n : v) > 0) return false;
+    } else if ((toplanan[k] || 0) < n) return false;
+  }
   return Object.entries(h.topla || {}).every(([tur, n]) => (toplanan[tur] || 0) >= n);
 }
+export const KALAN_HEDEF = ['sarmasik'];

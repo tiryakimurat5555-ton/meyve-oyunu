@@ -142,6 +142,16 @@ DIGER = {
     'sarmasik_kes': ('sarmasik_kes_3', 0.45, -16),
     'sarmasik_yay': ('sarmasik_yay_2', 0.55, -18),
     'sis': ('sis_2', 0.6, -17),
+    'cicek': ('cicek_3', 0.7, -17),
+    'saat_tik': ('saat_tik_4', 0.18, -20),
+    'saat_alarm': ('saat_alarm_1', 0.6, -15),
+    'ruzgar': ('ruzgar_1', 0.5, -18),
+    'mantar': ('mantar_4', 0.35, -17),
+    'yumurta': ('yumurta_4', 0.35, -16),
+    'civciv': ('civciv_3', 0.8, -17),
+    'kapi': ('kapi_3', 0.4, -18),
+    'anahtar': ('anahtar_3', 0.75, -16),
+    'bukalemun': ('bukalemun_1', 0.4, -18),
 }
 for ad, (dosya, uzun, db) in DIGER.items():
     kaydet(ad, esitle(kirp(oku(dosya), uzun, 0.08), db))

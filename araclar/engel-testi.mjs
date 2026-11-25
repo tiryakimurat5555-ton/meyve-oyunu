@@ -182,5 +182,23 @@ for (let i = 0; i < 30; i++) {
   dogru(k[3][3] === M.DELIK && k[7][0] === M.DELIK, 'karıştırmada delik yerinde');
   dogru(!M.tumHamleler(d.t, oz, d.engel).some(([a, b]) => d.t[a[0]][a[1]] === M.DELIK || d.t[b[0]][b[1]] === M.DELIK), 'delikle takas yok');
 }
-console.log(hata ? `${hata} HATA` : 'ENGEL TESTLERİ GEÇTİ (kar, tohum sarmaşık, fıçı, sis ve delik dahil)');
+{
+  // Çiçek: eşleşmede yalnız kendi rengiyle, özel parçayla her renkle tozlanır
+  const t = [];
+  for (let r = 0; r < 8; r++) t.push(Array.from({ length: 8 }, (_, c) => (r * 3 + c * 2 + (r % 2)) % 6));
+  t[7][0] = 0; t[7][1] = 0; t[7][2] = 0;
+  const oz = t.map((s) => s.map(() => null));
+  const en = t.map((s) => s.map(() => null));
+  const z = t.map((s) => s.map(() => 0));
+  z[7][0] = M.CICEK + 0; // çilek çiçeği
+  z[7][1] = M.CICEK + 1; // limon çiçeği
+  const ad = M.cozumAdimi(t, oz, { engel: en });
+  const er = M.karEriyen(ad, en, z, t);
+  dogru(er.length === 1 && er[0][1] === 0, 'yalnız çilek çiçeği tozlanmalı: ' + JSON.stringify(er));
+  const u = M.adimUygula(t, oz, en, ad, () => 0.3, z);
+  dogru(u.sayac.cicek === 1 && u.zemin[7][0] === 0 && u.zemin[7][1] === M.CICEK + 1, 'çiçek sayacı');
+  const ad2 = M.cozumAdimi(t, oz, { engel: en, ek: [[7, 1]] });
+  dogru(M.karEriyen({ ...ad2, gruplar: [] }, en, z, t).some(([r, c]) => c === 1), 'özel parça her rengi tozlamalı');
+}
+console.log(hata ? `${hata} HATA` : 'ENGEL TESTLERİ GEÇTİ (kar, tohum sarmaşık, fıçı, sis, delik ve çiçek dahil)');
 process.exit(hata ? 1 : 0);
