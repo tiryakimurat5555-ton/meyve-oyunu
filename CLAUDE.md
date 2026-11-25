@@ -27,7 +27,8 @@ Murat'ın meyve temalı 3'lü eşleştirme oyunu (Kasım 2026). Geçici ad "Meyv
   yayılır), 7 Kiraz Çiçeği (dinlenme, iki katlı kar), 8 Bağ Bozumu (fıçı: 3 vuruş, bazısından özel meyve), 9 Gece (sis: gizler,
   VoiceOver "sisli" der), 10 Kristal Bahçe (final, hepsi). Bot geçme: 31-50 ≥%75, 51-80 ≥%70, 81-100 ≥%65; bölüm başı tanıtım,
   4-5 seviyede bir dinlenme. Parça parça: 4-5 (31-50), 6 (51-60), 7 Kiraz Çiçeği (61-70, dinlenme: karışık engeller, bot %74-100), 8 Bağ Bozumu (71-80, bot %73-95), 9 Gece Bahçesi (81-90, bot %72-100) YAPILDI (25 Kasım);
-  sırada 10 Kristal Bahçe (91-100, final: bütün engeller).
+  25 Kasım Murat: SON BÖLÜM YOK. 100 seviye sınır değil; bölüm çeşitliliği olabildiğince artırılacak (her bölüm yeni bir mekanik/tema).
+  Sırada 10. bölüm (91-100); yeni bölüm planı Murat'a önerildi, onay bekleniyor.
 - KAR (31-40): zemin katmanı (Oyun.js zemin ref, mantik zemin[r][c]=kat), parçayla düşmez. Üstündeki parça temizlenince / orada özel
   parça oluşunca / üstündeki kasa kırılınca bir kat erir (karEriyen); buz kırılması eritmez; komşu eşleşme eritmez. Düzen 's'/'S'.
   Çizim: KarZemin (altta) + KarUst (meyvenin üstünde alt kenar kar yığını + mavi kenar). VO: "Karlı çilek", "İki kat karlı ...".
