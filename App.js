@@ -597,7 +597,7 @@ function Oyun() {
           accessibilityElementsHidden
           style={[TAM, { borderRadius: 18, backgroundColor: '#ffffff', opacity: flas }]}
         />
-        {ovgu && <Ovgu key={ovgu.id} metin={ovgu.metin} bitti={() => setOvgu(null)} />}
+        {ovgu && <Ovgu key={ovgu.id} metin={ovgu.metin} bitti={() => setOvgu((o) => (o && o.id === ovgu.id ? null : o))} />}
       </Animated.View>
 
       <View style={st.alt}>
