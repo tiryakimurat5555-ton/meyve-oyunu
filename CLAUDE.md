@@ -77,6 +77,9 @@ Murat'ın meyve temalı 3'lü eşleştirme oyunu (Kasım 2026). Geçici ad "Meyv
   akış csKqxNdVJHGnAhNOObTv. ovgu_nice/great/amazing/fantastic (coşku zincirle artar), ovgu_garden (şenlik), ovgu_level (kazanınca,
   kazandin'dan 250 ms sonra). Zincir sesi hamlenin bütün zinciri bitince en yüksek aşama için bir kez (hamleSonrasi); hedef tamamsa
   yalnız Garden Party. Hafif kristal yankı sesleri-isle.py'de. VoiceOver için ayrı ayar YOK (Murat: doğrudan çalsın).
+- MENÜ TIK SESLERİ (25 Kasım, Murat istedi): 'dugme' (kristal tık; ham dugme_3) ileri giden düğmeler, 'dugme_geri' (dugme_1'in
+  kalın kopyası) geri/kapat/vazgeç. App.js'te tikla(f, ses) sarmalayıcısı; Başla ve Vazgeç Oyun.js'te. Oyun içi güçlendirici
+  düğmelerinin kendi sesleri var (ipucu pling, çekiç secim, karıştır, +3 ozel_olustu).
 - `araclar/web-deneme`: tarayıcı denemesi (animasyonlar anında biter; window.__dondur=0..1 animasyonu o anda dondurur):
   `bash araclar/web-deneme/yap.sh /tmp/meyve-web && NODE_PATH=/opt/npm-tools/node_modules node araclar/web-deneme/seviye-dene.cjs /tmp/meyve-web /tmp/meyve-ekran`
 - Murat ekran videosu gönderirse ffmpeg ile kare kare incele (Expo Go eski güncellemeyi açabilir: yeşil tepe var mı bak).

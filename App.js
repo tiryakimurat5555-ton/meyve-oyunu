@@ -8,6 +8,12 @@ import Oyun from './oyun/Oyun';
 import ListeEkrani from './oyun/ListeEkrani';
 import { SEVIYELER } from './oyun/seviyeler';
 import { cal, sesAyari, sesleriHazirla, titresimAyari, titret } from './oyun/ses';
+
+// Menü düğmelerinin tık sesi: ileri giden düğmeler 'dugme', geri dönen / kapatan düğmeler 'dugme_geri'
+const tikla = (f, ses = 'dugme') => (...a) => {
+  cal(ses);
+  return f && f(...a);
+};
 import { st } from './oyun/gorsel';
 import { AyarlarPaneli, GUNLUK_ODUL, GunlukOdulPaneli, odulMetni } from './oyun/Paneller';
 
@@ -125,9 +131,9 @@ export default function App() {
   if (ilerleme && ekran.ad === 'liste')
     icerik = (
       <>
-        <ListeEkrani ilerleme={ilerleme} sec={oyna} ayarlarAc={() => setAyarAcik(true)} />
+        <ListeEkrani ilerleme={ilerleme} sec={tikla(oyna)} ayarlarAc={tikla(() => setAyarAcik(true))} />
         {gunluk && !ayarAcik && <GunlukOdulPaneli gun={gunluk.gun} al={gunlukAl} />}
-        {ayarAcik && <AyarlarPaneli ayar={ayar} degistir={ayarDegistir} kapat={() => setAyarAcik(false)} />}
+        {ayarAcik && <AyarlarPaneli ayar={ayar} degistir={tikla(ayarDegistir)} kapat={tikla(() => setAyarAcik(false), 'dugme_geri')} />}
       </>
     );
   if (ilerleme && ekran.ad === 'oyun') {
@@ -139,11 +145,11 @@ export default function App() {
         enIyi={ilerleme.enIyi[seviye.no] || 0}
         sonrakiVar={seviye.no < SEVIYELER.length}
         bitince={seviyeBitti}
-        geri={() => setEkran({ ad: 'liste' })}
-        sonraki={() => oyna(Math.min(SEVIYELER.length, seviye.no + 1))}
-        tekrar={() => oyna(seviye.no)}
+        geri={tikla(() => setEkran({ ad: 'liste' }), 'dugme_geri')}
+        sonraki={tikla(() => oyna(Math.min(SEVIYELER.length, seviye.no + 1)))}
+        tekrar={tikla(() => oyna(seviye.no))}
         bot={bot}
-        botDegistir={setBot}
+        botDegistir={tikla(setBot)}
         guc={ilerleme.guc}
         gucHarca={gucHarca}
         bolumOdulVar={seviye.no % 10 === 0 && !ilerleme.bolumOdul[seviye.no]}

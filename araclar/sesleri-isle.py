@@ -165,6 +165,10 @@ for ad, (dosya, db) in OVGU_SES.items():
     x = kirp(oku(dosya), 2.2, sondur=0.1, esik_db=-38)
     kaydet(ad, esitle(kirp(yanki(x), 2.5, sondur=0.15, esik_db=-40), db))
 
+# ---------- menü düğmeleri: kristal tık (ileri) ve aynı tıkın kalın kopyası (geri / kapat) ----------
+kaydet('dugme', esitle(kirp(oku('dugme_3'), 0.18, 0.05), -20))
+kaydet('dugme_geri', esitle(kirp(perde(kirp(oku('dugme_1'), 0.3, 0.05), 0.72), 0.25, 0.06), -20))
+
 # ---------- sessiz döngü (yalnız iPhone çalar: ses kanalını açık tutar; bkz. oyun/ses.js) ----------
 with wave.open(os.path.join(HEDEF, 'sessiz.wav'), 'wb') as w:
     w.setnchannels(1)

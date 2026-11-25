@@ -4,6 +4,8 @@ export const SES_DOSYALARI = {
   buz: require('../assets/ses/buz.wav'),
   cekic: require('../assets/ses/cekic.wav'),
   cizgi: require('../assets/ses/cizgi.wav'),
+  dugme: require('../assets/ses/dugme.wav'),
+  dugme_geri: require('../assets/ses/dugme_geri.wav'),
   gecersiz: require('../assets/ses/gecersiz.wav'),
   gokkusagi: require('../assets/ses/gokkusagi.wav'),
   karistir: require('../assets/ses/karistir.wav'),

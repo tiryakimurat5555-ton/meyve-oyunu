@@ -1087,7 +1087,10 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
                 <Text style={yst.tanitimMetin}>{TANITIM[seviye.yeni].metin}</Text>
               </View>
             )}
-            <Pressable accessibilityRole="button" accessibilityLabel="Başla" onPress={basla} style={({ pressed }) => [st.dugme, st.dugmeBuyuk, pressed && { transform: [{ scale: 0.96 }] }]}>
+            <Pressable accessibilityRole="button" accessibilityLabel="Başla" onPress={() => {
+                cal('dugme');
+                basla();
+              }} style={({ pressed }) => [st.dugme, st.dugmeBuyuk, pressed && { transform: [{ scale: 0.96 }] }]}>
               <Text style={[st.dugmeYazi, { fontSize: 20 }]}>Başla</Text>
             </Pressable>
           </GirisKart>
@@ -1106,7 +1109,10 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
               <Text style={[st.dugmeYazi, { fontSize: 22 }]}>+{EK_HAMLE} Hamle</Text>
               <Text style={[st.dugmeYazi, { fontSize: 13, textAlign: 'center', opacity: 0.9 }]}>Ücretsiz</Text>
             </Pressable>
-            <Pressable accessibilityRole="button" accessibilityLabel="Vazgeç" onPress={teklifiReddet} style={({ pressed }) => [yst.ikinciDugme, { marginTop: 14 }, pressed && { opacity: 0.7 }]}>
+            <Pressable accessibilityRole="button" accessibilityLabel="Vazgeç" onPress={() => {
+                cal('dugme_geri');
+                teklifiReddet();
+              }} style={({ pressed }) => [yst.ikinciDugme, { marginTop: 14 }, pressed && { opacity: 0.7 }]}>
               <Text style={yst.ikinciYazi}>Vazgeç</Text>
             </Pressable>
           </GirisKart>
