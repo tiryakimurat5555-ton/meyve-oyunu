@@ -19,7 +19,10 @@ export const FICI_ODUL = 23;
 export const ANAHTAR = 26;
 export const YUMURTA = 24;
 export const CIVCIV = 25;
-export const kasaMi = (v) => v === KASA || v === FICI || v === FICI_ODUL || v === YUMURTA;
+// Arı kovanı (Kovan Arıları): kasa gibi vurulur ama kırılmaz; her vuruşta bir yardımcı arı çıkar, arı rastgele bir engele vurur
+// (ariHedefleri). Düzende 'w'.
+export const KOVAN = 31;
+export const kasaMi = (v) => v === KASA || v === FICI || v === FICI_ODUL || v === YUMURTA || v === KOVAN;
 export const ficiMi = (v) => v === FICI || v === FICI_ODUL;
 // Tohum (4. bölüm sonrası, Çiçek Bahçesi): meyve değil; eşleşmez, patlamaz, takas edilebilir, yerçekimiyle düşer.
 // En alt sıraya inince toplanır (çiçek açar). Özel parçalar ona işlemez.
@@ -642,6 +645,10 @@ export function adimUygula(t, oz, engel, adim, rnd = Math.random, zemin = null) 
     oz[r][c] = null;
   }
   for (const [r, c] of adim.kasaVurus) {
+    if (t[r][c] === KOVAN) {
+      sayac.ari = (sayac.ari || 0) + 1;
+      continue;
+    }
     engel[r][c] = (engel[r][c] || 1) - 1;
     sayac.vurus++;
     if (engel[r][c] <= 0) {
@@ -688,7 +695,7 @@ export function adimUygula(t, oz, engel, adim, rnd = Math.random, zemin = null) 
 const ODUL_OZEL = ['satir', 'sutun', 'bomba'];
 
 // Seviye düzeninden (8 satırlık metin: '.' boş, 'b' buz, 'k' kasa, 'K' iki katlı kasa, 's' kar, 'S' iki katlı kar,
-// 't' tohum, 'v' sarmaşık, 'g' sis, 'x' delik, 'o' balon, 'h' bal, 'q' kurbağa, 'l' fener, 'z' saatli meyve, 'm' mantar, 'y' yumurta (2 kat, içinden civciv), 'c' kafesli meyve, 'a' anahtar, 'u' bukalemun, '1'-'6' çiçek (çilek, limon, üzüm, portakal, elma, erik), 'f' fıçı, 'F' ödüllü fıçı) başlangıç tahtası kurar. Dönüş: { t, oz, engel, zemin } — eşleşmesiz ve en az bir hamlesi olan.
+// 't' tohum, 'v' sarmaşık, 'g' sis, 'x' delik, 'o' balon, 'h' bal, 'q' kurbağa, 'l' fener, 'w' arı kovanı, 'z' saatli meyve, 'm' mantar, 'y' yumurta (2 kat, içinden civciv), 'c' kafesli meyve, 'a' anahtar, 'u' bukalemun, '1'-'6' çiçek (çilek, limon, üzüm, portakal, elma, erik), 'f' fıçı, 'F' ödüllü fıçı) başlangıç tahtası kurar. Dönüş: { t, oz, engel, zemin } — eşleşmesiz ve en az bir hamlesi olan.
 export function duzenliTahta(duzen, rnd = Math.random) {
   for (let d = 0; d < 300; d++) {
     const t = yeniTahta(rnd);
@@ -716,6 +723,10 @@ export function duzenliTahta(duzen, rnd = Math.random) {
           else if (h === 'x') t[r][c] = DELIK;
           else if (h === 'o') t[r][c] = BALON;
           else if (h === 'l') t[r][c] = FENER;
+          else if (h === 'w') {
+            t[r][c] = KOVAN;
+            engel[r][c] = 9;
+          }
           else if (h === 'q') {
             t[r][c] = KURBAGA;
             engel[r][c] = 'kurb0';
@@ -815,6 +826,7 @@ export function zincirCoz(t, oz, engel, zemin, { hamle = null, ek = [], izinli =
     engel = u.engel;
     zemin = u.zemin;
     sayacBirlestir(sayac, u.sayac);
+    if (u.sayac.ari) ek = ariHedefleri(t, engel, zemin, u.sayac.ari, rnd);
   }
   let enAzSaat = null;
   for (const s of engel) for (const e of s) if (saatMi(e)) enAzSaat = enAzSaat == null ? saatDeger(e) : Math.min(enAzSaat, saatDeger(e));
@@ -918,6 +930,20 @@ export const kurbagaAlani = (patlamalar) => {
   return [...m.values()];
 };
 
+// Kovandan çıkan arıların vuracağı hücreler: engelli (buz, sis, sarmaşık, mantar), zemini olan (kar, bal, çiçek) ya da kasa/fener
+export function ariHedefleri(t, engel, zemin, n, rnd = Math.random) {
+  const ad = [];
+  for (let r = 0; r < SATIR; r++)
+    for (let c = 0; c < SUTUN; c++) {
+      const v = t[r][c];
+      if (v === KOVAN || gecilmez(v) || inenMi(v)) continue;
+      if (ortuMu(engel[r][c]) || (zemin && zemin[r][c] > 0) || (kasaMi(v) && v !== KOVAN) || v === FENER) ad.push([r, c]);
+    }
+  const l = [];
+  for (let i = 0; i < n && ad.length; i++) l.push(ad.splice(Math.floor(rnd() * ad.length), 1)[0]);
+  return l;
+}
+
 // Balonu bir kare yükseltir (üstündeki parçayla yer değiştirir; yerinde değiştirir). En üstteyse uçar: 'uctu'.
 export function balonYukselt(t, oz, engel, r, c) {
   if (t[r][c] !== BALON) return null;
@@ -998,7 +1024,7 @@ export function inenDerinligi(t) {
 export const inenDegeri = (s, d0) => INEN_SAYAC.reduce((a, k) => a + (s.sayac[k] || 0) * 400, 0) + (inenDerinligi(s.t) - d0) * 60;
 
 // Bot: hamle sonucunun hedefe katkısı
-export const HEDEF_AGIRLIK = { buz: 150, kasa: 150, kar: 150, sarmasik: 170, fici: 200, sis: 160, cicek: 180, saat: 220, mantar: 180, kafes: 300, bukalemun: 200, balon: 400, bal: 170, fener: 500 };
+export const HEDEF_AGIRLIK = { buz: 150, kasa: 150, kar: 150, sarmasik: 170, fici: 200, sis: 160, cicek: 180, saat: 220, mantar: 180, kafes: 300, bukalemun: 200, balon: 400, bal: 170, fener: 500, ari: 120 };
 export function hamleDegeri(s, hedef, derin0 = 0) {
   if (hedef.puan) return s.puan;
   let d = s.puan / 100;

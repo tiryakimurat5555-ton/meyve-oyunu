@@ -79,6 +79,7 @@ export function parcaAdi(p) {
   if (p.tur === M.ANAHTAR) return 'Anahtar';
   if (p.tur === M.BALON) return 'Balon';
   if (p.tur === M.FENER) return 'Sönük fener';
+  if (p.tur === M.KOVAN) return 'Arı kovanı';
   if (p.tur === M.KURBAGA) return `Kurbağa, ${p.kurb || 0} meyve yedi, doymasına ${M.KURBAGA_DOY - (p.kurb || 0)} kaldı`;
   if (p.kafes) return 'Kafesli ' + MEYVELER[p.tur].isim.toLocaleLowerCase('tr');
   if (p.tur === M.YUMURTA) return p.kat >= 2 ? 'Yumurta, 2 kat' : 'Çatlak yumurta';
@@ -637,10 +638,17 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
       let ficiKirilan = 0;
       let ficiVurulan = 0;
       let yumurtaVurulan = 0;
+      let ariSay = 0;
       const odulOlusan = [];
       for (const [r, c] of adim.kasaVurus) {
         const p = parcaAt(r, c);
         if (!p || !M.kasaMi(p.tur)) continue;
+        if (p.tur === M.KOVAN) {
+          // Kovan kırılmaz: içinden yardımcı arı çıkar
+          ariSay++;
+          Animated.sequence([-0.4, 0.4, 0].map((v) => Animated.timing(p.don, { toValue: v, duration: 50, useNativeDriver: true }))).start();
+          continue;
+        }
         const fici = M.ficiMi(p.tur);
         if (fici) ficiVurulan++;
         p.kat -= 1;
@@ -752,7 +760,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
         titret('basari');
       }
       if (kasaKirilan || ficiKirilan) cal('kasa_kir');
-      else if (adim.kasaVurus.length > yumurtaVurulan) cal('kasa_vur');
+      else if (adim.kasaVurus.length > yumurtaVurulan + ariSay) cal('kasa_vur');
       if (yumurtaVurulan) {
         cal('yumurta');
         yenile();
@@ -907,6 +915,16 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
 
       // Düşür ve yenilerini getir
       await dusurDoldur();
+      // Kovandan çıkan arılar rastgele engellere vurur (bir sonraki adımda)
+      if (ariSay) {
+        const h = M.ariHedefleri(turIzgarasi(), engelIzgarasi(), zemin.current, ariSay);
+        if (h.length) {
+          ekler = h;
+          for (const [r, c] of h) efektEkle({ tip: 'ari', r, c });
+          cal('cicek', 0.8);
+          await bekle(450);
+        }
+      }
     }
     return { zincir, toplam, patlayan, olusanlar, ...sayacToplam };
   };
@@ -1419,7 +1437,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
       cal('gecersiz');
       titret('hata');
       const k = kilitli(pa) ? pa : pb;
-      duyur(k.tur === M.DELIK ? 'Orası boş, meyve gidemez' : k.tur === M.BALON ? 'Balon yer değiştiremez, yanında eşleşme yap' : k.tur === M.FENER ? 'Fener yer değiştiremez, özel meyveyle yak' : k.tur === M.KASA ? 'Kasa yer değiştiremez' : M.ficiMi(k.tur) ? 'Fıçı yer değiştiremez' : k.sarmasik ? 'Sarmaşıklı meyve yer değiştiremez' : k.sis ? 'Sisli kare yer değiştiremez' : k.mantar ? 'Mantarlı meyve yer değiştiremez' : k.kafes ? 'Kafesli meyve yer değiştiremez, anahtarı en alta indir' : 'Buzlu meyve yer değiştiremez');
+      duyur(k.tur === M.DELIK ? 'Orası boş, meyve gidemez' : k.tur === M.BALON ? 'Balon yer değiştiremez, yanında eşleşme yap' : k.tur === M.FENER ? 'Fener yer değiştiremez, özel meyveyle yak' : k.tur === M.KOVAN ? 'Kovan yer değiştiremez, yanında eşleşme yap, arı çıksın' : k.tur === M.KASA ? 'Kasa yer değiştiremez' : M.ficiMi(k.tur) ? 'Fıçı yer değiştiremez' : k.sarmasik ? 'Sarmaşıklı meyve yer değiştiremez' : k.sis ? 'Sisli kare yer değiştiremez' : k.mantar ? 'Mantarlı meyve yer değiştiremez' : k.kafes ? 'Kafesli meyve yer değiştiremez, anahtarı en alta indir' : 'Buzlu meyve yer değiştiremez');
       await oynat(salla(k));
       mesgul.current = false;
       ipucuKur();

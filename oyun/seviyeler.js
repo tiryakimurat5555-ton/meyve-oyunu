@@ -281,9 +281,21 @@ export const SEVIYELER = [
   { no: 248, hamle: 27, tur: 6, hedef: { tohum: 2, mantar: 4 }, yildiz: [5500, 6750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, yercekimi: { yonler: ['asagi', 'sag', 'asagi', 'sol'], aralik: 4 }, duzen: ['........', '.t....t.', '........', 'm......m', 'm......m', '........', '........', '........'] },
   { no: 249, hamle: 15, tur: 6, hedef: { topla: { 3: 20, 5: 20 } }, yildiz: [3750, 4750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, yercekimi: { yonler: ['yukari', 'asagi'], aralik: 5 } },
   { no: 250, hamle: 26, tur: 6, hedef: { kasa: 6, buz: 8, cicek: 4 }, yildiz: [6000, 7250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, yercekimi: { yonler: ['asagi', 'sol', 'yukari', 'sag'], aralik: 3 }, duzen: ['........', '.bbbbbb.', '.b.12.b.', '...34...', '..kkkk..', '...kk...', '........', '........'] },
+  // ---- 26. bölüm: Kovan Arıları (arı kovanı: vurdukça çıkan arılar rastgele bir engele vurur) ----
+  { no: 251, hamle: 11, tur: 6, hedef: { buz: 10 }, yildiz: [2500, 3000], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '.bbbbb..', '..bbbbb.', '........', '...w....', '........', '........', '........'], yeni: 'kovan' },
+  { no: 252, hamle: 10, tur: 6, hedef: { kar: 16 }, yildiz: [2250, 2750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['ssssssss', 'ssssssss', '........', '........', '..w..w..', '........', '........', '........'] },
+  { no: 253, hamle: 10, tur: 6, hedef: { sis: 12 }, yildiz: [2000, 2500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['gggggg..', '..gggggg', '........', '........', '........', '...w....', '........', '........'] },
+  { no: 254, hamle: 12, tur: 6, hedef: { kasa: 8, buz: 6 }, yildiz: [2750, 3500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '..bbb...', '...bbb..', '........', 'w......w', '........', '.kkkkkk.', '.k....k.'] },
+  { no: 255, hamle: 22, tur: 6, hedef: { puan: 5500 }, yildiz: [6750, 7750], ozel: { cizgili: true, bomba: true, gokkusagi: true } },
+  { no: 256, hamle: 13, tur: 6, hedef: { bal: 12 }, yildiz: [3000, 3750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['hh....hh', 'h......h', '........', '...ww...', '........', 'h......h', 'hh....hh', '........'] },
+  { no: 257, hamle: 14, tur: 6, hedef: { fener: 3, buz: 8 }, yildiz: [2750, 3500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '.l....l.', '.bbbbbb.', '.b....b.', '...w....', '....l...', '........', '........'] },
+  { no: 258, hamle: 11, tur: 6, hedef: { mantar: 6, kar: 8 }, yildiz: [2750, 3500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['mm....mm', 'm......m', '........', '..w..w..', '........', '........', 'ssssssss', '........'] },
+  { no: 259, hamle: 16, tur: 6, hedef: { topla: { 1: 22, 3: 22 } }, yildiz: [4000, 4750], ozel: { cizgili: true, bomba: true, gokkusagi: true } },
+  { no: 260, hamle: 15, tur: 6, hedef: { buz: 8, sis: 6, kasa: 4, kar: 8 }, yildiz: [3250, 4000], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['ggg..ggg', '.bbbbbb.', '.b....b.', 'w......w', '...ww...', '..kkkk..', 'ssssssss', '........'] },
 ];
 
 export const TANITIM = {
+  kovan: { baslik: 'Yeni: Arı kovanı', metin: 'Arı kovanı kırılmaz, ama yanında eşleşme yapınca ya da özel meyve değince içinden yardımcı bir arı çıkar. Arı tahtadaki rastgele bir engele uçup vurur: buz, kar, sis, kasa, bal ya da fener!' },
   uzay: { baslik: 'Yeni: Uzay yerçekimi', metin: 'Uzay bahçesinde yerçekimi döner! Birkaç hamlede bir meyveler başka yöne düşmeye başlar: yukarı, sola ya da sağa. Başlıktaki ok yönü gösterir; yön değişince sesli olarak da söylenir. Tohumlar da o yöndeki kenara iner.' },
   fener: { baslik: 'Yeni: Fener', metin: 'Gece bahçesinde sönük fenerler var. Fener yanındaki eşleşmeyle yanmaz: çizgili, bomba ya da gökkuşağı meyvenin patlaması değmeli. Çekiç de yakar. Bütün fenerleri yak!' },
   kurbaga: { baslik: 'Yeni: Kurbağa', metin: 'Göldeki kurbağa senin dostun! Her hamleden sonra yanındaki bir meyveye zıplayıp onu yer. 5 meyve yiyince doyar ve çevresini patlatır. Kurbağayı da meyveler gibi kaydırabilirsin.' },

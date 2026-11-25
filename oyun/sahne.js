@@ -492,6 +492,24 @@ const RENKLER = [
       { tip: 'parilti', renk: '#9ff0ff' },
     ],
   },
+  // 25: Kovan Arıları (sıcak yaz öğleni, bal sarısı ve yonca yeşili, çok arı)
+  {
+    gok: ['#8fd0f0', '#fff6d0'],
+    gunes: '#ffe14a',
+    gunesKenar: '#ffb81c',
+    tepeArka: ['#9fd06a', '#8bc058'],
+    tepeArka2: ['#b0d878', '#9bc964'],
+    tepeOn: ['#cbe790', '#b8da7a'],
+    tac: ['#5ea84a', '#4c923c', '#79c060'],
+    nokta: ['#ffc94a', '#ffffff', '#ff8fc7'],
+    cicek: ['#ffc94a', '#ffffff', '#c9a7ff'],
+    parca: [
+      { tip: 'ari' },
+      { tip: 'ari' },
+      { tip: 'ari' },
+      { tip: 'kelebek', renk: '#ffc94a' },
+    ],
+  },
 ];
 export const geceMi = (bolum) => !!(RENKLER[bolum] && RENKLER[bolum].gece);
 

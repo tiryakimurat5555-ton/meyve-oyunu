@@ -9,6 +9,7 @@ export const ANAHTAR_TUR = 26; // mantik.js ANAHTAR
 export const BALON_TUR = 27; // mantik.js BALON
 export const KURBAGA_TUR = 28; // mantik.js KURBAGA
 export const FENER_TUR = 29; // mantik.js FENER
+export const KOVAN_TUR = 31; // mantik.js KOVAN
 const KURBAGA_DOY = 5;
 export const FICI_TUR = 22; // mantik.js FICI
 export const FICI_ODUL_TUR = 23; // mantik.js FICI_ODUL
@@ -535,6 +536,21 @@ export function BukalemunIkon({ boy = 26 }) {
   return (
     <View style={{ width: boy, height: boy }}>
       <BukalemunHale H={boy / 0.94} />
+    </View>
+  );
+}
+
+// ---------- Arı kovanı ----------
+export function Kovan({ H }) {
+  const b = H * 0.86;
+  return (
+    <View style={{ width: H, height: H, alignItems: 'center', justifyContent: 'center' }}>
+      {[0.12, 0.3, 0.5, 0.7].map((y, i) => {
+        const g = b * [0.5, 0.78, 0.9, 0.72][i];
+        return <View key={i} style={{ position: 'absolute', top: H * 0.05 + b * y, width: g, height: b * 0.24, borderRadius: b, backgroundColor: i % 2 ? '#f0b02a' : '#ffc94a', borderWidth: 2, borderColor: '#b07800' }} />;
+      })}
+      <View style={{ position: 'absolute', top: H * 0.58, width: b * 0.22, height: b * 0.2, borderTopLeftRadius: b, borderTopRightRadius: b, backgroundColor: '#5b3a17' }} />
+      <Text style={{ position: 'absolute', right: H * 0.02, top: H * 0.02, fontSize: H * 0.26, lineHeight: H * 0.32 }}>🐝</Text>
     </View>
   );
 }
@@ -1157,7 +1173,9 @@ export function Parca({ p, H }) {
       }}
     >
       {p.kat ? (
-        p.tur === YUMURTA_TUR ? (
+        p.tur === KOVAN_TUR ? (
+          <Kovan H={H} />
+        ) : p.tur === YUMURTA_TUR ? (
           <Yumurta H={H} kat={p.kat} />
         ) : p.tur === FICI_TUR || p.tur === FICI_ODUL_TUR ? (
           <Fici H={H} kat={p.kat} odul={p.tur === FICI_ODUL_TUR} />

@@ -340,5 +340,18 @@ for (let i = 0; i < 30; i++) {
   dogru(y3.yeniler[0].yeni[0] === 7 && y3.kaymalar.some((k) => k.eski[0] === 1 && k.yeni[0] === 0), 'yukarı düşmeli');
   M.yonAyarla('asagi');
 }
-console.log(hata ? `${hata} HATA` : 'ENGEL TESTLERİ GEÇTİ (kar, tohum sarmaşık, fıçı, sis, delik, çiçek, saat, bant, akıntı kapısı, kafes, bukalemun, balon, bal, kurbağa, fener ve yerçekimi yönü dahil)');
+{
+  // Kovan: kırılmaz, vurulunca arı çıkar; arı bir engele vurur
+  const t = [];
+  for (let r = 0; r < 8; r++) t.push(Array.from({ length: 8 }, (_, c) => (r * 3 + c * 2 + (r % 2)) % 6));
+  t[7][0] = 0; t[7][1] = 0; t[7][2] = 0;
+  t[6][1] = M.KOVAN;
+  const oz = t.map((s) => s.map(() => null));
+  const en = t.map((s) => s.map(() => null));
+  en[6][1] = 9;
+  en[1][5] = 'buz';
+  const z = M.zincirCoz(t, oz, en, null, { rnd: () => 0.3 });
+  dogru(z.sayac.ari >= 1 && z.sayac.buz >= 1 && z.t.flat().includes(M.KOVAN), 'kovan kalmalı, arı buzu kırmalı: ' + JSON.stringify(z.sayac));
+}
+console.log(hata ? `${hata} HATA` : 'ENGEL TESTLERİ GEÇTİ (kar, tohum sarmaşık, fıçı, sis, delik, çiçek, saat, bant, akıntı kapısı, kafes, bukalemun, balon, bal, kurbağa, fener, yerçekimi yönü ve kovan dahil)');
 process.exit(hata ? 1 : 0);
