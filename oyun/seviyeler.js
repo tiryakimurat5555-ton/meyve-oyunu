@@ -204,9 +204,21 @@ export const SEVIYELER = [
   { no: 178, hamle: 16, tur: 6, hedef: { bukalemun: 6, saat: 2 }, yildiz: [3500, 4000], ozel: { cizgili: true, bomba: true, gokkusagi: true }, saat: 11, duzen: ['........', '.u.z..u.', '........', '..u..u..', '........', '.u..z.u.', '........', '........'] },
   { no: 179, hamle: 14, tur: 6, hedef: { topla: { 0: 20, 3: 20 } }, yildiz: [3500, 4750], ozel: { cizgili: true, bomba: true, gokkusagi: true } },
   { no: 180, hamle: 26, tur: 6, hedef: { bukalemun: 8, mantar: 4, cicek: 4 }, yildiz: [6500, 7750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['m......m', '.u.uu.u.', '........', '..1..2..', '..3..4..', '.u.uu.u.', 'm......m', '........'] },
+  // ---- 19. bölüm: Balon Festivali (balon: yanında eşleşme olunca yükselir, en üstte uçup gider) ----
+  { no: 181, hamle: 20, tur: 6, hedef: { balon: 2 }, yildiz: [4000, 4750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '........', '........', '........', '........', '..o..o..', '........', '........'], yeni: 'balon' },
+  { no: 182, hamle: 22, tur: 6, hedef: { balon: 3 }, yildiz: [4750, 5750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '........', '........', '........', '.o..o..o', '........', '........', '........'] },
+  { no: 183, hamle: 32, tur: 6, hedef: { balon: 3, topla: { 2: 12 } }, yildiz: [6750, 8250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '........', '........', '........', '........', '........', '.o..o..o', '........'] },
+  { no: 184, hamle: 23, tur: 6, hedef: { balon: 2, buz: 8 }, yildiz: [5000, 6000], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '.bbbbbb.', '.b....b.', '........', '........', '........', '..o..o..', '........'] },
+  { no: 185, hamle: 24, tur: 6, hedef: { puan: 6500 }, yildiz: [7750, 9000], ozel: { cizgili: true, bomba: true, gokkusagi: true } },
+  { no: 186, hamle: 26, tur: 6, hedef: { balon: 4 }, yildiz: [5000, 6000], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '........', '........', '........', '........', '.o.oo.o.', '........', '........'] },
+  { no: 187, hamle: 32, tur: 6, hedef: { balon: 3, kar: 8 }, yildiz: [6750, 8250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['ssssssss', '........', '........', '........', '........', '........', '.o..o..o', '........'] },
+  { no: 188, hamle: 36, tur: 6, hedef: { balon: 2, tohum: 2 }, yildiz: [7000, 8750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '..t..t..', '........', '........', '........', '........', '........', '.o....o.'] },
+  { no: 189, hamle: 18, tur: 6, hedef: { topla: { 1: 22, 2: 22 } }, yildiz: [4500, 5500], ozel: { cizgili: true, bomba: true, gokkusagi: true } },
+  { no: 190, hamle: 38, tur: 6, hedef: { balon: 4, sis: 4, kasa: 4 }, yildiz: [7250, 9250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '.gg..gg.', '........', '........', '..kkkk..', '........', 'o..oo..o', '........'] },
 ];
 
 export const TANITIM = {
+  balon: { baslik: 'Yeni: Balon', metin: 'Balonlar düşmez, meyveler yanlarından geçip iner. Balonun yanında eşleşme yap ya da özel meyveyle vur: bir kare yükselir. En üst sıradan uçup gidince sayılır!' },
   bukalemun: { baslik: 'Yeni: Bukalemun meyve', metin: 'Gökkuşağı halkalı meyveler bukalemun: her hamleden sonra bir sonraki renge geçer (çilek, limon, üzüm, portakal, elma, erik). Değişince eşleşme olursa kendiliğinden patlar. Hepsini patlat!' },
   kafes: { baslik: 'Yeni: Kafes ve anahtar', metin: 'Kafesli meyveler kilitli: eşleşme, özel meyve ya da çekiç onları açamaz. Altın anahtarı tohum gibi en alt sıraya indir; anahtar inince bütün kafesler açılır!' },
   kapi: { baslik: 'Yeni: Akıntı kapıları', metin: 'Göl kıyısında meyveler akıntıya kapılıyor! Numaralı kapı girişine düşen meyve, aynı numaralı çıkışın olduğu sütunun üstünden iner. Tohumlar da kapıdan geçer.' },

@@ -359,6 +359,25 @@ const RENKLER = [
       { tip: 'yaprak', renk: '#4fcc74' },
     ],
   },
+  // 18: Balon Festivali (parlak gök, şenlik renkleri, uçuşan konfeti)
+  {
+    gok: ['#7fd0ff', '#fff4fb'],
+    gunes: '#ffe14a',
+    gunesKenar: '#ffb81c',
+    tepeArka: ['#8fd47a', '#7bc266'],
+    tepeArka2: ['#a2dc8a', '#8bcd74'],
+    tepeOn: ['#c4ec9e', '#addf88'],
+    tac: ['#5cb84a', '#4aa03c', '#78cc62'],
+    nokta: ['#ff5c8a', '#ffd21f', '#4cc3ff'],
+    cicek: ['#ff5c8a', '#ffd21f', '#4cc3ff'],
+    parca: [
+      { tip: 'yaprak', renk: '#ff5c8a' },
+      { tip: 'yaprak', renk: '#ffd21f' },
+      { tip: 'yaprak', renk: '#4cc3ff' },
+      { tip: 'yaprak', renk: '#a24dff' },
+      { tip: 'kelebek', renk: '#ff5c8a' },
+    ],
+  },
 ];
 export const geceMi = (bolum) => !!(RENKLER[bolum] && RENKLER[bolum].gece);
 

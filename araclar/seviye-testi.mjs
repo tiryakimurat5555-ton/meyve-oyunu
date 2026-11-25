@@ -68,7 +68,7 @@ for (const sv of DENENECEK) {
     const d = M.duzenliTahta(sv.duzen, rnd);
     const zs = M.akisZincirleri(d.t);
     const say = zs.reduce((a, z) => a + z.length, 0);
-    const delik = d.t.flat().filter((v) => v === M.DELIK).length;
+    const delik = d.t.flat().filter((v) => v === M.DELIK || v === M.BALON).length;
     if (say !== 64 - delik) {
       hata++;
       console.log(`HATA: seviye ${sv.no} akış zincirleri ${say} hücre, olması gereken ${64 - delik} (kapı döngüsü?)`);

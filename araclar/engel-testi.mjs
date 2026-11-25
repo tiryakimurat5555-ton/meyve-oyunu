@@ -259,5 +259,24 @@ for (let i = 0; i < 30; i++) {
   dogru(b[0][0] === (t[0][0] + 1) % 6 && b[0][1] === t[0][1], 'bukalemun sonraki renge geçmeli');
   dogru(M.serbestMi('buk') && !M.serbestMi('kafes'), 'bukalemun serbest, kafes kilitli');
 }
-console.log(hata ? `${hata} HATA` : 'ENGEL TESTLERİ GEÇTİ (kar, tohum sarmaşık, fıçı, sis, delik, çiçek, saat, bant, akıntı kapısı, kafes ve bukalemun dahil)');
+{
+  // Balon: komşu eşleşmeyle yükselir, en üstte uçar, yerçekimi onu atlar
+  const t = [];
+  for (let r = 0; r < 8; r++) t.push(Array.from({ length: 8 }, (_, c) => (r * 3 + c * 2 + (r % 2)) % 6));
+  t[7][0] = 0; t[7][1] = 0; t[7][2] = 0;
+  t[6][1] = M.BALON;
+  const oz = t.map((s) => s.map(() => null));
+  const en = t.map((s) => s.map(() => null));
+  const ad = M.cozumAdimi(t, oz, { engel: en });
+  dogru(ad.balonlar.length === 1, 'balon yükselmeli');
+  const u = M.adimUygula(t, oz, en, ad, () => 0.3);
+  dogru(u.t[5][1] === M.BALON && u.sayac.balonKalk === 1, 'balon bir kare yükselmeli: ' + u.t.map((s) => s[1]).join(','));
+  const t2 = t.map((s) => s.slice());
+  t2[6][1] = t[6][1] === M.BALON ? 4 : t[6][1];
+  t2[0][4] = M.BALON;
+  const ad2 = M.cozumAdimi(t2, oz, { engel: en, ek: [[0, 4]] });
+  const u2 = M.adimUygula(t2, oz, en, ad2, () => 0.3);
+  dogru(u2.sayac.balon === 1 && !u2.t.flat().includes(M.BALON), 'en üstteki balon uçmalı');
+}
+console.log(hata ? `${hata} HATA` : 'ENGEL TESTLERİ GEÇTİ (kar, tohum sarmaşık, fıçı, sis, delik, çiçek, saat, bant, akıntı kapısı, kafes, bukalemun ve balon dahil)');
 process.exit(hata ? 1 : 0);

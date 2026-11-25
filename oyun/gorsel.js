@@ -6,6 +6,7 @@ export const TOHUM_TUR = 21; // mantik.js TOHUM ile aynı
 export const YUMURTA_TUR = 24; // mantik.js YUMURTA
 export const CIVCIV_TUR = 25; // mantik.js CIVCIV
 export const ANAHTAR_TUR = 26; // mantik.js ANAHTAR
+export const BALON_TUR = 27; // mantik.js BALON
 export const FICI_TUR = 22; // mantik.js FICI
 export const FICI_ODUL_TUR = 23; // mantik.js FICI_ODUL
 
@@ -535,6 +536,47 @@ export function BukalemunIkon({ boy = 26 }) {
   );
 }
 
+// ---------- Balon ----------
+export function Balon({ H, renk = '#ff5c8a' }) {
+  const b = H * 0.66;
+  return (
+    <View style={{ width: H, height: H, alignItems: 'center' }}>
+      <View style={{ position: 'absolute', top: H * 0.66, left: H * 0.49, width: 1.5, height: H * 0.3, backgroundColor: '#8a7a6a' }} />
+      <View style={{ position: 'absolute', top: H * 0.62, left: H * 0.45, width: 0, height: 0, borderLeftWidth: H * 0.05, borderRightWidth: H * 0.05, borderBottomWidth: H * 0.06, borderLeftColor: 'transparent', borderRightColor: 'transparent', borderBottomColor: renk }} />
+      <View style={{ marginTop: H * 0.03, width: b, height: b * 1.12, borderRadius: b * 0.56, backgroundColor: renk, borderWidth: 2, borderColor: 'rgba(0,0,0,0.18)' }}>
+        <View style={{ position: 'absolute', left: b * 0.18, top: b * 0.14, width: b * 0.22, height: b * 0.32, borderRadius: b, backgroundColor: 'rgba(255,255,255,0.65)', transform: [{ rotate: '20deg' }] }} />
+        <View style={{ position: 'absolute', left: b * 0.3, top: b * 0.5, width: b * 0.09, height: b * 0.12, borderRadius: b, backgroundColor: '#3a1020' }} />
+        <View style={{ position: 'absolute', left: b * 0.6, top: b * 0.5, width: b * 0.09, height: b * 0.12, borderRadius: b, backgroundColor: '#3a1020' }} />
+        <View style={{ position: 'absolute', left: b * 0.4, top: b * 0.66, width: b * 0.2, height: b * 0.08, borderBottomLeftRadius: b, borderBottomRightRadius: b, borderWidth: 1.5, borderTopWidth: 0, borderColor: '#3a1020' }} />
+      </View>
+    </View>
+  );
+}
+export function BalonIkon({ boy = 26 }) {
+  return <Balon H={boy * 1.1} />;
+}
+// Balon uçar: yükselir, küçülür, kaybolur
+export function BalonUcus({ e, H, bitti }) {
+  const t = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    Animated.timing(t, { toValue: 1, duration: 900, easing: Easing.in(Easing.quad), useNativeDriver: true }).start(() => bitti(e.id));
+  }, []);
+  return (
+    <Animated.View
+      pointerEvents="none"
+      style={{
+        position: 'absolute',
+        left: e.c * H,
+        top: e.r * H,
+        opacity: t.interpolate({ inputRange: [0, 0.8, 1], outputRange: [1, 1, 0] }),
+        transform: [{ translateY: t.interpolate({ inputRange: [0, 1], outputRange: [0, -H * 3] }) }, { translateX: t.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, H * 0.2, -H * 0.1] }) }, { scale: t.interpolate({ inputRange: [0, 1], outputRange: [1, 0.6] }) }],
+      }}
+    >
+      <Balon H={H} />
+    </Animated.View>
+  );
+}
+
 export function SarmasikKatman({ H }) {
   const b = H * 0.96;
   const dal = (aci, ust) => (
@@ -1018,6 +1060,8 @@ export function Parca({ p, H }) {
         <Civciv H={H} />
       ) : p.tur === ANAHTAR_TUR ? (
         <Anahtar H={H} />
+      ) : p.tur === BALON_TUR ? (
+        <Balon H={H} />
       ) : p.kat ? null : p.ozel === 'gokkusagi' || !MEYVELER[p.tur] ? (
         <GokkusagiKure H={H} />
       ) : (
