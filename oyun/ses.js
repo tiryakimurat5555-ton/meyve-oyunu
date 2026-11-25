@@ -1,14 +1,21 @@
 // Ses ve titreşim. Her ses için küçük bir çalar havuzu tutulur; böylece aynı ses üst üste çalabilir.
-import { createAudioPlayer, setAudioModeAsync } from 'expo-audio';
+// iPhone'a özel düzeltmeler (Demir 1919 ve Kayıp Okyanus'taki gibi); Android'de eski davranış aynen sürer:
+//  - seekTo iOS'ta eşzamansızdır: sarma bitmeden play() çağrılırsa art arda gelen ses çalmayabilir (basaSarVeCal).
+//  - keepAudioSessionActive: kısa bir ses bitince iPhone ses kanalını kapatıp sonraki sesi geciktirmesin / VoiceOver'ı kısmasın.
+//  - Sürekli çalan sessiz döngü: ses kanalı hep açık kalır, art arda gelen sesler gecikmeden çalar.
+import { AppState, Platform } from 'react-native';
+import { createAudioPlayer, setAudioModeAsync, setIsAudioActiveAsync } from 'expo-audio';
 import * as Haptics from 'expo-haptics';
 import { SES_DOSYALARI } from './sesListesi';
 
-const HAVUZ = 2;
+const IOS = Platform.OS === 'ios';
+const HAVUZ = IOS ? 3 : 2;
 const havuzlar = {};
 const sira = {};
 let hazir = false;
 let sesAcik = true;
 let titresimAcik = true;
+let sessiz = null;
 
 export async function sesleriHazirla() {
   if (hazir) return;
@@ -16,14 +23,63 @@ export async function sesleriHazirla() {
   try {
     await setAudioModeAsync({ playsInSilentMode: true, interruptionMode: 'mixWithOthers', shouldPlayInBackground: false });
   } catch (e) {}
+  if (IOS) {
+    try {
+      await setIsAudioActiveAsync(true);
+    } catch (e) {}
+  }
+  const ayar = IOS ? { keepAudioSessionActive: true } : undefined;
   for (const ad of Object.keys(SES_DOSYALARI)) {
+    if (ad === 'sessiz') continue;
     havuzlar[ad] = [];
     sira[ad] = 0;
     for (let i = 0; i < HAVUZ; i++) {
       try {
-        havuzlar[ad].push(createAudioPlayer(SES_DOSYALARI[ad]));
+        havuzlar[ad].push(ayar ? createAudioPlayer(SES_DOSYALARI[ad], ayar) : createAudioPlayer(SES_DOSYALARI[ad]));
       } catch (e) {}
     }
+  }
+  if (IOS && SES_DOSYALARI.sessiz) {
+    try {
+      sessiz = createAudioPlayer(SES_DOSYALARI.sessiz, ayar);
+      sessiz.loop = true;
+    } catch (e) {}
+    oturumuAcikTut();
+    // Uygulama arka plandan dönünce sessiz döngüyü yeniden başlat
+    AppState.addEventListener('change', (d) => {
+      if (d === 'active') oturumuAcikTut();
+    });
+  }
+}
+
+// iPhone: sessiz döngü çalarken ses kanalı açık kalır
+function oturumuAcikTut() {
+  if (!sessiz) return;
+  try {
+    sessiz.volume = 1;
+    if (!sessiz.playing) sessiz.play();
+  } catch (e) {}
+}
+
+// iPhone: önce başa sar, sarma bitince çal (en geç 120 ms sonra yine de çalar)
+function basaSarVeCal(p) {
+  let oldu = false;
+  const oynat = () => {
+    if (oldu) return;
+    oldu = true;
+    try {
+      p.play();
+    } catch (e) {}
+  };
+  try {
+    if (p.playing) p.pause();
+    const s = p.seekTo(0);
+    if (s && typeof s.then === 'function') {
+      s.then(oynat, oynat);
+      setTimeout(oynat, 120);
+    } else oynat();
+  } catch (e) {
+    oynat();
   }
 }
 
@@ -35,8 +91,12 @@ export function cal(ad, ses = 1) {
   sira[ad]++;
   try {
     p.volume = ses;
-    p.seekTo(0);
-    p.play();
+    if (IOS) {
+      basaSarVeCal(p);
+    } else {
+      p.seekTo(0);
+      p.play();
+    }
   } catch (e) {}
 }
 

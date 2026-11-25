@@ -64,7 +64,9 @@ Murat'ın meyve temalı 3'lü eşleştirme oyunu (Kasım 2026). Geçici ad "Meyv
   Testler: `bun araclar/mantik-testi.mjs`, `bun araclar/ozel-testi.mjs`, `bun araclar/engel-testi.mjs`, `bun araclar/seviye-testi.mjs` (bot;
   ARALIK=11-30, DENEME=200, TOHUM=n, SEVIYE='{...}'). Tarayıcıda engel denemesi: araclar/web-deneme/engel-dene.cjs (NO=20, VO=1).
 - `oyun/seviyeler.js`: SEVIYELER, TANITIM, yildizHesapla, hedefTamam.
-- `oyun/ses.js`: expo-audio havuzu + expo-haptics. Meyve sesi sütuna göre sol/orta/sağ.
+- `oyun/ses.js`: expo-audio havuzu + expo-haptics. Meyve sesi sütuna göre sol/orta/sağ. YALNIZ iPhone'da (Platform.OS==='ios';
+  Android eski davranışta kalır, bozulmasın diye): setIsAudioActiveAsync, keepAudioSessionActive, sessiz.wav sürekli döngü
+  (AppState active'de yeniden), basaSarVeCal (seekTo sözü bitince çal, en geç 120 ms), havuz 3 (Android 2).
 - SESLER (25 Kasım): ElevenLabs Sound Effects v3 ile "Kristal Bahçe" teması (araclar/ses-tema.md: promptlar). Her meyve ayrı
   çalgı + ayrı nota (erik Sol4, portakal Do5, elma Do6, limon Mi6, çilek Mi7, üzüm şıngırtı). Seçilen ham adaylar
   araclar/ham-sesler/*.mp3; `python3 araclar/sesleri-isle.py` kırpar, perde kaydırır, eşitler, sol/orta/sağ + zincir/yıldız

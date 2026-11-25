@@ -32,6 +32,7 @@ export const SES_DOSYALARI = {
   ozel_olustu: require('../assets/ses/ozel_olustu.wav'),
   pling: require('../assets/ses/pling.wav'),
   secim: require('../assets/ses/secim.wav'),
+  sessiz: require('../assets/ses/sessiz.wav'),
   takas: require('../assets/ses/takas.wav'),
   yildiz_1: require('../assets/ses/yildiz_1.wav'),
   yildiz_2: require('../assets/ses/yildiz_2.wav'),

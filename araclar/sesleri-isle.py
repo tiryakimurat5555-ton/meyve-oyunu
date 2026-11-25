@@ -143,6 +143,13 @@ DIGER = {
 for ad, (dosya, uzun, db) in DIGER.items():
     kaydet(ad, esitle(kirp(oku(dosya), uzun, 0.08), db))
 
+# ---------- sessiz döngü (yalnız iPhone çalar: ses kanalını açık tutar; bkz. oyun/ses.js) ----------
+with wave.open(os.path.join(HEDEF, 'sessiz.wav'), 'wb') as w:
+    w.setnchannels(1)
+    w.setsampwidth(2)
+    w.setframerate(8000)
+    w.writeframes(np.zeros(8000, dtype='<i2').tobytes())
+
 # ---------- sesListesi.js: assets/ses'teki bütün WAV dosyaları ----------
 hepsi = sorted(f[:-4] for f in os.listdir(HEDEF) if f.endswith('.wav'))
 with open(os.path.join(KOK, 'oyun', 'sesListesi.js'), 'w') as f:

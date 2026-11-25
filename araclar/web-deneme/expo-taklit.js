@@ -25,7 +25,7 @@ export function createAudioPlayer(kaynak) {
       window.__sesler.push(typeof kaynak === 'string' ? kaynak.replace(/^.*\//, '').replace('.mp3', '') : kaynak && kaynak.ad);
     },
     pause() {},
-    seekTo() {},
+    seekTo() { return new Promise((r) => setTimeout(r, 5)); },
     release() {},
     addListener() { return { remove() {} }; },
     playing: false,
