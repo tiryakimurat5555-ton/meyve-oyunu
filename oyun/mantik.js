@@ -7,6 +7,13 @@ export const SUTUN = 8;
 export const TUR_SAYISI = 6;
 // Gökkuşağı meyvesinin rengi yoktur; hiçbir meyveyle eşleşmez.
 export const GOKKUSAGI = 9;
+// Kasa: meyve değil; eşleşmez, takas edilemez, yerçekimiyle düşer. Kat sayısı engel ızgarasında tutulur.
+export const KASA = 20;
+// Buz yanındaki eşleşmeyle de kırılır (Murat 25 Kasım 2026'da onayladı; önceki kural yalnız eşleşmeye katılınca kırıyordu)
+let buzKomsuKirar = true;
+export function buzKuraliAyarla(komsu) {
+  buzKomsuKirar = !!komsu;
+}
 
 // Seviyede kullanılan tür sayısı (ilk seviyelerde 5: erik çıkmaz)
 let etkinTur = TUR_SAYISI;
@@ -116,14 +123,20 @@ export function takasla(t, a, b) {
 }
 
 // Eşleşme oluşturan ilk takası bulur (ipucu ve "hamle kaldı mı" denetimi için). Yoksa null.
-export function hamleBul(t, oz) {
+// kilit: takas edilemeyen hücreler (buzlu meyve, kasa). Verilmezse kasalar yine de kilitli sayılır.
+export function hamleBul(t, oz, kilit) {
+  const kilitli = (r, c) => t[r][c] === KASA || (kilit && kilit[r][c]);
   // Gökkuşağı her komşusuyla takas edilebilir; iki özel parça yan yanaysa birleşim de bir hamledir
   for (let r = 0; r < SATIR; r++)
     for (let c = 0; c < SUTUN; c++) {
-      if (t[r][c] === GOKKUSAGI) return [[r, c], c + 1 < SUTUN ? [r, c + 1] : [r, c - 1]];
+      if (kilitli(r, c)) continue;
+      if (t[r][c] === GOKKUSAGI) {
+        for (const b of [[r, c + 1], [r, c - 1], [r + 1, c], [r - 1, c]])
+          if (b[0] >= 0 && b[1] >= 0 && b[0] < SATIR && b[1] < SUTUN && !kilitli(b[0], b[1])) return [[r, c], b];
+      }
       if (oz && oz[r][c]) {
-        if (c + 1 < SUTUN && oz[r][c + 1]) return [[r, c], [r, c + 1]];
-        if (r + 1 < SATIR && oz[r + 1][c]) return [[r, c], [r + 1, c]];
+        if (c + 1 < SUTUN && oz[r][c + 1] && !kilitli(r, c + 1)) return [[r, c], [r, c + 1]];
+        if (r + 1 < SATIR && oz[r + 1][c] && !kilitli(r + 1, c)) return [[r, c], [r + 1, c]];
       }
     }
   for (let r = 0; r < SATIR; r++) {
@@ -134,6 +147,7 @@ export function hamleBul(t, oz) {
       ];
       for (const b of komsular) {
         if (b[0] >= SATIR || b[1] >= SUTUN) continue;
+        if (kilitli(r, c) || kilitli(b[0], b[1])) continue;
         if (t[r][c] === t[b[0]][b[1]]) continue;
         if (eslesmeleriBul(takasla(t, [r, c], b)).length) return [[r, c], b];
       }
@@ -343,13 +357,16 @@ export function genislet(t, oz, baslangic, korunan = []) {
 
 // Bir çözüm adımı: eşleşmeleri bulur, oluşacak özel parçaları ayırır, silinecekleri (tetiklenen özel parçalarla) genişletir.
 // ek: eşleşme dışında temizlenecek hücreler (birleşim etkisi). Dönüş: { gruplar, olusan, hucreler, tetiklenen }
-export function cozumAdimi(t, oz, { hamle = null, ek = [], izinli = null } = {}) {
+// engel: null | 'buz' | kasa kat sayısı (1, 2). Dönüşe kasaVurus eklenir: bu adımda bir kez vurulan kasalar
+// (eşleşmeye komşu olanlar ve özel parça alanına girenler).
+export function cozumAdimi(t, oz, { hamle = null, ek = [], izinli = null, engel = null } = {}) {
   const gruplar = eslesmeleriBul(t);
-  // Yeni özel parça, zaten özel parça olan bir hücreye konmaz (eskisi tetiklensin); şeklin başka bir hücresi seçilir
+  const buzlu = (r, c) => engel && engel[r][c] === 'buz';
+  // Yeni özel parça, zaten özel parça olan ya da buzlu bir hücreye konmaz; şeklin başka bir hücresi seçilir
   const olusan = [];
   for (const o of ozelOlusumlari(gruplar, hamle, izinli)) {
-    if (oz[o.hucre[0]][o.hucre[1]]) {
-      const bos = o.hucreler.find(([r, c]) => !oz[r][c]);
+    if (oz[o.hucre[0]][o.hucre[1]] || buzlu(o.hucre[0], o.hucre[1])) {
+      const bos = o.hucreler.find(([r, c]) => !oz[r][c] && !buzlu(r, c));
       if (!bos) continue;
       o.hucre = bos;
     }
@@ -357,5 +374,92 @@ export function cozumAdimi(t, oz, { hamle = null, ek = [], izinli = null } = {})
   }
   const korunan = olusan.map((o) => o.hucre);
   const g = genislet(t, oz, [...silinecekler(gruplar), ...ek], korunan);
-  return { gruplar, olusan, hucreler: g.hucreler, tetiklenen: g.tetiklenen };
+  // Kasa vuruşları
+  const vur = new Map();
+  for (const [r, c] of g.hucreler) if (t[r][c] === KASA) vur.set(anahtar(r, c), [r, c]);
+  for (const [r, c] of silinecekler(gruplar))
+    for (const [i, j] of [[r - 1, c], [r + 1, c], [r, c - 1], [r, c + 1]])
+      if (i >= 0 && j >= 0 && i < SATIR && j < SUTUN && t[i][j] === KASA) vur.set(anahtar(i, j), [i, j]);
+  let hucreler = g.hucreler.filter(([r, c]) => t[r][c] !== KASA);
+  if (buzKomsuKirar && engel) {
+    // Eşleşmeye komşu buzlar da kırılır (meyve yerinde kalır): buzlu hücre listeye eklenir
+    const var_ = new Set(hucreler.map(([r, c]) => anahtar(r, c)));
+    for (const [r, c] of silinecekler(gruplar))
+      for (const [i, j] of [[r - 1, c], [r + 1, c], [r, c - 1], [r, c + 1]])
+        if (i >= 0 && j >= 0 && i < SATIR && j < SUTUN && engel[i][j] === 'buz' && !var_.has(anahtar(i, j))) {
+          var_.add(anahtar(i, j));
+          hucreler.push([i, j]);
+        }
+  }
+  return { gruplar, olusan, hucreler, tetiklenen: g.tetiklenen, kasaVurus: [...vur.values()] };
+}
+
+// Bir çözüm adımını ızgaralara uygular (bot ve testler için; oyun ekranı aynı kuralları animasyonla uygular).
+// Dönüş: { t, oz, engel, sayac: { topla:{tur:n}, buz, kasa } } — yerçekimi ve yeni meyveler dahil.
+export function adimUygula(t, oz, engel, adim, rnd = Math.random) {
+  t = kopya(t);
+  oz = kopya(oz);
+  engel = kopya(engel);
+  const sayac = { topla: {}, buz: 0, kasa: 0 };
+  for (const [r, c] of adim.hucreler) {
+    if (engel[r][c] === 'buz') {
+      engel[r][c] = null;
+      sayac.buz++;
+      continue;
+    }
+    if (renkli(t[r][c])) sayac.topla[t[r][c]] = (sayac.topla[t[r][c]] || 0) + 1;
+    t[r][c] = -1;
+    oz[r][c] = null;
+  }
+  for (const [r, c] of adim.kasaVurus) {
+    engel[r][c] = (engel[r][c] || 1) - 1;
+    if (engel[r][c] <= 0) {
+      engel[r][c] = null;
+      t[r][c] = -1;
+      sayac.kasa++;
+    }
+  }
+  for (const o of adim.olusan) {
+    t[o.hucre[0]][o.hucre[1]] = o.tur;
+    oz[o.hucre[0]][o.hucre[1]] = o.ozel;
+  }
+  const y = yercekimi(t, rnd);
+  const yoz = kopya(oz);
+  const yen = kopya(engel);
+  for (const k of y.kaymalar) {
+    yoz[k.eski[0]][k.eski[1]] = null;
+    yen[k.eski[0]][k.eski[1]] = null;
+  }
+  for (const k of y.kaymalar) {
+    yoz[k.yeni[0]][k.yeni[1]] = oz[k.eski[0]][k.eski[1]];
+    yen[k.yeni[0]][k.yeni[1]] = engel[k.eski[0]][k.eski[1]];
+  }
+  for (const n of y.yeniler) {
+    yoz[n.yeni[0]][n.yeni[1]] = null;
+    yen[n.yeni[0]][n.yeni[1]] = null;
+  }
+  return { t: y.tahta, oz: yoz, engel: yen, sayac, yercekimi: y };
+}
+
+// Seviye düzeninden (8 satırlık metin: '.' boş, 'b' buz, 'k' kasa, 'K' iki katlı kasa) başlangıç tahtası kurar.
+// Dönüş: { t, oz, engel } — eşleşmesiz ve en az bir hamlesi olan.
+export function duzenliTahta(duzen, rnd = Math.random) {
+  for (let d = 0; d < 300; d++) {
+    const t = yeniTahta(rnd);
+    const oz = t.map((s) => s.map(() => null));
+    const engel = t.map((s) => s.map(() => null));
+    if (duzen)
+      for (let r = 0; r < SATIR; r++)
+        for (let c = 0; c < SUTUN; c++) {
+          const h = duzen[r][c];
+          if (h === 'b') engel[r][c] = 'buz';
+          else if (h === 'k' || h === 'K') {
+            t[r][c] = KASA;
+            engel[r][c] = h === 'K' ? 2 : 1;
+          }
+        }
+    const kilit = engel.map((s) => s.map((e) => e != null));
+    if (!eslesmeleriBul(t).length && hamleBul(t, oz, kilit)) return { t, oz, engel };
+  }
+  throw new Error('Düzenli tahta kurulamadı');
 }

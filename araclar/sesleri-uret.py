@@ -189,6 +189,32 @@ for k, fq in enumerate([783.99, 659.25, 523.25, 392.0]):
     ekle(y, int(k * 0.22 * SR), can(fq, sure - k * 0.22, 0.6, 0.4) * 0.8)
 adlar.append(yaz('kaybettin', y))
 
+# ---------- Engel sesleri ----------
+# Buz kırılması: tiz cam çatırtısı + kısa çan
+t = zaman(0.5)
+y = 0.8 * rng.standard_normal(len(t)) * np.exp(-25 * t)
+y = np.convolve(y, np.ones(3) / 3, mode='same')
+y += pirilti(0.5, 18, 0.0, 0.12, 0.35)
+y += 0.6 * can(2349.3, 0.5, 1.4)
+adlar.append(yaz('buz', y))
+
+# Kasaya vuruş: tok tahta tıkırtısı
+t = zaman(0.25)
+y = np.zeros_like(t)
+for f, g in [(180, 1.0), (410, 0.6), (930, 0.3)]:
+    y += g * np.sin(2 * np.pi * f * t) * np.exp(-28 * t)
+y += 0.3 * rng.standard_normal(len(t)) * np.exp(-60 * t)
+adlar.append(yaz('kasa_vur', y))
+
+# Kasa kırılması: çatırtı + düşen tahta parçaları
+t = zaman(0.7)
+y = 0.9 * rng.standard_normal(len(t)) * np.exp(-18 * t)
+for b in (0.0, 0.09, 0.2, 0.33):
+    i = int(b * SR)
+    tt = t[: len(t) - i]
+    y[i:] += 0.8 * (np.sin(2 * np.pi * 160 * tt) + 0.5 * np.sin(2 * np.pi * 330 * tt)) * np.exp(-30 * tt)
+adlar.append(yaz('kasa_kir', y))
+
 with open(os.path.join(KOK, 'oyun', 'sesListesi.js'), 'w') as d:
     d.write('// araclar/sesleri-uret.py tarafından üretildi; elle değiştirme.\n')
     d.write('export const SES_DOSYALARI = {\n')

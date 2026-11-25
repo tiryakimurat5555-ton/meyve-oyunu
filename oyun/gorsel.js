@@ -326,6 +326,120 @@ export function Donusum({ e, H, bitti }) {
   );
 }
 
+// ---------- Engeller (kodla; ileride resimle değişebilir) ----------
+// Buz: meyvenin üstünde yarı saydam mavi kristal katman ve parlama çizgileri
+export function BuzKatman({ H }) {
+  const b = H * 0.94;
+  return (
+    <View pointerEvents="none" style={{ position: 'absolute', left: (H - b) / 2, top: (H - b) / 2, width: b, height: b, borderRadius: H * 0.2, overflow: 'hidden' }}>
+      <View style={{ ...TAM, backgroundColor: 'rgba(175,222,255,0.38)', borderRadius: H * 0.2, borderWidth: 2.5, borderColor: 'rgba(255,255,255,0.95)' }} />
+      <View style={{ position: 'absolute', left: b * 0.12, top: -b * 0.1, width: b * 0.14, height: b * 0.8, backgroundColor: 'rgba(255,255,255,0.75)', transform: [{ rotate: '35deg' }] }} />
+      <View style={{ position: 'absolute', left: b * 0.38, top: -b * 0.05, width: b * 0.06, height: b * 0.7, backgroundColor: 'rgba(255,255,255,0.55)', transform: [{ rotate: '35deg' }] }} />
+      <View style={{ position: 'absolute', right: b * 0.1, bottom: b * 0.1, width: b * 0.16, height: b * 0.16, borderRadius: b, backgroundColor: 'rgba(255,255,255,0.8)' }} />
+    </View>
+  );
+}
+
+// Tahta kasa: tahta kutu, iki yatay tahta çizgisi, köşe çivileri; iki katlıda iki metal kuşak
+export function Kasa({ H, kat }) {
+  const b = H * 0.9;
+  const civi = H * 0.08;
+  return (
+    <View style={{ width: b, height: b, borderRadius: H * 0.12, backgroundColor: '#cf8f48', borderWidth: 3, borderColor: '#7a4a1c', overflow: 'hidden' }}>
+      <View style={{ position: 'absolute', left: 0, right: 0, top: b * 0.31, height: 2.5, backgroundColor: '#8f5a24' }} />
+      <View style={{ position: 'absolute', left: 0, right: 0, top: b * 0.62, height: 2.5, backgroundColor: '#8f5a24' }} />
+      <View style={{ position: 'absolute', left: b * 0.06, right: b * 0.06, top: b * 0.08, height: b * 0.1, borderRadius: 4, backgroundColor: 'rgba(255,230,180,0.45)' }} />
+      {[
+        [0.1, 0.1],
+        [0.1, 0.78],
+        [0.78, 0.1],
+        [0.78, 0.78],
+      ].map(([x, y], i) => (
+        <View key={i} style={{ position: 'absolute', left: b * x, top: b * y, width: civi, height: civi, borderRadius: civi, backgroundColor: '#5b3a17' }} />
+      ))}
+      {kat >= 2 &&
+        [0.22, 0.66].map((x) => (
+          <View key={x} style={{ position: 'absolute', top: 0, bottom: 0, left: b * x, width: b * 0.12, backgroundColor: '#a9b4bd', borderLeftWidth: 1.5, borderRightWidth: 1.5, borderColor: '#5f6b75' }}>
+            <View style={{ position: 'absolute', top: b * 0.42, left: b * 0.025, width: b * 0.07, height: b * 0.07, borderRadius: b, backgroundColor: '#5f6b75' }} />
+          </View>
+        ))}
+    </View>
+  );
+}
+
+// Kırılma efekti: buz için mavi kristal parçaları, kasa için tahta kıymıkları (az = sadece çatlama)
+export function Kirilma({ e, H, bitti }) {
+  const t = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    Animated.timing(t, { toValue: 1, duration: 620, easing: Easing.out(Easing.quad), useNativeDriver: true }).start(() => bitti(e.id));
+  }, []);
+  const cx = e.c * H + H / 2;
+  const cy = e.r * H + H / 2;
+  const buz = e.tur === 'buz';
+  const adet = e.az ? 3 : 7;
+  const renkler = buz ? ['#e9f7ff', '#a7dcff', '#ffffff'] : ['#cf8f48', '#8f5a24', '#e0aa66'];
+  return (
+    <>
+      {!e.az && (
+        <Animated.View
+          style={{
+            position: 'absolute',
+            left: cx - H * 0.55,
+            top: cy - H * 0.55,
+            width: H * 1.1,
+            height: H * 1.1,
+            borderRadius: H,
+            backgroundColor: buz ? '#e8f8ff' : '#fff0d0',
+            opacity: t.interpolate({ inputRange: [0, 0.35], outputRange: [0.85, 0], extrapolate: 'clamp' }),
+            transform: [{ scale: t.interpolate({ inputRange: [0, 0.35], outputRange: [0.5, 1.2], extrapolate: 'clamp' }) }],
+          }}
+        />
+      )}
+      {Array.from({ length: adet }, (_, i) => {
+        const aci = ((i * 360) / adet + 20) * (Math.PI / 180);
+        const uz = H * (0.6 + (i % 3) * 0.2);
+        const gen = H * (buz ? 0.2 : 0.3);
+        const yuk = H * (buz ? 0.2 : 0.1);
+        return (
+          <Animated.View
+            key={i}
+            style={{
+              position: 'absolute',
+              left: cx - gen / 2,
+              top: cy - yuk / 2,
+              width: gen,
+              height: yuk,
+              borderRadius: buz ? 2 : 3,
+              backgroundColor: renkler[i % 3],
+              borderWidth: 1,
+              borderColor: buz ? 'rgba(90,160,210,0.8)' : '#6b4019',
+              opacity: t.interpolate({ inputRange: [0, 0.7, 1], outputRange: [1, 1, 0] }),
+              transform: [
+                { translateX: t.interpolate({ inputRange: [0, 1], outputRange: [0, Math.cos(aci) * uz] }) },
+                { translateY: t.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, Math.sin(aci) * uz * 0.8, Math.sin(aci) * uz * 0.8 + H * 0.7] }) },
+                { rotate: t.interpolate({ inputRange: [0, 1], outputRange: ['0deg', `${(i % 2 ? 1 : -1) * (200 + i * 40)}deg`] }) },
+                ...(buz ? [{ rotate: '45deg' }] : []),
+              ],
+            }}
+          />
+        );
+      })}
+    </>
+  );
+}
+
+// Hedef kutusundaki küçük simgeler
+export function BuzIkon({ boy = 26 }) {
+  return (
+    <View style={{ width: boy, height: boy, borderRadius: boy * 0.22, backgroundColor: '#bfe6ff', borderWidth: 2, borderColor: '#ffffff', overflow: 'hidden' }}>
+      <View style={{ position: 'absolute', left: boy * 0.2, top: -boy * 0.1, width: boy * 0.18, height: boy * 0.9, backgroundColor: 'rgba(255,255,255,0.85)', transform: [{ rotate: '35deg' }] }} />
+    </View>
+  );
+}
+export function KasaIkon({ boy = 26 }) {
+  return <Kasa H={boy / 0.9} kat={1} />;
+}
+
 // ---------- Yıldızlar ----------
 export function Yildiz({ dolu, boy = 22, renk = '#ffc21a' }) {
   return <Text style={{ fontSize: boy, color: dolu ? renk : '#d3dbe3', lineHeight: boy * 1.15, textShadowColor: dolu ? '#c26a00' : 'transparent', textShadowRadius: 1, textShadowOffset: { width: 1, height: 1 } }}>★</Text>;
@@ -369,8 +483,11 @@ export function Parca({ p, H }) {
         transform: [{ translateX: p.tx }, { translateY: p.ty }, { scale: p.olcek }, { scaleX: p.sx }, { scaleY: p.sy }, { rotate: p.rot }],
       }}
     >
+      {p.kat ? (
+        <Kasa H={H} kat={p.kat} />
+      ) : null}
       {p.ozel === 'bomba' && <BombaHale key="b" H={H} renk={MEYVELER[p.tur].renk} />}
-      {p.ozel === 'gokkusagi' || !MEYVELER[p.tur] ? (
+      {p.kat ? null : p.ozel === 'gokkusagi' || !MEYVELER[p.tur] ? (
         <GokkusagiKure H={H} />
       ) : (
         <Image
@@ -381,6 +498,7 @@ export function Parca({ p, H }) {
         />
       )}
       {(p.ozel === 'satir' || p.ozel === 'sutun') && <Cizgiler key={p.ozel} H={H} yon={p.ozel} renk={MEYVELER[p.tur].koyu} />}
+      {p.buz && <BuzKatman H={H} />}
     </Animated.View>
   );
 }

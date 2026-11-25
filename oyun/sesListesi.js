@@ -39,4 +39,7 @@ export const SES_DOSYALARI = {
   yildiz_3: require('../assets/ses/yildiz_3.wav'),
   kazandin: require('../assets/ses/kazandin.wav'),
   kaybettin: require('../assets/ses/kaybettin.wav'),
+  buz: require('../assets/ses/buz.wav'),
+  kasa_vur: require('../assets/ses/kasa_vur.wav'),
+  kasa_kir: require('../assets/ses/kasa_kir.wav'),
 };

@@ -19,7 +19,13 @@ Murat'ın meyve temalı 3'lü eşleştirme oyunu (Kasım 2026). Geçici ad "Meyv
   25 Kasım: 7. seviye 20 hamle, 9. seviye 22 hamle/3500 puan (yıldız 4500/6000), 10. seviye 28 hamle (onaylandı).
   İLKE (Murat): uzun soluklu oyun; ilk seviyelerde oyuncu zorlanmaz, zorluk çok yavaş artar, arada kolay seviyeler.
   Bot simülasyonu: `bun araclar/seviye-testi.mjs` (SEVIYE='{"no":9,"hamle":22}' ile tek seviye denenir).
-- Engeller (buz vb.) ve ödüllü reklam sonraki aşama. 11-30. seviyeler önerilecek.
+- Engeller (25 Kasım onaylandı): BUZ = buzlu meyve yer değiştiremez, eşleşmeye katılınca, yanında eşleşme olunca ya da özel
+  parça değince kırılır, meyve kalır. KASA = meyve değil (tur M.KASA), takas/eşleşme yok, yerçekimiyle düşer, yanında eşleşme
+  ya da özel parça değince bir kat azalır; iki katlı (K) iki vuruş ister. Seviye düzeni 8 satır metin: '.', 'b', 'k', 'K'.
+  11-30. seviyeler oyun/seviyeler.js'te; bölümler: 1-10 İlkbahar, 11-20 Yaz, 21-30 Sonbahar Bahçesi.
+  Bot hedefi: 1-10 ≥%88, 11-20 ≥%85, 21-30 ≥%75 geçme; yıldız eşikleri bottan (2★ ≈ %40'lık, 3★ ≈ %75'lik puan).
+  Simülasyon mulberry32 üreteci kullanır (eski LCG tekrarlı dizilerle sonuçları çarpıtıyordu).
+- Zincir övgü yazıları İngilizce (Nice!, Great!, Amazing!, Fantastic!) — Murat: global oyun. Ödüllü reklam sonraki aşama.
 - Ekranda VoiceOver'a özel uyarı yazıları olmasın.
 
 ## Yayın
@@ -41,7 +47,8 @@ Murat'ın meyve temalı 3'lü eşleştirme oyunu (Kasım 2026). Geçici ad "Meyv
   (Patlama, Isin, Dalga, GokkusagiIsinlari, Donusum, PuanYazisi, Ovgu), Kutu, GirisKart, Yildiz, ortak stiller st.
   Not: StyleSheet.absoluteFillObject bu RN sürümünde YOK; TAM kullan.
 - `oyun/mantik.js`: saf mantık + özel parçalar (ozelOlusumlari, etkiAlani, birlesim, genislet, cozumAdimi).
-  Testler: `bun araclar/mantik-testi.mjs`, `bun araclar/ozel-testi.mjs`, `bun araclar/seviye-testi.mjs` (bot).
+  Testler: `bun araclar/mantik-testi.mjs`, `bun araclar/ozel-testi.mjs`, `bun araclar/engel-testi.mjs`, `bun araclar/seviye-testi.mjs` (bot;
+  ARALIK=11-30, DENEME=200, TOHUM=n, SEVIYE='{...}'). Tarayıcıda engel denemesi: araclar/web-deneme/engel-dene.cjs (NO=20, VO=1).
 - `oyun/seviyeler.js`: SEVIYELER, TANITIM, yildizHesapla, hedefTamam.
 - `oyun/ses.js`: expo-audio havuzu + expo-haptics. Meyve sesi sütuna göre sol/orta/sağ.
 - `araclar/sesleri-uret.py`: geçici kristal sesleri üretir (assets/ses + oyun/sesListesi.js). İleride ElevenLabs.

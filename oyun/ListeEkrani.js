@@ -5,6 +5,13 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SEVIYELER } from './seviyeler';
 import { MEYVELER, Yildiz, st } from './gorsel';
 
+// Bölümler (ileride resimli haritada her biri ayrı bir bahçe olacak)
+const BOLUMLER = [
+  { ad: 'İlkbahar Bahçesi', ilk: 1, son: 10, renk: '#ff9fc4' },
+  { ad: 'Yaz Bahçesi', ilk: 11, son: 20, renk: '#ffc93d' },
+  { ad: 'Sonbahar Bahçesi', ilk: 21, son: 30, renk: '#ff8f4a' },
+];
+
 export default function ListeEkrani({ ilerleme, sec }) {
   const ek = useSafeAreaInsets();
   const { width: EG, height: EY } = useWindowDimensions();
@@ -43,11 +50,20 @@ export default function ListeEkrani({ ilerleme, sec }) {
           <Text style={[st.dugmeYazi, { fontSize: 22 }]}>Oyna · Seviye {siradaki}</Text>
         </Pressable>
 
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', maxWidth: (boy + 12) * sutun }}>
-          {SEVIYELER.map((s) => (
-            <SeviyeDugmesi key={s.no} s={s} boy={boy} acik={s.no <= ilerleme.acik} yildiz={(ilerleme.yildiz || {})[s.no] || 0} siradaki={s.no === siradaki} sec={sec} />
-          ))}
-        </View>
+        {BOLUMLER.map((b) => (
+          <View key={b.ad} style={{ alignItems: 'center', marginBottom: 10 }}>
+            <View style={[lst.bolum, { backgroundColor: b.renk }]}>
+              <Text style={lst.bolumYazi} accessibilityRole="header">
+                {b.ad}
+              </Text>
+            </View>
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', maxWidth: (boy + 12) * sutun }}>
+              {SEVIYELER.filter((s) => s.no >= b.ilk && s.no <= b.son).map((s) => (
+                <SeviyeDugmesi key={s.no} s={s} boy={boy} acik={s.no <= ilerleme.acik} yildiz={(ilerleme.yildiz || {})[s.no] || 0} siradaki={s.no === siradaki} sec={sec} />
+              ))}
+            </View>
+          </View>
+        ))}
         <Text style={lst.yakinda}>Yeni seviyeler yakında</Text>
       </ScrollView>
     </View>
@@ -118,5 +134,7 @@ const lst = {
   kilitli: { backgroundColor: '#dfe7ee', borderBottomColor: '#b9c6d2' },
   siradaki: { backgroundColor: '#ffcf1f', borderBottomColor: '#d49b00' },
   no: { color: '#ffffff', fontWeight: '900', textShadowColor: 'rgba(0,0,0,0.25)', textShadowRadius: 2, textShadowOffset: { width: 0, height: 2 } },
+  bolum: { borderRadius: 18, paddingVertical: 6, paddingHorizontal: 18, marginTop: 6, marginBottom: 6, borderWidth: 3, borderColor: '#ffffff' },
+  bolumYazi: { fontSize: 18, fontWeight: '900', color: '#ffffff', textShadowColor: 'rgba(0,0,0,0.25)', textShadowRadius: 2, textShadowOffset: { width: 0, height: 1 } },
   yakinda: { marginTop: 18, fontSize: 15, fontWeight: '700', color: '#4d6a80' },
 };

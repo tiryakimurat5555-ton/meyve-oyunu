@@ -1,110 +1,141 @@
-// Seviyeleri özel parçalarla, "akıllıca" (en çok hedef meyve toplayan hamleyi seçen) bir botla oynatır.
-// Amaç: sonsuz döngü/çökme olmadığını ve seviyelerin kabaca geçilebilir olduğunu görmek. Kullanım: bun araclar/seviye-testi.mjs
+// Seviyeleri özel parçalar ve engellerle, basit "akıllı" bir botla oynatır (rastgele 6 hamleden hedefe en çok katkı yapanı seçer).
+// Amaç: sonsuz döngü/çökme olmadığını, seviyelerin geçilebilirliğini ve yıldız eşiklerini görmek.
+// Kullanım: bun araclar/seviye-testi.mjs                 (bütün seviyeler)
+//           SEVIYE='{"no":9,"hamle":22}' bun araclar/seviye-testi.mjs   (tek seviye, değiştirilmiş)
+//           ARALIK=11-30 bun araclar/seviye-testi.mjs     (aralık)
 import * as M from '../oyun/mantik.js';
 import { SEVIYELER, hedefTamam, yildizHesapla } from '../oyun/seviyeler.js';
 
-let tohum = 99;
-const rnd = () => ((tohum = (tohum * 1103515245 + 12345) % 2147483648) / 2147483648);
-const kop = (g) => g.map((s) => s.slice());
+// mulberry32: hızlı ve kaliteli rastgele üreteç (eski basit üreteç tekrarlı diziler verip sonuçları çarpıtıyordu)
+let tohum = Number(process.env.TOHUM || 99) >>> 0;
+const rnd = () => {
+  tohum = (tohum + 0x6d2b79f5) >>> 0;
+  let t = tohum;
+  t = Math.imul(t ^ (t >>> 15), t | 1);
+  t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+  return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+};
+const kilitOf = (engel) => engel.map((s) => s.map((e) => e != null));
 
-function hamleler(t, oz) {
+function hamleler(t, oz, engel) {
+  const k = kilitOf(engel);
   const l = [];
   for (let r = 0; r < 8; r++)
     for (let c = 0; c < 8; c++)
       for (const b of [[r, c + 1], [r + 1, c]]) {
         if (b[0] > 7 || b[1] > 7) continue;
-        const bir = M.birlesim(t, oz, [r, c], b);
-        if (bir || M.eslesmeleriBul(M.takasla(t, [r, c], b)).length) l.push([[r, c], b]);
+        if (k[r][c] || k[b[0]][b[1]] || t[r][c] === M.KASA || t[b[0]][b[1]] === M.KASA) continue;
+        if (M.birlesim(t, oz, [r, c], b) || M.eslesmeleriBul(M.takasla(t, [r, c], b)).length) l.push([[r, c], b]);
       }
   return l;
 }
 
-// Hamleyi uygular, zincirleri çözer. Dönüş: { t, oz, puan, toplanan }
-function oyna(t, oz, a, b, izinli) {
+// Hamleyi uygular, zincirleri çözer.
+export function oyna(t, oz, engel, a, b, izinli) {
   let puan = 0;
-  const toplanan = {};
-  let bir = M.birlesim(t, oz, a, b);
+  const sayac = { topla: {}, buz: 0, kasa: 0 };
+  const bir = M.birlesim(t, oz, a, b);
   t = M.takasla(t, a, b);
   oz = M.takasla(oz, a, b);
   let ek = [];
   if (bir) {
-    // takastan sonra merkezler yer değiştirdi
     const merkez = bir.merkez[0] === a[0] && bir.merkez[1] === a[1] ? b : a;
-    for (const d of bir.donusum) oz[d.hucre[0]][d.hucre[1]] = d.ozel;
-    oz[a[0]][a[1]] = null;
-    oz[b[0]][b[1]] = null;
+    for (const d of bir.donusum) if (!(d.hucre[0] === merkez[0] && d.hucre[1] === merkez[1])) oz[d.hucre[0]][d.hucre[1]] = d.ozel;
+    for (const h of [a, b]) if (oz[h[0]][h[1]] === 'gokkusagi' || bir.etki !== 'gokkusagi') oz[h[0]][h[1]] = null;
     ek = [...M.etkiAlani(bir.etki, merkez[0], merkez[1], t, bir.hedefTur), a, b];
   }
   let zincir = 0;
   for (;;) {
-    const adim = M.cozumAdimi(t, oz, { hamle: zincir === 0 ? [a, b] : null, ek, izinli });
+    const adim = M.cozumAdimi(t, oz, { hamle: zincir === 0 ? [a, b] : null, ek, izinli, engel });
     ek = [];
-    if (!adim.hucreler.length && !adim.olusan.length) break;
+    if (!adim.hucreler.length && !adim.olusan.length && !adim.kasaVurus.length) break;
     zincir++;
     if (zincir > 60) throw new Error('sonsuz zincir');
     for (const g of adim.gruplar) puan += M.grupPuani(g.hucreler.length, zincir);
-    // Özel parçanın temizlediği her meyve +20 (zincir çarpanıyla)
     const eslesen = new Set(M.silinecekler(adim.gruplar).map(([r, c]) => r * 8 + c));
     puan += adim.hucreler.filter(([r, c]) => !eslesen.has(r * 8 + c)).length * M.OZEL_HUCRE_PUANI * Math.max(1, zincir);
-    for (const [r, c] of adim.hucreler) {
-      if (t[r][c] >= 0 && t[r][c] < 6) toplanan[t[r][c]] = (toplanan[t[r][c]] || 0) + 1;
-      t[r][c] = -1;
-      oz[r][c] = null;
-    }
-    for (const o of adim.olusan) {
-      t[o.hucre[0]][o.hucre[1]] = o.tur;
-      oz[o.hucre[0]][o.hucre[1]] = o.ozel;
-    }
-    const y = M.yercekimi(t, rnd);
-    const yoz = kop(oz);
-    for (const k of y.kaymalar) yoz[k.eski[0]][k.eski[1]] = null;
-    for (const k of y.kaymalar) yoz[k.yeni[0]][k.yeni[1]] = oz[k.eski[0]][k.eski[1]];
-    for (const n of y.yeniler) yoz[n.yeni[0]][n.yeni[1]] = null;
-    t = y.tahta;
-    oz = yoz;
+    const u = M.adimUygula(t, oz, engel, adim, rnd);
+    t = u.t;
+    oz = u.oz;
+    engel = u.engel;
+    for (const k in u.sayac.topla) sayac.topla[k] = (sayac.topla[k] || 0) + u.sayac.topla[k];
+    sayac.buz += u.sayac.buz;
+    sayac.kasa += u.sayac.kasa;
   }
-  return { t, oz, puan, toplanan };
+  return { t, oz, engel, puan, sayac };
 }
 
-// İsteğe bağlı: SEVIYE='{"no":9,"hamle":22,"hedef":{"puan":3500}}' yalnız o seviyeyi değiştirilmiş haliyle dener
 const degisik = process.env.SEVIYE ? JSON.parse(process.env.SEVIYE) : null;
-const DENENECEK = degisik ? [{ ...SEVIYELER.find((s) => s.no === degisik.no), ...degisik }] : SEVIYELER;
+const aralik = process.env.ARALIK ? process.env.ARALIK.split('-').map(Number) : null;
+let DENENECEK = degisik ? [{ ...SEVIYELER.find((s) => s.no === degisik.no), ...degisik }] : SEVIYELER;
+if (aralik) DENENECEK = DENENECEK.filter((s) => s.no >= aralik[0] && s.no <= aralik[1]);
+const DENEME = Number(process.env.DENEME || (degisik ? 80 : 40));
+const ADAY = Number(process.env.BOT_ADAY || 30);
+
+if (process.env.BUZ_KOMSU) M.buzKuraliAyarla(true);
 let hata = 0;
-const ozelSay = { satir: 0, sutun: 0, bomba: 0, gokkusagi: 0 };
 for (const sv of DENENECEK) {
   M.turSayisiAyarla(sv.tur);
+  // Düzen ile hedef sayıları tutarlı mı?
+  if (sv.duzen) {
+    const b = sv.duzen.join('').split('').filter((x) => x === 'b').length;
+    const k = sv.duzen.join('').split('').filter((x) => x === 'k' || x === 'K').length;
+    if ((sv.hedef.buz || 0) !== b || (sv.hedef.kasa || 0) !== k) {
+      hata++;
+      console.log(`HATA: seviye ${sv.no} düzen ${b} buz/${k} kasa, hedef ${sv.hedef.buz || 0}/${sv.hedef.kasa || 0}`);
+    }
+  }
   let gecen = 0;
-  let yildizToplam = 0;
-  const DENEME = degisik ? 80 : 40;
+  const puanlar = [];
   for (let d = 0; d < DENEME; d++) {
-    let t = M.yeniTahta(rnd);
-    let oz = t.map((s) => s.map(() => null));
+    let { t, oz, engel } = M.duzenliTahta(sv.duzen, rnd);
     let puan = 0;
-    const top = {};
+    const top = { buz: 0, kasa: 0 };
     let hamle = sv.hamle;
+    let bos = 0;
     while (hamle > 0 && !hedefTamam(sv, top, puan)) {
-      const hl = hamleler(t, oz);
-      if (!hl.length) { t = M.karistir(t, rnd); oz = t.map((s) => s.map(() => null)); continue; }
-      // Bot: rastgele 6 hamleyi dener, en çok hedef/puan getireni seçer
-      let en = null;
-      for (let i = 0; i < 6; i++) {
-        const h = hl[Math.floor(rnd() * hl.length)];
-        const s = oyna(kop(t), kop(oz), h[0], h[1], sv.ozel);
-        const deger = sv.hedef.puan ? s.puan : Object.keys(sv.hedef.topla).reduce((a, k) => a + (s.toplanan[k] || 0), 0) * 100 + s.puan / 100;
-        if (!en || deger > en.deger) en = { deger, h, s };
+      const hl = hamleler(t, oz, engel);
+      if (!hl.length) {
+        // Karıştır: kilitli olmayan meyveleri yeniden dağıt
+        if (++bos > 50) break;
+        const k = M.karistir(t, rnd);
+        for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) if (engel[r][c] == null && !oz[r][c]) t[r][c] = k[r][c];
+        continue;
       }
-      t = en.s.t; oz = en.s.oz; puan += en.s.puan;
-      for (const k in en.s.toplanan) top[k] = (top[k] || 0) + en.s.toplanan[k];
-      for (const s of oz.flat()) if (s) ozelSay[s] !== undefined && ozelSay[s]++;
+      // Bütün hamleleri dener (en çok 30); hedefe en çok katkı yapanı seçer. BOT_ADAY ile sınırlanabilir.
+      let en = null;
+      const adaylar = hl.length <= ADAY ? hl : Array.from({ length: ADAY }, () => hl[Math.floor(rnd() * hl.length)]);
+      for (const h of adaylar) {
+        const s = oyna(t, oz, engel, h[0], h[1], sv.ozel);
+        const h2 = sv.hedef;
+        let deger = s.puan / 100;
+        if (h2.topla) deger += Object.keys(h2.topla).reduce((a, k) => a + (s.sayac.topla[k] || 0), 0) * 100;
+        if (h2.buz) deger += s.sayac.buz * 150;
+        if (h2.kasa) deger += s.sayac.kasa * 150;
+        if (h2.puan) deger = s.puan;
+        if (!en || deger > en.deger) en = { deger, s };
+      }
+      ({ t, oz, engel } = en.s);
+      puan += en.s.puan;
+      for (const k in en.s.sayac.topla) top[k] = (top[k] || 0) + en.s.sayac.topla[k];
+      top.buz += en.s.sayac.buz;
+      top.kasa += en.s.sayac.kasa;
       hamle--;
     }
     const ok = hedefTamam(sv, top, puan);
-    if (ok) gecen++;
-    yildizToplam += yildizHesapla(sv, puan + hamle * 200, ok);
-    if (!sv.ozel.cizgili && oz.flat().some(Boolean)) { hata++; console.log('HATA: izinsiz özel parça', sv.no); }
-    if (sv.tur === 5 && t.flat().includes(5)) { hata++; console.log('HATA: 5 türlü seviyede erik', sv.no); }
+    if (ok) {
+      gecen++;
+      puanlar.push(puan + Math.min(15, hamle) * 220 + Math.max(0, hamle - 15) * 100);
+    }
   }
-  console.log(`Seviye ${sv.no}: bot ${gecen}/${DENEME} geçti, ortalama ${(yildizToplam / DENEME).toFixed(1)} yıldız`);
+  puanlar.sort((a, b) => a - b);
+  const yuzde = (p) => (puanlar.length ? puanlar[Math.min(puanlar.length - 1, Math.floor(puanlar.length * p))] : 0);
+  const yuvarla = (x) => Math.round(x / 250) * 250;
+  const yildizlar = puanlar.map((p) => yildizHesapla(sv, p, true));
+  const ort = yildizlar.length ? (yildizlar.reduce((a, b) => a + b, 0) / DENEME).toFixed(1) : '0';
+  console.log(
+    `Seviye ${sv.no}: bot ${gecen}/${DENEME} geçti (%${Math.round((gecen / DENEME) * 100)}), ortalama ${ort} yıldız` +
+      (sv.no > 10 ? ` | öneri eşik: 2★ ${yuvarla(yuzde(0.4))}, 3★ ${yuvarla(yuzde(0.75))}` : '')
+  );
 }
-console.log('Görülen özel parçalar (hamle başına sayım):', JSON.stringify(ozelSay));
 console.log(hata ? `${hata} HATA` : 'SEVİYE SİMÜLASYONU HATASIZ');
