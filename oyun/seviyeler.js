@@ -193,9 +193,21 @@ export const SEVIYELER = [
   { no: 168, hamle: 30, tur: 6, hedef: { kafes: 8, tohum: 1 }, yildiz: [6000, 7250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '..a..t..', '........', '........', 'c......c', 'cc....cc', 'c......c', '........'] },
   { no: 169, hamle: 18, tur: 6, hedef: { topla: { 1: 22, 4: 22 } }, yildiz: [4500, 5500], ozel: { cizgili: true, bomba: true, gokkusagi: true } },
   { no: 170, hamle: 45, tur: 6, hedef: { kafes: 8, sis: 4, civciv: 2 }, yildiz: [8250, 9750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '.ya..ay.', '.gg..gg.', '........', 'cc....cc', 'cc....cc', '........', '........'] },
+  // ---- 18. bölüm: Bukalemun Bahçesi (bukalemun meyve her hamleden sonra bir sonraki renge geçer) ----
+  { no: 171, hamle: 14, tur: 6, hedef: { bukalemun: 4 }, yildiz: [3000, 3500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '........', '..u..u..', '........', '........', '..u..u..', '........', '........'], yeni: 'bukalemun' },
+  { no: 172, hamle: 12, tur: 6, hedef: { bukalemun: 6 }, yildiz: [2750, 3250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '.u....u.', '........', '...uu...', '........', '.u....u.', '........', '........'] },
+  { no: 173, hamle: 15, tur: 6, hedef: { bukalemun: 6, topla: { 5: 15 } }, yildiz: [3500, 4500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['u......u', '........', '..u..u..', '........', '........', '..u..u..', '........', '........'] },
+  { no: 174, hamle: 12, tur: 6, hedef: { bukalemun: 6, buz: 8 }, yildiz: [2750, 3500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '.u.uu.u.', '........', '.bbbbbb.', '.b....b.', '........', '..u..u..', '........'] },
+  { no: 175, hamle: 24, tur: 6, hedef: { puan: 6000 }, yildiz: [7500, 8500], ozel: { cizgili: true, bomba: true, gokkusagi: true } },
+  { no: 176, hamle: 15, tur: 6, hedef: { bukalemun: 10 }, yildiz: [3500, 4250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['u..uu..u', '........', '.u....u.', '........', '........', '.u....u.', '........', 'u......u'] },
+  { no: 177, hamle: 22, tur: 6, hedef: { bukalemun: 6, kar: 8 }, yildiz: [5000, 6000], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '.u....u.', '..u..u..', '.u....u.', '........', '........', 'ssssssss', '........'] },
+  { no: 178, hamle: 16, tur: 6, hedef: { bukalemun: 6, saat: 2 }, yildiz: [3500, 4000], ozel: { cizgili: true, bomba: true, gokkusagi: true }, saat: 11, duzen: ['........', '.u.z..u.', '........', '..u..u..', '........', '.u..z.u.', '........', '........'] },
+  { no: 179, hamle: 14, tur: 6, hedef: { topla: { 0: 20, 3: 20 } }, yildiz: [3500, 4750], ozel: { cizgili: true, bomba: true, gokkusagi: true } },
+  { no: 180, hamle: 26, tur: 6, hedef: { bukalemun: 8, mantar: 4, cicek: 4 }, yildiz: [6500, 7750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['m......m', '.u.uu.u.', '........', '..1..2..', '..3..4..', '.u.uu.u.', 'm......m', '........'] },
 ];
 
 export const TANITIM = {
+  bukalemun: { baslik: 'Yeni: Bukalemun meyve', metin: 'Gökkuşağı halkalı meyveler bukalemun: her hamleden sonra bir sonraki renge geçer (çilek, limon, üzüm, portakal, elma, erik). Değişince eşleşme olursa kendiliğinden patlar. Hepsini patlat!' },
   kafes: { baslik: 'Yeni: Kafes ve anahtar', metin: 'Kafesli meyveler kilitli: eşleşme, özel meyve ya da çekiç onları açamaz. Altın anahtarı tohum gibi en alt sıraya indir; anahtar inince bütün kafesler açılır!' },
   kapi: { baslik: 'Yeni: Akıntı kapıları', metin: 'Göl kıyısında meyveler akıntıya kapılıyor! Numaralı kapı girişine düşen meyve, aynı numaralı çıkışın olduğu sütunun üstünden iner. Tohumlar da kapıdan geçer.' },
   civciv: { baslik: 'Yeni: Yumurta ve civciv', metin: 'Yuvadaki yumurtanın yanında iki kez eşleşme yap: önce çatlar, sonra içinden civciv çıkar. Civciv tohum gibi aşağı iner; en alt sıraya ulaşınca yuvaya uçar!' },

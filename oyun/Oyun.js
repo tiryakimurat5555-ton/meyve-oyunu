@@ -17,6 +17,7 @@ import {
   CicekUst,
   CicekIkon,
   AriEfekt,
+  BukalemunIkon,
   KafesIkon,
   KapiIsareti,
   CivcivIkon,
@@ -75,7 +76,7 @@ export function parcaAdi(p) {
   if (p.sarmasik) return 'Sarmaşıklı ' + MEYVELER[p.tur].isim.toLocaleLowerCase('tr');
   if (p.mantar) return 'Mantarlı ' + MEYVELER[p.tur].isim.toLocaleLowerCase('tr');
   if (p.ozel === 'gokkusagi' || !MEYVELER[p.tur]) return 'Gökkuşağı';
-  return MEYVELER[p.tur].isim + (p.ozel ? ' ' + OZEL_AD[p.ozel] : '') + (p.saat ? `, saatli, ${p.saat} hamle` : '');
+  return (p.buk ? 'Bukalemun ' + MEYVELER[p.tur].isim.toLocaleLowerCase('tr') : MEYVELER[p.tur].isim) + (p.ozel ? ' ' + OZEL_AD[p.ozel] : '') + (p.saat ? `, saatli, ${p.saat} hamle` : '');
 }
 
 // Taşıyıcı bant satırı (rüzgâr) için hücre etiketine ek
@@ -101,6 +102,7 @@ function karliAd(kat, ad) {
 // Yeni bölümlerin hedefleri tek tabloda: hedef anlatımı, kalan, olay duyurusu ve simge
 // kalanAnahtar: yayılabilen engeller için tahtada kalan sayısı (toplanan[k + 'Kalan'])
 const EK_HEDEF = [
+  { k: 'bukalemun', hedef: (n) => `${n} bukalemun meyveyi patlat`, ad: 'bukalemun', olay: (n) => `${n} bukalemun patladı`, Ikon: BukalemunIkon },
   { k: 'kafes', hedef: (n) => `anahtarı en alta indirip ${n} kafesi aç`, ad: 'kafes', olay: (n) => `Anahtar geldi, ${n} kafes açıldı`, Ikon: KafesIkon },
   { k: 'civciv', hedef: (n) => `${n} yumurtayı kır, civcivleri en alta indir`, ad: 'civciv', olay: (n) => (n > 1 ? `${n} civciv yuvaya uçtu` : 'Civciv yuvaya uçtu'), Ikon: CivcivIkon },
   { k: 'mantar', kalanAnahtar: true, hedef: () => 'bütün mantarları temizle', ad: 'mantar', olay: (n) => `${n} mantar temizlendi`, Ikon: MantarIkon },
@@ -232,6 +234,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
       sarmasik: engel === 'sarmasik',
       mantar: engel === 'mantar',
       kafes: engel === 'kafes',
+      buk: engel === 'buk',
       saat: M.saatMi(engel) ? M.saatDeger(engel) : 0,
       sis: engel === 'sis',
       kat: M.kasaMi(tur) ? engel || (M.ficiMi(tur) ? 3 : 1) : 0,
@@ -260,6 +263,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
         if (p.sarmasik) return 'sarmasik';
         if (p.mantar) return 'mantar';
         if (p.kafes) return 'kafes';
+        if (p.buk) return 'buk';
         if (p.saat) return 'saat' + p.saat;
         if (p.sis) return 'sis';
         if (M.kasaMi(p.tur)) return p.kat;
@@ -754,7 +758,8 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
       }
       const tohumSay = (adim.tohumlar || []).length - civcivSay - anahtarSay;
       const saatSay = silinen.filter((x) => x.p.saat).length;
-      topla({ ...adimSayaci(silinen), buz: buzKirilan.length - sarmasikKesilen - sisDagilan - mantarKesilen, sis: sisDagilan, mantar: mantarKesilen, kasa: kasaKirilan, fici: ficiKirilan, kar: karSay, cicek: cicekSay, saat: saatSay, tohum: tohumSay, civciv: civcivSay, anahtar: anahtarSay, kafes: kafesAcilan });
+      const bukSay = silinen.filter((x) => x.p.buk).length;
+      topla({ ...adimSayaci(silinen), buz: buzKirilan.length - sarmasikKesilen - sisDagilan - mantarKesilen, sis: sisDagilan, mantar: mantarKesilen, kasa: kasaKirilan, fici: ficiKirilan, kar: karSay, cicek: cicekSay, saat: saatSay, tohum: tohumSay, civciv: civcivSay, anahtar: anahtarSay, kafes: kafesAcilan, bukalemun: bukSay });
       sarmasikGuncelle();
       sayacToplam.sarmasik += sarmasikKesilen;
       sayacToplam.buz += buzKirilan.length - sarmasikKesilen - sisDagilan - mantarKesilen;
@@ -767,6 +772,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
       sayacToplam.saat = (sayacToplam.saat || 0) + saatSay;
       sayacToplam.civciv = (sayacToplam.civciv || 0) + civcivSay;
       sayacToplam.kafes = (sayacToplam.kafes || 0) + kafesAcilan;
+      sayacToplam.bukalemun = (sayacToplam.bukalemun || 0) + bukSay;
       sayacToplam.tohum += tohumSay;
       puanEkle(kazanc);
 
@@ -1080,7 +1086,36 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
     return cozumle();
   };
 
+  // Bukalemun meyveler bir sonraki renge geçer, sonra oluşan eşleşmeler çözülür
+  const bukalemunDegistir = async () => {
+    const liste = [];
+    for (let r = 0; r < M.SATIR; r++)
+      for (let c = 0; c < M.SUTUN; c++) {
+        const p = parcaAt(r, c);
+        if (p && p.buk && p.tur >= 0 && p.tur < seviye.tur) liste.push([p, r, c]);
+      }
+    if (!liste.length) return null;
+    cal('bukalemun', 0.8);
+    for (const [p, r, c] of liste) {
+      p.tur = (p.tur + 1) % seviye.tur;
+      efektEkle({ tip: 'donusum', r, c });
+      parlayarakDonustur(p).start();
+    }
+    yenile();
+    await bekle(260);
+    return cozumle();
+  };
+
   const hamleSonrasi = async (sonuc, cekicle = false) => {
+    // Bukalemunlar renk değiştirir
+    let bukDegisti = false;
+    if (seviye.hedef.bukalemun && !cekicle && !hedefTamam(seviye, toplananRef.current, puanRef.current)) {
+      const b = await bukalemunDegistir();
+      if (b) {
+        bukDegisti = true;
+        sonuc = sonucBirlestir(sonuc, b);
+      }
+    }
     // Rüzgâr: bant satırları kayar
     if (seviye.bant && seviye.bant.length && !cekicle && !hedefTamam(seviye, toplananRef.current, puanRef.current)) {
       sonuc = sonucBirlestir(sonuc, await bantKaydir());
@@ -1103,7 +1138,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
     const p = Object.entries(sonuc.patlayan).map(([tur, n]) => `${n} ${MEYVELER[tur].isim}`);
     const o = sonuc.olusanlar.map((x) => (x.ozel === 'gokkusagi' ? 'Gökkuşağı oluştu' : `${MEYVELER[x.tur].isim} ${OZEL_AD[x.ozel]} oluştu`));
     duyur(
-      [p.length ? p.join(', ') + ' patladı' : '', sonuc.buz ? `${sonuc.buz} buz kırıldı` : '', sonuc.kasa ? `${sonuc.kasa} kasa kırıldı` : '', sonuc.fici ? `${sonuc.fici} fıçı kırıldı` : '', sonuc.sarmasik ? `${sonuc.sarmasik} sarmaşık kesildi` : '', sonuc.sis ? `${sonuc.sis} sis dağıldı` : '', ...EK_HEDEF.map((e) => (sonuc[e.k] ? e.olay(sonuc[e.k]) : '')), sonuc.kar ? `${sonuc.kar} kat kar eridi` : '', sonuc.tohum ? (sonuc.tohum > 1 ? `${sonuc.tohum} tohum çiçek açtı` : 'Tohum çiçek açtı') : '', ...o, sonuc.zincir >= 2 ? `${sonuc.zincir} zincir` : '', seviye.hedef.mantar && !cekicle && toplananRef.current.mantarKalan > 0 && (mantarSayac.current + 1) % M.MANTAR_ARALIK ? `Mantarlar ${M.MANTAR_ARALIK - ((mantarSayac.current + 1) % M.MANTAR_ARALIK)} hamle sonra çoğalacak` : '', saatDoldu ? 'Saat doldu!' : enAzSaat != null && enAzSaat <= 3 ? `Dikkat, saatli meyvede ${enAzSaat} hamle kaldı` : '', kalanMetni(seviye, toplananRef.current, puanRef.current), `${hamleRef.current} hamle`]
+      [p.length ? p.join(', ') + ' patladı' : '', sonuc.buz ? `${sonuc.buz} buz kırıldı` : '', sonuc.kasa ? `${sonuc.kasa} kasa kırıldı` : '', sonuc.fici ? `${sonuc.fici} fıçı kırıldı` : '', sonuc.sarmasik ? `${sonuc.sarmasik} sarmaşık kesildi` : '', sonuc.sis ? `${sonuc.sis} sis dağıldı` : '', ...EK_HEDEF.map((e) => (sonuc[e.k] ? e.olay(sonuc[e.k]) : '')), sonuc.kar ? `${sonuc.kar} kat kar eridi` : '', sonuc.tohum ? (sonuc.tohum > 1 ? `${sonuc.tohum} tohum çiçek açtı` : 'Tohum çiçek açtı') : '', ...o, sonuc.zincir >= 2 ? `${sonuc.zincir} zincir` : '', bukDegisti ? 'Bukalemunlar renk değiştirdi' : '', seviye.hedef.mantar && !cekicle && toplananRef.current.mantarKalan > 0 && (mantarSayac.current + 1) % M.MANTAR_ARALIK ? `Mantarlar ${M.MANTAR_ARALIK - ((mantarSayac.current + 1) % M.MANTAR_ARALIK)} hamle sonra çoğalacak` : '', saatDoldu ? 'Saat doldu!' : enAzSaat != null && enAzSaat <= 3 ? `Dikkat, saatli meyvede ${enAzSaat} hamle kaldı` : '', kalanMetni(seviye, toplananRef.current, puanRef.current), `${hamleRef.current} hamle`]
         .filter(Boolean)
         .join('. ')
     );

@@ -512,6 +512,29 @@ export function Anahtar({ H }) {
   );
 }
 
+// ---------- Bukalemun ----------
+// Meyvenin çevresinde gökkuşağı renkli halka ve köşede sevimli bukalemun gözü (renk değiştireceğini gösterir)
+export function BukalemunHale({ H }) {
+  const b = H * 0.94;
+  return (
+    <View pointerEvents="none" style={{ position: 'absolute', left: (H - b) / 2, top: (H - b) / 2, width: b, height: b }}>
+      <View style={{ position: 'absolute', left: 0, top: 0, width: b, height: b, borderRadius: b, borderWidth: 3.5, borderTopColor: '#ff3b4e', borderRightColor: '#ffd21f', borderBottomColor: '#7ed321', borderLeftColor: '#4263eb', opacity: 0.9 }} />
+      <View style={{ position: 'absolute', right: -b * 0.02, top: -b * 0.02, width: b * 0.3, height: b * 0.3, borderRadius: b, backgroundColor: '#7ed321', borderWidth: 1.5, borderColor: '#3f7d0f', alignItems: 'center', justifyContent: 'center' }}>
+        <View style={{ width: b * 0.16, height: b * 0.16, borderRadius: b, backgroundColor: '#ffffff', alignItems: 'center', justifyContent: 'center' }}>
+          <View style={{ width: b * 0.08, height: b * 0.08, borderRadius: b, backgroundColor: '#1a1a1a' }} />
+        </View>
+      </View>
+    </View>
+  );
+}
+export function BukalemunIkon({ boy = 26 }) {
+  return (
+    <View style={{ width: boy, height: boy }}>
+      <BukalemunHale H={boy / 0.94} />
+    </View>
+  );
+}
+
 export function SarmasikKatman({ H }) {
   const b = H * 0.96;
   const dal = (aci, ust) => (
@@ -1010,6 +1033,7 @@ export function Parca({ p, H }) {
       {p.sarmasik && <SarmasikKatman H={H} />}
       {p.mantar && <MantarKatman H={H} />}
       {p.kafes && <KafesKatman H={H} />}
+      {p.buk && <BukalemunHale H={H} />}
       {p.sis && <SisKatman H={H} />}
       {p.saat ? <SaatRozet H={H} n={p.saat} /> : null}
     </Animated.View>

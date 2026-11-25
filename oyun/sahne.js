@@ -340,6 +340,25 @@ const RENKLER = [
       { tip: 'kelebek', renk: '#c9a7ff' },
     ],
   },
+  // 17: Bukalemun Bahçesi (rengârenk tropik: turkuaz gök, canlı yeşiller, her renkten kelebek)
+  {
+    gok: ['#52c7d8', '#eafff4'],
+    gunes: '#ffe14a',
+    gunesKenar: '#ffb81c',
+    tepeArka: ['#5fcf7a', '#4bbb66'],
+    tepeArka2: ['#7ed99a', '#66c884'],
+    tepeOn: ['#a6e8b0', '#8edc9c'],
+    tac: ['#2fae5a', '#22994a', '#4fcc74'],
+    nokta: ['#ff3b4e', '#ffd21f', '#4263eb'],
+    cicek: ['#ff3b4e', '#ffd21f', '#a24dff'],
+    parca: [
+      { tip: 'kelebek', renk: '#ff3b4e' },
+      { tip: 'kelebek', renk: '#ffd21f' },
+      { tip: 'kelebek', renk: '#4263eb' },
+      { tip: 'kelebek', renk: '#a24dff' },
+      { tip: 'yaprak', renk: '#4fcc74' },
+    ],
+  },
 ];
 export const geceMi = (bolum) => !!(RENKLER[bolum] && RENKLER[bolum].gece);
 

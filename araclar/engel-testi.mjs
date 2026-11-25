@@ -234,5 +234,30 @@ for (let i = 0; i < 30; i++) {
   dogru(y.yeniler.length === 1 && y.yeniler[0].yeni[1] === 0, 'yeni meyve 0. sütunun üstünden gelmeli');
   M.seviyeKur(null);
 }
-console.log(hata ? `${hata} HATA` : 'ENGEL TESTLERİ GEÇTİ (kar, tohum sarmaşık, fıçı, sis, delik, çiçek, saat, bant ve akıntı kapısı dahil)');
+{
+  // Kafes: eşleşme kafesli meyveyi temizlemez; anahtar en alta inince kafesler açılır
+  M.turSayisiAyarla(6);
+  const t = [];
+  for (let r = 0; r < 8; r++) t.push(Array.from({ length: 8 }, (_, c) => (r * 3 + c * 2 + (r % 2)) % 6));
+  t[7][0] = 0; t[7][1] = 0; t[7][2] = 0;
+  const oz = t.map((s) => s.map(() => null));
+  const en = t.map((s) => s.map(() => null));
+  en[7][1] = 'kafes';
+  const ad = M.cozumAdimi(t, oz, { engel: en });
+  dogru(!ad.hucreler.some(([r, c]) => r === 7 && c === 1), 'kafesli meyve temizlenmemeli');
+  const t2 = t.map((s) => s.slice());
+  t2[7][5] = M.ANAHTAR;
+  const en2 = en.map((s) => s.slice());
+  en2[2][2] = 'kafes';
+  const ad2 = M.cozumAdimi(t2, oz, { engel: en2 });
+  const u = M.adimUygula(t2, oz, en2, ad2, () => 0.3);
+  dogru(u.sayac.anahtar === 1 && u.sayac.kafes >= 1 && !u.engel.flat().includes('kafes'), 'anahtar kafesleri açmalı: ' + JSON.stringify(u.sayac));
+  // Bukalemun: renk değiştirir, takas edilebilir
+  const en3 = t.map((s) => s.map(() => null));
+  en3[0][0] = 'buk';
+  const b = M.bukalemunDegistir(t, en3);
+  dogru(b[0][0] === (t[0][0] + 1) % 6 && b[0][1] === t[0][1], 'bukalemun sonraki renge geçmeli');
+  dogru(M.serbestMi('buk') && !M.serbestMi('kafes'), 'bukalemun serbest, kafes kilitli');
+}
+console.log(hata ? `${hata} HATA` : 'ENGEL TESTLERİ GEÇTİ (kar, tohum sarmaşık, fıçı, sis, delik, çiçek, saat, bant, akıntı kapısı, kafes ve bukalemun dahil)');
 process.exit(hata ? 1 : 0);
