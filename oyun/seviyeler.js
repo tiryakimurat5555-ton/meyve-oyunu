@@ -215,9 +215,21 @@ export const SEVIYELER = [
   { no: 188, hamle: 36, tur: 6, hedef: { balon: 2, tohum: 2 }, yildiz: [7000, 8750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '..t..t..', '........', '........', '........', '........', '........', '.o....o.'] },
   { no: 189, hamle: 18, tur: 6, hedef: { topla: { 1: 22, 2: 22 } }, yildiz: [4500, 5500], ozel: { cizgili: true, bomba: true, gokkusagi: true } },
   { no: 190, hamle: 38, tur: 6, hedef: { balon: 4, sis: 4, kasa: 4 }, yildiz: [7250, 9250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '.gg..gg.', '........', '........', '..kkkk..', '........', 'o..oo..o', '........'] },
+  // ---- 20. bölüm: Hasat Pazarı (sipariş: müşteriler sırayla meyve ya da özel meyve ister) ----
+  { no: 191, hamle: 22, tur: 6, hedef: { siparis: 3 }, yildiz: [5000, 6250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, siparisler: [{ tur: 0, n: 10 }, { tur: 4, n: 10 }, { tur: 2, n: 10 }], yeni: 'siparis' },
+  { no: 192, hamle: 21, tur: 6, hedef: { siparis: 3 }, yildiz: [5000, 6000], ozel: { cizgili: true, bomba: true, gokkusagi: true }, siparisler: [{ tur: 1, n: 12 }, { ozel: 'cizgili', n: 1 }, { tur: 3, n: 12 }] },
+  { no: 193, hamle: 26, tur: 6, hedef: { siparis: 4 }, yildiz: [6500, 8000], ozel: { cizgili: true, bomba: true, gokkusagi: true }, siparisler: [{ tur: 5, n: 12 }, { tur: 0, n: 12 }, { ozel: 'cizgili', n: 2 }, { tur: 4, n: 12 }] },
+  { no: 194, hamle: 26, tur: 6, hedef: { siparis: 3, buz: 8 }, yildiz: [6500, 7750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, siparisler: [{ tur: 2, n: 14 }, { ozel: 'bomba', n: 1 }, { tur: 1, n: 14 }], duzen: ['........', '........', '.bbbbbb.', '.b....b.', '........', '........', '........', '........'] },
+  { no: 195, hamle: 24, tur: 6, hedef: { puan: 6000 }, yildiz: [7250, 8500], ozel: { cizgili: true, bomba: true, gokkusagi: true } },
+  { no: 196, hamle: 30, tur: 6, hedef: { siparis: 4 }, yildiz: [7500, 9000], ozel: { cizgili: true, bomba: true, gokkusagi: true }, siparisler: [{ tur: 0, n: 15 }, { ozel: 'cizgili', n: 2 }, { tur: 3, n: 15 }, { ozel: 'bomba', n: 1 }] },
+  { no: 197, hamle: 40, tur: 6, hedef: { siparis: 3, kar: 8 }, yildiz: [9250, 11000], ozel: { cizgili: true, bomba: true, gokkusagi: true }, siparisler: [{ tur: 4, n: 14 }, { tur: 5, n: 14 }, { ozel: 'gokkusagi', n: 1 }], duzen: ['........', '........', '........', '........', '........', '........', 'ssssssss', '........'] },
+  { no: 198, hamle: 30, tur: 6, hedef: { siparis: 3, mantar: 4 }, yildiz: [7500, 8750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, siparisler: [{ ozel: 'cizgili', n: 2 }, { tur: 1, n: 16 }, { ozel: 'bomba', n: 2 }], duzen: ['........', 'm......m', '........', '........', '........', '........', 'm......m', '........'] },
+  { no: 199, hamle: 17, tur: 6, hedef: { topla: { 3: 20, 5: 20 } }, yildiz: [4000, 5000], ozel: { cizgili: true, bomba: true, gokkusagi: true } },
+  { no: 200, hamle: 43, tur: 6, hedef: { siparis: 5, sis: 4, balon: 2 }, yildiz: [9750, 11500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, siparisler: [{ tur: 0, n: 15 }, { ozel: 'bomba', n: 1 }, { tur: 2, n: 15 }, { ozel: 'cizgili', n: 2 }, { tur: 4, n: 15 }], duzen: ['........', '.gg..gg.', '........', '........', '........', '........', '..o..o..', '........'] },
 ];
 
 export const TANITIM = {
+  siparis: { baslik: 'Yeni: Pazar siparişleri', metin: 'Müşteriler sırayla sipariş veriyor! Hedef kutusunda açık siparişi görürsün: istenen meyveyi topla ya da istenen özel meyveyi yap. Biri bitince sıradaki gelir.' },
   balon: { baslik: 'Yeni: Balon', metin: 'Balonlar düşmez, meyveler yanlarından geçip iner. Balonun yanında eşleşme yap ya da özel meyveyle vur: bir kare yükselir. En üst sıradan uçup gidince sayılır!' },
   bukalemun: { baslik: 'Yeni: Bukalemun meyve', metin: 'Gökkuşağı halkalı meyveler bukalemun: her hamleden sonra bir sonraki renge geçer (çilek, limon, üzüm, portakal, elma, erik). Değişince eşleşme olursa kendiliğinden patlar. Hepsini patlat!' },
   kafes: { baslik: 'Yeni: Kafes ve anahtar', metin: 'Kafesli meyveler kilitli: eşleşme, özel meyve ya da çekiç onları açamaz. Altın anahtarı tohum gibi en alt sıraya indir; anahtar inince bütün kafesler açılır!' },

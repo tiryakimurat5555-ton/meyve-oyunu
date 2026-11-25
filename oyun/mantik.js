@@ -634,6 +634,8 @@ export function adimUygula(t, oz, engel, adim, rnd = Math.random, zemin = null) 
   for (const o of adim.olusan) {
     t[o.hucre[0]][o.hucre[1]] = o.tur;
     oz[o.hucre[0]][o.hucre[1]] = o.ozel;
+    const k = 'ozel_' + ozelSiparisAdi(o.ozel);
+    sayac[k] = (sayac[k] || 0) + 1;
   }
   for (const [r, c] of adim.balonlar || []) {
     const h = balonYukselt(t, oz, engel, r, c);
@@ -798,6 +800,32 @@ export function zincirCoz(t, oz, engel, zemin, { hamle = null, ek = [], izinli =
   };
 }
 
+// ---------------- Sipariş (Hasat Pazarı) ----------------
+// seviye.siparisler = [{ tur: 0, n: 12 } (o meyveden topla) | { ozel: 'cizgili'|'bomba'|'gokkusagi', n: 2 } (o özel parçayı yap)].
+// Siparişler sırayla gelir; yalnız açık sipariş sayılır, fazlası sonrakine geçmez. hedef.siparis = sipariş sayısı.
+// toplanan.siparis = biten sipariş, toplanan.siparisAdim = açık siparişteki ilerleme.
+export const ozelSiparisAdi = (o) => (o === 'satir' || o === 'sutun' ? 'cizgili' : o);
+let aktifSiparis = null;
+export function siparisIlerlet(top, seviye, sayacIc) {
+  const l = seviye.siparisler || [];
+  top.siparis = top.siparis || 0;
+  top.siparisAdim = top.siparisAdim || 0;
+  const s = l[top.siparis];
+  if (s) {
+    const n = s.ozel ? sayacIc['ozel_' + s.ozel] || 0 : (sayacIc.topla && sayacIc.topla[s.tur]) || 0;
+    top.siparisAdim += n;
+    if (top.siparisAdim >= s.n) {
+      top.siparis++;
+      top.siparisAdim = 0;
+    }
+  }
+  aktifSiparis = l[top.siparis] || null;
+  return top;
+}
+export function siparisSifirla(seviye) {
+  aktifSiparis = (seviye && seviye.siparisler && seviye.siparisler[0]) || null;
+}
+
 // Balonu bir kare yükseltir (üstündeki parçayla yer değiştirir; yerinde değiştirir). En üstteyse uçar: 'uctu'.
 export function balonYukselt(t, oz, engel, r, c) {
   if (t[r][c] !== BALON) return null;
@@ -865,6 +893,10 @@ export function hamleDegeri(s, hedef, derin0 = 0) {
   if (hedef.topla) d += Object.keys(hedef.topla).reduce((a, k) => a + (s.sayac.topla[k] || 0), 0) * 100;
   for (const k in HEDEF_AGIRLIK) if (hedef[k]) d += (s.sayac[k] || 0) * HEDEF_AGIRLIK[k];
   if (hedef.fici) d += (s.sayac.vurus || 0) * 60;
+  if (hedef.siparis && aktifSiparis) {
+    const s0 = aktifSiparis;
+    d += (s0.ozel ? (s.sayac['ozel_' + s0.ozel] || 0) * 500 : ((s.sayac.topla && s.sayac.topla[s0.tur]) || 0) * 120);
+  }
   if (hedef.balon) d += (s.sayac.balonKalk || 0) * 110;
   if (hedef.civciv) d += (s.sayac.vurus || 0) * 70 + (s.sayac.yumurta || 0) * 200;
   if (inenHedefMi(hedef)) d += inenDegeri(s, derin0);
@@ -934,6 +966,7 @@ let etkinSeviye = null;
 let kapilar = [];
 export function seviyeKur(seviye) {
   etkinSeviye = seviye;
+  siparisSifirla(seviye);
   kapilar = (seviye && seviye.kapilar) || [];
 }
 export const kapiGirisMi = (r, c) => kapilar.some((k) => k.giris[0] === r && k.giris[1] === c);
@@ -981,6 +1014,8 @@ export function hamleSonrasiKurallar(durum, seviye, ctx, rnd = Math.random) {
     sayacBirlestir(sayac, z.sayac);
     olaylar.push({ tip: 'bant' });
   }
+  // Sipariş: hamlenin ve bu kuralların sayacı açık siparişe işlenir
+  if (h.siparis) siparisIlerlet(ctx.top, seviye, sayacBirlestir(sayacBirlestir({ topla: {} }, ctx.kesilen || {}), sayac));
   // Saatler: her hamlede bir azalır; sıfıra inen varsa kaybedilir
   let kaybetti = false;
   if (h.saat) {

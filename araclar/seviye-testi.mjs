@@ -79,6 +79,7 @@ for (const sv of DENENECEK) {
   const kayipNeden = {};
   for (let d = 0; d < DENEME; d++) {
     let durum = M.duzenliTahta(sv.duzen, rnd);
+    M.siparisSifirla(sv);
     let { t, oz, engel, zemin } = durum;
     let puan = 0;
     const top = M.baslangicToplanan(sv, engel);

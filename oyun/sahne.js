@@ -378,6 +378,24 @@ const RENKLER = [
       { tip: 'kelebek', renk: '#ff5c8a' },
     ],
   },
+  // 19: Hasat Pazarı (sıcak öğleden sonra, altın tarlalar, kırmızı-turuncu yapraklar)
+  {
+    gok: ['#f9c46b', '#fff3dc'],
+    gunes: '#ffd93a',
+    gunesKenar: '#ff9a1f',
+    tepeArka: ['#c9b05a', '#b89e48'],
+    tepeArka2: ['#d6bf6c', '#c4ab58'],
+    tepeOn: ['#e8d38a', '#dac374'],
+    tac: ['#c9762a', '#b0611f', '#e0913c'],
+    nokta: ['#ff3b4e', '#ffd21f', '#7ed321'],
+    cicek: ['#ff8a1f', '#ffd21f', '#ff3b4e'],
+    parca: [
+      { tip: 'yaprak', renk: '#e0913c' },
+      { tip: 'yaprak', renk: '#c9762a' },
+      { tip: 'yaprak', renk: '#ffd21f' },
+      { tip: 'yaprak', renk: '#b0611f', buyuk: true },
+    ],
+  },
 ];
 export const geceMi = (bolum) => !!(RENKLER[bolum] && RENKLER[bolum].gece);
 
