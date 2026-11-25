@@ -29,7 +29,9 @@ import {
 
 // Zincir yazıları İngilizce (Murat: global oyun). VoiceOver'a okunmaz; duyurular Türkçe kalır.
 const OVGU = ['', '', 'Nice!', 'Great!', 'Amazing!', 'Fantastic!'];
-const IPUCU_SURE = 7000;
+const IPUCU_SURE = 5000;
+const GUC_SEVIYE = 5; // güçlendiriciler bu seviyeden itibaren açılır
+const EK_HAMLE = 5; // kaybedince bir kez verilen ek hamle
 const SENLIK_EN_FAZLA = 15;
 const BOT_ARA = 1100; // bot hamleleri arası bekleme (ms)
 const OZEL_AD = { satir: 'satır temizler', sutun: 'sütun temizler', bomba: 'bomba', gokkusagi: '' };
@@ -80,7 +82,7 @@ function kalanMetni(seviye, toplanan, puan) {
   return l.join(', ');
 }
 
-export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki, tekrar, bot = false, botDegistir }) {
+export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki, tekrar, bot = false, botDegistir, guc = {}, gucHarca, bolumOdulVar = false }) {
   const ek = useSafeAreaInsets();
   const { width: EG, height: EY } = useWindowDimensions();
   const TAHTA = Math.floor(Math.min(EG - 20, EY * 0.58, 560));
@@ -97,6 +99,11 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
   const [ovgu, setOvgu] = useState(null);
   const [vo, setVo] = useState(false);
   const [sonuc, setSonuc] = useState(null);
+  const [gucModu, setGucModu] = useState(null); // 'cekic' seçiliyken dokunulan parça kırılır
+  const gucModuRef = useRef(null);
+  const ekHamleRef = useRef(false);
+  const gucRef = useRef(guc);
+  gucRef.current = guc;
 
   const izgara = useRef(null);
   const parcalar = useRef(new Map());
@@ -258,6 +265,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
     if (!bot) return;
     let z = null;
     if (asama === 'giris') z = setTimeout(() => botRef.current && asamaRef.current === 'giris' && basla(), 1800);
+    if (asama === 'teklif') z = setTimeout(() => botRef.current && ekHamleAl(), 1800);
     if (asama === 'sonuc' && sonuc)
       z = setTimeout(() => {
         if (!botRef.current) return;
@@ -288,20 +296,26 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
     }
     ipucuParcalar.current = [];
   };
+  // Uygun bir hamlenin iki parçası nabız gibi büyüyüp küçülür; soyle: VoiceOver'a hamleyi söyler (İpucu düğmesi)
+  const ipucuGoster = (soyle = false) => {
+    if (mesgul.current || !izgara.current || bittiRef.current) return;
+    const h = M.hamleBul(turIzgarasi(), ozIzgarasi(), kilitIzgarasi());
+    if (!h) return;
+    ipucuDurdur();
+    const ps = [parcaAt(h[0][0], h[0][1]), parcaAt(h[1][0], h[1][1])];
+    ipucuParcalar.current = ps;
+    if (soyle) {
+      cal('pling', 0.6);
+      duyur(`İpucu: ${h[0][0] + 1}. satır ${h[0][1] + 1}. sütundaki ${parcaAdi(ps[0])} ile ${h[1][0] + 1}. satır ${h[1][1] + 1}. sütundaki ${parcaAdi(ps[1])} yer değiştir`);
+    }
+    const nabiz = (p) => Animated.sequence([1.16, 1, 1.16, 1].map((v) => Animated.timing(p.olcek, { toValue: v, duration: 220, useNativeDriver: true })));
+    Animated.parallel(ps.map(nabiz)).start(() => {
+      if (ipucuParcalar.current === ps) ipucuKur();
+    });
+  };
   const ipucuKur = () => {
     ipucuDurdur();
-    ipucuZaman.current = setTimeout(() => {
-      if (mesgul.current || !izgara.current || bittiRef.current) return;
-      const h = M.hamleBul(turIzgarasi(), ozIzgarasi(), kilitIzgarasi());
-      if (!h) return;
-      const ps = [parcaAt(h[0][0], h[0][1]), parcaAt(h[1][0], h[1][1])];
-      ipucuParcalar.current = ps;
-      const nabiz = (p) =>
-        Animated.sequence([1.16, 1, 1.16, 1].map((v) => Animated.timing(p.olcek, { toValue: v, duration: 220, useNativeDriver: true })));
-      Animated.parallel(ps.map(nabiz)).start(() => {
-        if (ipucuParcalar.current === ps) ipucuKur();
-      });
-    }, IPUCU_SURE);
+    ipucuZaman.current = setTimeout(() => ipucuGoster(false), IPUCU_SURE);
   };
 
   // ---------- toplama ----------
@@ -535,7 +549,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
   }
 
   // ---------- karıştır (hamle kalmazsa) ----------
-  const karistir = async () => {
+  const karistir = async (mesaj = 'Hamle kalmadı, meyveler karıştırıldı') => {
     cal('karistir');
     // Buzlu meyveler ve kasalar yerinde kalır; yalnız hareketli parçalar karışır
     const hepsi = [];
@@ -583,7 +597,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
         )
       )
     );
-    duyur('Hamle kalmadı, meyveler karıştırıldı');
+    duyur(mesaj);
   };
 
   // ---------- seviye sonu ----------
@@ -593,13 +607,14 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
     const p = puanRef.current;
     const yildiz = yildizHesapla(seviye, p, basarili);
     const rekor = basarili && enIyi > 0 && p > enIyi;
+    const bolumOdulu = basarili && bolumOdulVar;
     bitince && bitince({ no: seviye.no, basarili, yildiz, puan: p });
-    setSonuc({ basarili, yildiz, puan: p, rekor });
+    setSonuc({ basarili, yildiz, puan: p, rekor, bolumOdulu });
     setAsama('sonuc');
     if (basarili) {
       cal('kazandin');
       titret('basari');
-      duyur(`Seviye ${seviye.no} tamam! ${yildiz} yıldız. Puanın ${p}.${rekor ? ' Yeni rekor!' : ''}`);
+      duyur(`Seviye ${seviye.no} tamam! ${yildiz} yıldız. Puanın ${p}.${rekor ? ' Yeni rekor!' : ''}${bolumOdulu ? ' Bölüm tamamlandı! Her güçlendiriciden 1 tane kazandın.' : ''}`);
     } else {
       cal('kaybettin');
       titret('hata');
@@ -646,6 +661,108 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
     sonucuGoster(true);
   };
 
+  // ---------- hamleler bitince ek hamle teklifi (her denemede bir kez; ileride ödüllü reklam) ----------
+  const teklifGoster = () => {
+    ipucuDurdur();
+    setAsama('teklif');
+    cal('gecersiz', 0.7);
+    titret('hata');
+    duyur(`Hamleler bitti. ${kalanMetni(seviye, toplananRef.current, puanRef.current)}. ${EK_HAMLE} hamle daha ister misin?`);
+  };
+  const ekHamleAl = async () => {
+    if (ekHamleRef.current || asamaRef.current !== 'teklif') return;
+    ekHamleRef.current = true;
+    hamleRef.current += EK_HAMLE;
+    setHamle(hamleRef.current);
+    setAsama('oyun');
+    cal('ozel_olustu');
+    titret('basari');
+    duyur(`${EK_HAMLE} hamle eklendi`);
+    if (!M.hamleBul(turIzgarasi(), ozIzgarasi(), kilitIzgarasi())) await karistir();
+    mesgul.current = false;
+    yenile();
+    ipucuKur();
+  };
+  const teklifiReddet = () => {
+    if (asamaRef.current !== 'teklif') return;
+    ekHamleRef.current = true;
+    sonucuGoster(false);
+  };
+
+  // ---------- güçlendiriciler ----------
+  const GUC_AD = { cekic: 'Çekiç', karistir: 'Karıştır', hamle3: 'Artı 3 hamle' };
+  const gucModuAyarla = (m) => {
+    gucModuRef.current = m;
+    setGucModu(m);
+  };
+  const gucBas = async (ad) => {
+    if (asamaRef.current !== 'oyun' || bittiRef.current) return;
+    if (ad === 'ipucu') {
+      if (mesgul.current) return;
+      ipucuGoster(true);
+      return;
+    }
+    if (mesgul.current) return;
+    if (gucModuRef.current === 'cekic' && ad === 'cekic') {
+      gucModuAyarla(null);
+      duyur('Çekiç bırakıldı');
+      return;
+    }
+    if (!(gucRef.current[ad] > 0)) {
+      cal('gecersiz');
+      titret('hata');
+      duyur(`${GUC_AD[ad]} kalmadı`);
+      return;
+    }
+    if (ad === 'cekic') {
+      seciliAyarla(null);
+      ipucuDurdur();
+      gucModuAyarla('cekic');
+      cal('secim');
+      titret('hafif');
+      duyur('Çekiç hazır. Kırmak istediğin parçaya dokun.');
+      return;
+    }
+    gucModuAyarla(null);
+    gucHarca && gucHarca(ad);
+    if (ad === 'karistir') {
+      mesgul.current = true;
+      ipucuDurdur();
+      seciliAyarla(null);
+      await karistir('Meyveler karıştırıldı');
+      mesgul.current = false;
+      yenile();
+      ipucuKur();
+    } else if (ad === 'hamle3') {
+      hamleRef.current += 3;
+      setHamle(hamleRef.current);
+      cal('ozel_olustu');
+      titret('basari');
+      duyur(`3 hamle eklendi. ${hamleRef.current} hamle`);
+    }
+  };
+  const cekicVur = async (h) => {
+    const p = parcaAt(h[0], h[1]);
+    if (!p) return;
+    gucModuAyarla(null);
+    gucHarca && gucHarca('cekic');
+    mesgul.current = true;
+    ipucuDurdur();
+    seciliAyarla(null);
+    cal('bomba', 0.8);
+    titret('guclu');
+    sars(5);
+    await oynat(
+      Animated.sequence([
+        Animated.timing(p.olcek, { toValue: 0.75, duration: 90, useNativeDriver: true }),
+        Animated.timing(p.olcek, { toValue: 1.1, duration: 90, useNativeDriver: true }),
+      ])
+    );
+    p.olcek.setValue(1);
+    const sonuc = await cozumle({ ek: [h] });
+    await hamleSonrasi(sonuc);
+  };
+
   // ---------- hamle ----------
   const hamleSonrasi = async (sonuc) => {
     const p = Object.entries(sonuc.patlayan).map(([tur, n]) => `${n} ${MEYVELER[tur].isim}`);
@@ -661,7 +778,8 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
     }
     if (hamleRef.current <= 0) {
       await bekle(300);
-      sonucuGoster(false);
+      if (!ekHamleRef.current) teklifGoster();
+      else sonucuGoster(false);
       return;
     }
     if (!M.hamleBul(turIzgarasi(), ozIzgarasi(), kilitIzgarasi())) await karistir();
@@ -672,6 +790,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
 
   const hamleYap = async (a, b) => {
     if (mesgul.current || bittiRef.current) return;
+    if (gucModuRef.current) return; // çekiç seçiliyken kaydırma takas yapmaz
     if (a[0] < 0 || a[1] < 0 || b[0] < 0 || b[1] < 0 || a[0] >= M.SATIR || b[0] >= M.SATIR || a[1] >= M.SUTUN || b[1] >= M.SUTUN) return;
     const pa = parcaAt(a[0], a[1]);
     const pb = parcaAt(b[0], b[1]);
@@ -770,6 +889,10 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
 
   const hucreDokun = (h) => {
     if (mesgul.current || bittiRef.current) return;
+    if (gucModuRef.current === 'cekic') {
+      cekicVur(h);
+      return;
+    }
     const s = seciliRef.current;
     const p = parcaAt(h[0], h[1]);
     if (!s) {
@@ -829,7 +952,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
     })
   ).current;
 
-  if (typeof globalThis !== 'undefined' && globalThis.__denemeTahta) globalThis.__denemeOyun = { hamleYap, hucreDokun, durum: () => ({ puan: puanRef.current, hamle: hamleRef.current, toplanan: toplananRef.current, t: turIzgarasi(), oz: ozIzgarasi(), engel: engelIzgarasi(), mesgul: mesgul.current }) };
+  if (typeof globalThis !== 'undefined' && globalThis.__denemeTahta) globalThis.__denemeOyun = { hamleYap, hucreDokun, gucBas, hamleAyarla: (n) => { hamleRef.current = n; setHamle(n); }, durum: () => ({ puan: puanRef.current, hamle: hamleRef.current, toplanan: toplananRef.current, t: turIzgarasi(), oz: ozIzgarasi(), engel: engelIzgarasi(), mesgul: mesgul.current }) };
 
   // ---------- çizim ----------
   if (!izgara.current) return <View style={st.kok} />;
@@ -917,6 +1040,21 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
         {ovgu && <Ovgu key={ovgu.id} metin={ovgu.metin} bitti={() => setOvgu((o) => (o && o.id === ovgu.id ? null : o))} />}
       </Animated.View>
 
+      {/* Güçlendiriciler ve ipucu */}
+      <View style={yst.gucSatir}>
+        <GucDugmesi ad="ipucu" simge="💡" yazi="İpucu" etiket="İpucu, uygun bir hamle gösterir" onPress={() => gucBas('ipucu')} />
+        {seviye.no >= GUC_SEVIYE && (
+          <>
+            <GucDugmesi ad="cekic" simge="🔨" yazi="Çekiç" sayi={guc.cekic || 0} secili={gucModu === 'cekic'} etiket={`Çekiç, ${guc.cekic || 0} tane. Tek bir meyveyi, buzu ya da kasayı kırar`} onPress={() => gucBas('cekic')} />
+            <GucDugmesi ad="karistir" simge="🔄" yazi="Karıştır" sayi={guc.karistir || 0} etiket={`Karıştır, ${guc.karistir || 0} tane. Meyveleri karıştırır`} onPress={() => gucBas('karistir')} />
+            <GucDugmesi ad="hamle3" simgeYazi="+3" yazi="Hamle" sayi={guc.hamle3 || 0} etiket={`Artı 3 hamle, ${guc.hamle3 || 0} tane`} onPress={() => gucBas('hamle3')} />
+          </>
+        )}
+      </View>
+      <View style={{ height: 22, justifyContent: 'center' }} importantForAccessibility="no-hide-descendants" accessibilityElementsHidden>
+        <Text style={[yst.cekicYazi, !gucModu && { opacity: 0 }]}>Kırmak istediğin parçaya dokun</Text>
+      </View>
+
       {/* Bot (otomatik oyun) düğmesi: tahtanın altında (sağ üst köşede Expo Go'nun dişli düğmesi duruyor) */}
       <Pressable
         accessibilityRole="switch"
@@ -924,7 +1062,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
         accessibilityState={{ checked: !!bot }}
         onPress={() => botDegistir && botDegistir(!bot)}
         hitSlop={10}
-        style={({ pressed }) => [yst.geri, yst.bot, bot && yst.botAcik, { marginTop: 16 }, pressed && { opacity: 0.6 }]}
+        style={({ pressed }) => [yst.geri, yst.bot, bot && yst.botAcik, { marginTop: 2, paddingVertical: 5 }, pressed && { opacity: 0.6 }]}
       >
         <Text style={[yst.geriYazi, bot && { color: '#ffffff' }]}>{bot ? 'Bot: Açık' : 'Bot: Kapalı'}</Text>
       </Pressable>
@@ -951,6 +1089,25 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
         </View>
       )}
 
+      {asama === 'teklif' && (
+        <View style={st.perde} accessibilityViewIsModal>
+          <GirisKart>
+            <Text style={st.kartBaslik} accessibilityRole="header">
+              Hamleler bitti
+            </Text>
+            <Text style={[st.kartAlt, { marginTop: 10, textAlign: 'center' }]}>{kalanMetni(seviye, toplanan, puan)}</Text>
+            <Text style={[yst.kartHedef, { marginTop: 16 }]}>Biraz kaldı! {EK_HAMLE} hamle daha?</Text>
+            <Pressable accessibilityRole="button" accessibilityLabel={`Artı ${EK_HAMLE} hamle, ücretsiz`} onPress={ekHamleAl} style={({ pressed }) => [st.dugme, st.dugmeBuyuk, { backgroundColor: '#2fae4f', borderBottomColor: '#1f8a3a' }, pressed && { transform: [{ scale: 0.96 }] }]}>
+              <Text style={[st.dugmeYazi, { fontSize: 22 }]}>+{EK_HAMLE} Hamle</Text>
+              <Text style={[st.dugmeYazi, { fontSize: 13, textAlign: 'center', opacity: 0.9 }]}>Ücretsiz</Text>
+            </Pressable>
+            <Pressable accessibilityRole="button" accessibilityLabel="Vazgeç" onPress={teklifiReddet} style={({ pressed }) => [yst.ikinciDugme, { marginTop: 14 }, pressed && { opacity: 0.7 }]}>
+              <Text style={yst.ikinciYazi}>Vazgeç</Text>
+            </Pressable>
+          </GirisKart>
+        </View>
+      )}
+
       {asama === 'sonuc' && sonuc && (
         <View style={st.perde} accessibilityViewIsModal>
           <GirisKart>
@@ -964,6 +1121,12 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
             )}
             <Text style={st.kartPuan}>{sonuc.puan}</Text>
             {sonuc.rekor && <Text style={st.kartAlt}>Yeni rekor!</Text>}
+            {sonuc.bolumOdulu && (
+              <View style={yst.tanitim}>
+                <Text style={yst.tanitimBaslik}>Bölüm tamamlandı!</Text>
+                <Text style={yst.tanitimMetin}>Ödül: 🔨 1   🔄 1   +3 hamle 1</Text>
+              </View>
+            )}
             {sonuc.basarili && sonrakiVar ? (
               <Pressable accessibilityRole="button" accessibilityLabel="Sonraki seviye" onPress={sonraki} style={({ pressed }) => [st.dugme, st.dugmeBuyuk, pressed && { transform: [{ scale: 0.96 }] }]}>
                 <Text style={[st.dugmeYazi, { fontSize: 20 }]}>Sonraki seviye</Text>
@@ -984,7 +1147,6 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
   );
 }
 
-// Hedef kutusu: toplanacak meyveler ve kalan sayılar ya da puan hedefi çubuğu
 // Tahta çerçevesinin süsleri: üstte parlak şerit, köşelerde yaprak ve çiçek (yalnızca görsel)
 function Yaprakcik({ x, y, aci, boy = 1, renk = '#5cb85c' }) {
   return (
@@ -1037,6 +1199,32 @@ function CerceveSusu() {
   );
 }
 
+// Güçlendirici / ipucu düğmesi: yuvarlak, altında adı, köşesinde kaç tane kaldığı
+function GucDugmesi({ simge, simgeYazi, yazi, sayi, secili, etiket, onPress }) {
+  const bos = sayi === 0;
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={etiket}
+      accessibilityState={{ selected: !!secili, disabled: bos }}
+      onPress={onPress}
+      hitSlop={6}
+      style={({ pressed }) => [{ alignItems: 'center', marginHorizontal: 7 }, pressed && { transform: [{ scale: 0.92 }] }]}
+    >
+      <View style={[yst.gucDaire, secili && yst.gucSecili, bos && { opacity: 0.5 }]}>
+        {simgeYazi ? <Text style={yst.gucSimgeYazi}>{simgeYazi}</Text> : <Text style={yst.gucSimge}>{simge}</Text>}
+        {sayi != null && (
+          <View style={[yst.gucRozet, bos && { backgroundColor: '#9aa9b6' }]}>
+            <Text style={yst.gucRozetYazi}>{sayi}</Text>
+          </View>
+        )}
+      </View>
+      <Text style={yst.gucAd}>{yazi}</Text>
+    </Pressable>
+  );
+}
+
+// Hedef kutusu: toplanacak meyveler ve kalan sayılar ya da puan hedefi çubuğu
 function HedefKutusu({ seviye, toplanan, puan }) {
   const h = seviye.hedef;
   const etiket = 'Hedef: ' + kalanMetni(seviye, toplanan, puan);
@@ -1164,6 +1352,29 @@ const yst = {
     elevation: 7,
   },
   cerceveIc: { flex: 1, padding: 2.5, borderRadius: 17, backgroundColor: '#f6d7a0', alignItems: 'center', justifyContent: 'center' },
+  gucSatir: { flexDirection: 'row', justifyContent: 'center', marginTop: 12 },
+  gucDaire: {
+    width: 54,
+    height: 54,
+    borderRadius: 27,
+    backgroundColor: '#ffffff',
+    borderWidth: 3,
+    borderColor: '#ffcf3a',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#3a6a8a',
+    shadowOpacity: 0.25,
+    shadowRadius: 5,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 3,
+  },
+  gucSecili: { borderColor: '#ff7a3d', backgroundColor: '#fff1c4', transform: [{ scale: 1.12 }] },
+  gucSimge: { fontSize: 26 },
+  gucSimgeYazi: { fontSize: 21, fontWeight: '900', color: '#2fae4f' },
+  gucRozet: { position: 'absolute', right: -7, bottom: -5, minWidth: 22, height: 22, borderRadius: 11, backgroundColor: '#ff7a3d', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 4, borderWidth: 2, borderColor: '#ffffff' },
+  gucRozetYazi: { color: '#ffffff', fontSize: 12, fontWeight: '900' },
+  gucAd: { marginTop: 4, fontSize: 12, fontWeight: '800', color: '#24384a', textShadowColor: '#ffffff', textShadowRadius: 4, textShadowOffset: { width: 0, height: 0 } },
+  cekicYazi: { fontSize: 14, fontWeight: '900', color: '#c2410c', textShadowColor: '#ffffff', textShadowRadius: 4, textShadowOffset: { width: 0, height: 0 } },
   ustSatir: { width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 12, marginBottom: 4 },
   geri: { backgroundColor: 'rgba(255,255,255,0.85)', borderRadius: 18, paddingVertical: 7, paddingHorizontal: 12, minWidth: 96 },
   geriYazi: { fontSize: 15, fontWeight: '800', color: '#2b5876' },

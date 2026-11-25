@@ -27,6 +27,11 @@ Murat'ın meyve temalı 3'lü eşleştirme oyunu (Kasım 2026). Geçici ad "Meyv
   Simülasyon mulberry32 üreteci kullanır (eski LCG tekrarlı dizilerle sonuçları çarpıtıyordu).
 - Zincir övgü yazıları İngilizce (Nice!, Great!, Amazing!, Fantastic!), şenlik yazısı 'Garden Party!' — Murat: global oyun. Ödüllü reklam sonraki aşama.
 - Ekranda VoiceOver'a özel uyarı yazıları olmasın.
+- 25 Kasım ONAYLANDI (güçlendiriciler/günlük ödül): Çekiç (tek parça/buz/kasa kırar), Karıştır, +3 Hamle; hamle harcamazlar;
+  seviye 5'ten açılır (L5 tanıtım 'guc'), başlangıç hediyesi 2'şer. Günlük ödül 7 gün: çekiç, karıştır, +3, çekiç, karıştır, +3,
+  her birinden 2; gün kaçarsa 1. güne döner; seviye 5 açılınca listede gösterilir. Bölüm sonu (10/20/30 ilk geçiş) 1'er.
+  Kaybedince +5 hamle teklifi her denemede 1 kez, şimdilik ücretsiz (sonra ödüllü reklam). İpucu 5 sn + İpucu düğmesi
+  (VoiceOver'a hamleyi söyler). Ayarlar (sol üst dişli): ses efektleri, titreşim ('meyve-ayar-v1'). Müzik henüz yok.
 - BOT düğmesi (25 Kasım, Murat istedi): oyun ekranında tahtanın altında "Bot: Kapalı/Açık"; açıkken M.enIyiHamle ile
   1,1 sn arayla kendi oynar (ekran görüntüsü/video için). Tam otomatik: giriş kartında 1,8 sn sonra Başla'ya basar, sonuç
   kartından 4,5 sn sonra sonraki seviyeye geçer (kaybederse tekrar dener). Bot düğmesi Başla'dan sonra açılır (kart üstünü kapatır). Sağ üstte Expo Go dişlisi
@@ -40,10 +45,12 @@ Murat'ın meyve temalı 3'lü eşleştirme oyunu (Kasım 2026). Geçici ad "Meyv
 - Expo derlemesi (build) Murat'a sormadan başlatılmaz.
 
 ## Dosyalar
-- `App.js`: kök; ekran (liste/oyun) ve ilerleme kaydı (AsyncStorage 'meyve-ilerleme-v1': acik, yildiz, enIyi).
+- `App.js`: kök; ekran (liste/oyun), ilerleme kaydı (AsyncStorage 'meyve-ilerleme-v1': acik, yildiz, enIyi, guc, gunluk{son,seri},
+  bolumOdul), ayarlar, günlük ödül. `oyun/Paneller.js`: GunlukOdulPaneli, AyarlarPaneli, GUNLUK_ODUL.
 - `oyun/ListeEkrani.js`: seviye listesi (Oyna düğmesi, 4 sütun yuvarlak düğmeler, yıldızlar, kilit).
 - `oyun/Oyun.js`: bir seviye. Parçalar kimlikli nesneler (tur, ozel, poz ValueXY hücre biriminde, olcek, ez, don, zip);
-  `izgara` ref'i kimlikleri tutar. Aşamalar: giris (hedef kartı + tanıtım) → oyun → senlik → sonuc (yıldızlar).
+  `izgara` ref'i kimlikleri tutar. Aşamalar: giris (hedef kartı + tanıtım) → oyun (→ teklif: +5 hamle) → senlik → sonuc (yıldızlar).
+  Güçlendirici sırası tahtanın altında (GucDugmesi); çekiç kipinde dokunulan hücre cozumle({ek}) ile kırılır.
   Görerek kipte PanResponder (kaydır = takas, dokun = seç). VoiceOver kipinde 64 hücre Pressable
   ("Çilek bomba seçili, 3. satır 5. sütun"), seç + komşuya dokun = takas; sonuçlar announceForAccessibility ile.
   Bilgisayar denemesi için globalThis.__denemeTahta (hazır tahta) ve __denemeOyun kancası (telefonda yok).

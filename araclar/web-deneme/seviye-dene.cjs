@@ -70,7 +70,7 @@ fs.mkdirSync(O, { recursive: true });
   const v = await ac({
     f: (a) => {
       globalThis.__denemeTahta = a.tahta;
-      localStorage.setItem('meyve-ilerleme-v1', JSON.stringify({ acik: 10, yildiz: { 1: 3, 2: 2 }, enIyi: {} }));
+      { const d = new Date(); localStorage.setItem('meyve-ilerleme-v1', JSON.stringify({ acik: 10, yildiz: { 1: 3, 2: 2 }, enIyi: {}, gunluk: { son: d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(), seri: 1 } })); }
       window.__voiceover = true;
     },
     a: { tahta: { tur, oz } },

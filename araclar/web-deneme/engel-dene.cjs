@@ -18,7 +18,7 @@ fs.mkdirSync(O, { recursive: true });
   s.on('pageerror', (e) => h.push(e.message + ' ' + (e.stack || '').split('\n').slice(1, 3).join(' ')));
   await s.addInitScript((a) => {
     globalThis.__denemeTahta = a.tahta;
-    localStorage.setItem('meyve-ilerleme-v1', JSON.stringify({ acik: 30, yildiz: {}, enIyi: {} }));
+    { const d = new Date(); localStorage.setItem('meyve-ilerleme-v1', JSON.stringify({ acik: 30, yildiz: {}, enIyi: {}, gunluk: { son: d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(), seri: 1 } })); }
     if (a.vo) window.__voiceover = true;
   }, { tahta: { tur: tahta.t, oz: tahta.oz, engel: tahta.engel }, vo: !!process.env.VO });
   await s.goto('file://' + W + '/index.html');

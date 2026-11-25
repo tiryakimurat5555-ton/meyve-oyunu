@@ -9,7 +9,7 @@ export const SEVIYELER = [
   { no: 2, hamle: 20, tur: 5, hedef: { topla: { 1: 12, 4: 12 } }, yildiz: [2000, 3000], ozel: {} },
   { no: 3, hamle: 18, tur: 5, hedef: { puan: 1500 }, yildiz: [2200, 3200], ozel: {} },
   { no: 4, hamle: 20, tur: 6, hedef: { topla: { 2: 15 } }, yildiz: [2500, 3800], ozel: { cizgili: true }, yeni: 'cizgili' },
-  { no: 5, hamle: 22, tur: 6, hedef: { topla: { 3: 20, 5: 20 } }, yildiz: [3000, 4500], ozel: { cizgili: true } },
+  { no: 5, hamle: 22, tur: 6, hedef: { topla: { 3: 20, 5: 20 } }, yildiz: [3000, 4500], ozel: { cizgili: true }, yeni: 'guc' },
   { no: 6, hamle: 20, tur: 6, hedef: { puan: 3000 }, yildiz: [4000, 5500], ozel: { cizgili: true, bomba: true }, yeni: 'bomba' },
   { no: 7, hamle: 20, tur: 6, hedef: { topla: { 0: 25 } }, yildiz: [3000, 4500], ozel: { cizgili: true, bomba: true } },
   { no: 8, hamle: 22, tur: 6, hedef: { topla: { 1: 15, 2: 15, 4: 15 } }, yildiz: [3500, 5000], ozel: { cizgili: true, bomba: true } },
@@ -42,6 +42,7 @@ export const SEVIYELER = [
 ];
 
 export const TANITIM = {
+  guc: { baslik: 'Yeni: Güçlendiriciler', metin: 'Tahtanın altındaki Çekiç tek bir parçayı kırar, Karıştır meyveleri karıştırır, +3 Hamle seviyene 3 hamle ekler. Hiçbiri hamle harcamaz.' },
   cizgili: { baslik: 'Yeni: Çizgili meyve', metin: '4 meyveyi yan yana getir. Çizgili meyve patlayınca bütün satırı ya da sütunu temizler.' },
   bomba: { baslik: 'Yeni: Bomba meyve', metin: '5 meyveyi L ya da T şeklinde birleştir. Bomba patlayınca çevresini temizler.' },
   buz: { baslik: 'Yeni: Buzlu meyve', metin: 'Buzlu meyve yer değiştiremez. Hemen yanında meyve eşleştir ya da özel parçayla vur, buz kırılsın.' },

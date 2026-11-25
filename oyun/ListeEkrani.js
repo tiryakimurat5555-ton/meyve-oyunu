@@ -13,7 +13,7 @@ const BOLUMLER = [
   { ad: 'Sonbahar Bahçesi', ilk: 21, son: 30, renk: '#ff8f4a' },
 ];
 
-export default function ListeEkrani({ ilerleme, sec }) {
+export default function ListeEkrani({ ilerleme, sec, ayarlarAc }) {
   const ek = useSafeAreaInsets();
   const { width: EG, height: EY } = useWindowDimensions();
   const sutun = 4;
@@ -24,6 +24,16 @@ export default function ListeEkrani({ ilerleme, sec }) {
   return (
     <View style={[st.kok, { justifyContent: 'flex-start' }]}>
       <Sahne bolum={bolumNo(siradaki)} EG={EG} EY={EY} gunesX={EG - 34} gunesY={ek.top + 20} gunesBoy={50} />
+      {/* Ayarlar düğmesi sol üstte (sağ üstte Expo Go'nun dişlisi var) */}
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="Ayarlar"
+        onPress={ayarlarAc}
+        hitSlop={10}
+        style={({ pressed }) => [lst.ayar, { top: ek.top + 8 }, pressed && { opacity: 0.6 }]}
+      >
+        <Text style={{ fontSize: 22 }}>⚙️</Text>
+      </Pressable>
       <ScrollView contentContainerStyle={{ paddingTop: ek.top + 16, paddingBottom: ek.bottom + 40, alignItems: 'center' }} style={{ width: '100%' }}>
         <View style={{ flexDirection: 'row', marginBottom: 6 }} importantForAccessibility="no-hide-descendants" accessibilityElementsHidden>
           {MEYVELER.map((m) => (
@@ -39,6 +49,21 @@ export default function ListeEkrani({ ilerleme, sec }) {
             {toplamYildiz} / {SEVIYELER.length * 3}
           </Text>
         </View>
+
+        {ilerleme.acik >= 5 && ilerleme.guc && (
+          <View
+            style={lst.gucSatir}
+            accessible
+            accessibilityLabel={`Güçlendiricilerin: ${ilerleme.guc.cekic || 0} çekiç, ${ilerleme.guc.karistir || 0} karıştır, ${ilerleme.guc.hamle3 || 0} artı 3 hamle`}
+          >
+            <Text style={lst.gucYazi}>🔨 {ilerleme.guc.cekic || 0}</Text>
+            <Text style={lst.gucYazi}>🔄 {ilerleme.guc.karistir || 0}</Text>
+            <View style={{ flexDirection: 'row' }}>
+              <Text style={[lst.gucYazi, { color: '#2fae4f', marginRight: 0 }]}>+3</Text>
+              <Text style={[lst.gucYazi, { marginLeft: 5 }]}>{ilerleme.guc.hamle3 || 0}</Text>
+            </View>
+          </View>
+        )}
 
         <Pressable
           accessibilityRole="button"
@@ -113,6 +138,9 @@ function SeviyeDugmesi({ s, boy, acik, yildiz, siradaki, sec }) {
 }
 
 const lst = {
+  ayar: { position: 'absolute', left: 14, zIndex: 5, width: 46, height: 46, borderRadius: 23, backgroundColor: 'rgba(255,255,255,0.9)', alignItems: 'center', justifyContent: 'center', shadowColor: '#3a6a8a', shadowOpacity: 0.25, shadowRadius: 5, shadowOffset: { width: 0, height: 2 }, elevation: 3 },
+  gucSatir: { flexDirection: 'row', backgroundColor: 'rgba(255,255,255,0.85)', borderRadius: 18, paddingVertical: 5, paddingHorizontal: 8, marginTop: 8 },
+  gucYazi: { fontSize: 17, fontWeight: '900', color: '#24384a', marginHorizontal: 9 },
   baslik: { fontSize: 32, fontWeight: '900', color: '#24384a', textShadowColor: '#ffffff', textShadowRadius: 6, textShadowOffset: { width: 0, height: 0 } },
   yildizSatir: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.8)', borderRadius: 16, paddingHorizontal: 12, paddingVertical: 4, marginTop: 6 },
   yildizSayi: { fontSize: 17, fontWeight: '900', color: '#24384a', marginLeft: 6 },
