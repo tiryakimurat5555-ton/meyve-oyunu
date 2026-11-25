@@ -17,6 +17,7 @@ import {
   CicekUst,
   CicekIkon,
   AriEfekt,
+  KurbagaIkon,
   BalZemin,
   BalUst,
   BalIkon,
@@ -75,6 +76,7 @@ export function parcaAdi(p) {
   if (p.tur === M.CIVCIV) return 'Civciv';
   if (p.tur === M.ANAHTAR) return 'Anahtar';
   if (p.tur === M.BALON) return 'Balon';
+  if (p.tur === M.KURBAGA) return `Kurbağa, ${p.kurb || 0} meyve yedi, doymasına ${M.KURBAGA_DOY - (p.kurb || 0)} kaldı`;
   if (p.kafes) return 'Kafesli ' + MEYVELER[p.tur].isim.toLocaleLowerCase('tr');
   if (p.tur === M.YUMURTA) return p.kat >= 2 ? 'Yumurta, 2 kat' : 'Çatlak yumurta';
   if (p.sis) return 'Sisli';
@@ -120,6 +122,7 @@ function SiparisSimge({ s, boy }) {
 // Yeni bölümlerin hedefleri tek tabloda: hedef anlatımı, kalan, olay duyurusu ve simge
 // kalanAnahtar: yayılabilen engeller için tahtada kalan sayısı (toplanan[k + 'Kalan'])
 const EK_HEDEF = [
+  { k: 'kurbaga', hedef: (n) => `${n} kurbağayı doyur (her biri ${M.KURBAGA_DOY} meyve yiyince doyar)`, ad: 'kurbağa', olay: (n) => (n > 1 ? `${n} kurbağa doydu` : 'Kurbağa doydu'), Ikon: KurbagaIkon },
   { k: 'bal', kalanAnahtar: true, hedef: () => 'bütün bal lekelerini temizle', ad: 'bal', olay: (n) => `${n} bal temizlendi`, Ikon: BalIkon },
   { k: 'balon', hedef: (n) => `${n} balonu en üste çıkarıp uçur`, ad: 'balon', olay: (n) => (n > 1 ? `${n} balon uçtu` : 'Balon uçtu'), Ikon: BalonIkon },
   { k: 'bukalemun', hedef: (n) => `${n} bukalemun meyveyi patlat`, ad: 'bukalemun', olay: (n) => `${n} bukalemun patladı`, Ikon: BukalemunIkon },
@@ -261,6 +264,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
       mantar: engel === 'mantar',
       kafes: engel === 'kafes',
       buk: engel === 'buk',
+      kurb: M.kurbMi(engel) ? M.kurbDeger(engel) : tur === M.KURBAGA ? 0 : null,
       saat: M.saatMi(engel) ? M.saatDeger(engel) : 0,
       sis: engel === 'sis',
       kat: M.kasaMi(tur) ? engel || (M.ficiMi(tur) ? 3 : 1) : 0,
@@ -290,6 +294,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
         if (p.mantar) return 'mantar';
         if (p.kafes) return 'kafes';
         if (p.buk) return 'buk';
+        if (p.tur === M.KURBAGA) return 'kurb' + (p.kurb || 0);
         if (p.saat) return 'saat' + p.saat;
         if (p.sis) return 'sis';
         if (M.kasaMi(p.tur)) return p.kat;
@@ -299,7 +304,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
   const kilitIzgarasi = () => engelIzgarasi().map((s) => s.map((e) => !M.serbestMi(e)));
   const kilitli = (p) => !p || p.tur === M.BALON || p.buz || p.sarmasik || p.sis || p.mantar || p.kafes || M.kasaMi(p.tur) || p.tur === M.DELIK;
   // Karıştırmada ve şenlikte yerinde kalanlar (tohum takas edilebilir ama meyveye dönüşmez)
-  const sabit = (p) => kilitli(p) || M.inenMi(p.tur);
+  const sabit = (p) => kilitli(p) || M.inenMi(p.tur) || p.tur === M.KURBAGA;
 
   const tasi = (p, r, c, sure, yumusak = Easing.out(Easing.quad)) =>
     Animated.timing(p.poz, { toValue: { x: c, y: r }, duration: sure, easing: yumusak, useNativeDriver: true });
@@ -517,6 +522,38 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
       sars(ozel === 'hepsi' ? 10 : 5);
       parlat(ozel === 'hepsi' ? 0.7 : 0.35);
     }
+  };
+
+  // Boşlukları yerçekimiyle doldurur (düşen ve yeni gelen parçalar)
+  const dusurDoldur = async () => {
+    const s = M.yercekimi(turIzgarasi());
+    const yeniIzgara = izgara.current.map((satir) => satir.slice());
+    for (const k of s.kaymalar) {
+      const id = izgara.current[k.eski[0]][k.eski[1]];
+      yeniIzgara[k.eski[0]][k.eski[1]] = null;
+      yeniIzgara[k.yeni[0]][k.yeni[1]] = id;
+    }
+    const dusenler = [];
+    let kapidan = 0;
+    for (const k of s.kaymalar) {
+      const p = parcalar.current.get(yeniIzgara[k.yeni[0]][k.yeni[1]]);
+      if (k.eski[1] !== k.yeni[1]) {
+        // Akıntı kapısından geçen parça: çıkış sütununun üstünden süzülerek iner
+        kapidan++;
+        const bas = -1 - kapidan * 0.6;
+        p.poz.setValue({ x: k.yeni[1], y: bas });
+        dusenler.push([p, k.yeni[0], k.yeni[1], k.yeni[0] - bas, 60 * kapidan]);
+      } else dusenler.push([p, k.yeni[0], k.yeni[1], k.yeni[0] - k.eski[0], 0]);
+    }
+    if (kapidan) cal('kapi', 0.7);
+    for (const n of s.yeniler) {
+      const p = yeniParca(n.tur, n.yeni[0], n.yeni[1], -n.kacinci);
+      yeniIzgara[n.yeni[0]][n.yeni[1]] = p.id;
+      dusenler.push([p, n.yeni[0], n.yeni[1], n.yeni[0] + n.kacinci, 40]);
+    }
+    izgara.current = yeniIzgara;
+    yenile();
+    await Promise.all(dusenler.map(([p, r, c, m, g]) => dusur(p, r, c, m, g + c * 12)));
   };
 
   // ---------- eşleşmeleri ve özel parçaları çöz (zincirler dahil) ----------
@@ -840,34 +877,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
       puanEkle(kazanc);
 
       // Düşür ve yenilerini getir
-      const s = M.yercekimi(turIzgarasi());
-      const yeniIzgara = izgara.current.map((satir) => satir.slice());
-      for (const k of s.kaymalar) {
-        const id = izgara.current[k.eski[0]][k.eski[1]];
-        yeniIzgara[k.eski[0]][k.eski[1]] = null;
-        yeniIzgara[k.yeni[0]][k.yeni[1]] = id;
-      }
-      const dusenler = [];
-      let kapidan = 0;
-      for (const k of s.kaymalar) {
-        const p = parcalar.current.get(yeniIzgara[k.yeni[0]][k.yeni[1]]);
-        if (k.eski[1] !== k.yeni[1]) {
-          // Akıntı kapısından geçen parça: çıkış sütununun üstünden süzülerek iner
-          kapidan++;
-          const bas = -1 - kapidan * 0.6;
-          p.poz.setValue({ x: k.yeni[1], y: bas });
-          dusenler.push([p, k.yeni[0], k.yeni[1], k.yeni[0] - bas, 60 * kapidan]);
-        } else dusenler.push([p, k.yeni[0], k.yeni[1], k.yeni[0] - k.eski[0], 0]);
-      }
-      if (kapidan) cal('kapi', 0.7);
-      for (const n of s.yeniler) {
-        const p = yeniParca(n.tur, n.yeni[0], n.yeni[1], -n.kacinci);
-        yeniIzgara[n.yeni[0]][n.yeni[1]] = p.id;
-        dusenler.push([p, n.yeni[0], n.yeni[1], n.yeni[0] + n.kacinci, 40]);
-      }
-      izgara.current = yeniIzgara;
-      yenile();
-      await Promise.all(dusenler.map(([p, r, c, m, g]) => dusur(p, r, c, m, g + c * 12)));
+      await dusurDoldur();
     }
     return { zincir, toplam, patlayan, olusanlar, ...sayacToplam };
   };
@@ -1169,7 +1179,58 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
     return cozumle();
   };
 
+  // Kurbağalar komşu meyveyi yer; doyan kurbağa çevresini patlatır
+  const kurbagaBeslen = async () => {
+    const kurbalar = [];
+    for (let r = 0; r < M.SATIR; r++) for (let c = 0; c < M.SUTUN; c++) if ((parcaAt(r, c) || {}).tur === M.KURBAGA) kurbalar.push([r, c]);
+    if (!kurbalar.length) return null;
+    const yenen = {};
+    const patlamalar = [];
+    let doyan = 0;
+    for (const [r, c] of kurbalar) {
+      const k = parcaAt(r, c);
+      const h = M.kurbagaHedefi(turIzgarasi(), ozIzgarasi(), engelIzgarasi(), r, c);
+      if (!k || !h) continue;
+      const m = parcaAt(h[0], h[1]);
+      yenen[m.tur] = (yenen[m.tur] || 0) + 1;
+      await oynat(
+        Animated.parallel([
+          tasi(k, h[0], h[1], 220, Easing.out(Easing.back(1.4))),
+          Animated.timing(m.olcek, { toValue: 0, duration: 200, useNativeDriver: true }),
+        ])
+      );
+      parcalar.current.delete(m.id);
+      izgara.current[h[0]][h[1]] = k.id;
+      izgara.current[r][c] = null;
+      k.kurb = (k.kurb || 0) + 1;
+      cal('mantar', 0.7);
+      if (k.kurb >= M.KURBAGA_DOY) {
+        doyan++;
+        patlamalar.push(h);
+        parcalar.current.delete(k.id);
+        izgara.current[h[0]][h[1]] = null;
+        efektEkle({ tip: 'dalga', r: h[0], c: h[1] });
+        cal('bomba');
+        titret('guclu');
+        sars(5);
+      }
+      yenile();
+    }
+    topla({ ...yenen, kurbaga: doyan });
+    puanEkle(Object.values(yenen).reduce((a, b) => a + b, 0) * 20);
+    await dusurDoldur();
+    const z = await cozumle({ ek: M.kurbagaAlani(patlamalar) });
+    z.kurbaga = (z.kurbaga || 0) + doyan;
+    for (const [t, n] of Object.entries(yenen)) z.patlayan[t] = (z.patlayan[t] || 0) + n;
+    return z;
+  };
+
   const hamleSonrasi = async (sonuc, cekicle = false) => {
+    // Kurbağalar yer
+    if (seviye.hedef.kurbaga && !cekicle && !hedefTamam(seviye, toplananRef.current, puanRef.current)) {
+      const k = await kurbagaBeslen();
+      if (k) sonuc = sonucBirlestir(sonuc, k);
+    }
     // Bukalemunlar renk değiştirir
     let bukDegisti = false;
     if (seviye.hedef.bukalemun && !cekicle && !hedefTamam(seviye, toplananRef.current, puanRef.current)) {

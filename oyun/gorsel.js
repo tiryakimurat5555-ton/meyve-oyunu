@@ -7,6 +7,8 @@ export const YUMURTA_TUR = 24; // mantik.js YUMURTA
 export const CIVCIV_TUR = 25; // mantik.js CIVCIV
 export const ANAHTAR_TUR = 26; // mantik.js ANAHTAR
 export const BALON_TUR = 27; // mantik.js BALON
+export const KURBAGA_TUR = 28; // mantik.js KURBAGA
+const KURBAGA_DOY = 5;
 export const FICI_TUR = 22; // mantik.js FICI
 export const FICI_ODUL_TUR = 23; // mantik.js FICI_ODUL
 
@@ -532,6 +534,41 @@ export function BukalemunIkon({ boy = 26 }) {
   return (
     <View style={{ width: boy, height: boy }}>
       <BukalemunHale H={boy / 0.94} />
+    </View>
+  );
+}
+
+// ---------- Kurbağa ----------
+export function Kurbaga({ H, n = 0 }) {
+  const b = H * 0.82;
+  const goz = (x) => (
+    <View style={{ position: 'absolute', left: b * x, top: -b * 0.08, width: b * 0.3, height: b * 0.3, borderRadius: b, backgroundColor: '#5ccf4f', borderWidth: 2, borderColor: '#2f8a28', alignItems: 'center', justifyContent: 'center' }}>
+      <View style={{ width: b * 0.18, height: b * 0.18, borderRadius: b, backgroundColor: '#ffffff', alignItems: 'center', justifyContent: 'center' }}>
+        <View style={{ width: b * 0.09, height: b * 0.11, borderRadius: b, backgroundColor: '#1a1a1a' }} />
+      </View>
+    </View>
+  );
+  return (
+    <View style={{ width: H, height: H, alignItems: 'center', justifyContent: 'center' }}>
+      <View style={{ width: b, height: b * 0.78, marginTop: b * 0.12, borderRadius: b * 0.4, backgroundColor: '#5ccf4f', borderWidth: 2, borderColor: '#2f8a28' }}>
+        {goz(0.08)}
+        {goz(0.62)}
+        <View style={{ position: 'absolute', left: b * 0.22, top: b * 0.38, width: b * 0.56, height: b * 0.18, borderBottomLeftRadius: b, borderBottomRightRadius: b, borderWidth: 2.5, borderTopWidth: 0, borderColor: '#1f5f19' }} />
+        <View style={{ position: 'absolute', left: b * 0.12, top: b * 0.34, width: b * 0.12, height: b * 0.07, borderRadius: b, backgroundColor: 'rgba(255,130,150,0.6)' }} />
+        <View style={{ position: 'absolute', right: b * 0.12, top: b * 0.34, width: b * 0.12, height: b * 0.07, borderRadius: b, backgroundColor: 'rgba(255,130,150,0.6)' }} />
+      </View>
+      <View style={{ position: 'absolute', right: 0, bottom: 0, minWidth: H * 0.36, height: H * 0.26, borderRadius: H, backgroundColor: '#ffffff', borderWidth: 1.5, borderColor: '#2f8a28', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 2 }}>
+        <Text style={{ fontSize: H * 0.17, lineHeight: H * 0.22, fontWeight: '900', color: '#2f8a28' }}>{n}/{KURBAGA_DOY}</Text>
+      </View>
+    </View>
+  );
+}
+export function KurbagaIkon({ boy = 26 }) {
+  return (
+    <View style={{ width: boy, height: boy, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+      <View style={{ width: boy * 0.9, height: boy * 0.7, marginTop: boy * 0.15, borderRadius: boy * 0.35, backgroundColor: '#5ccf4f', borderWidth: 2, borderColor: '#2f8a28' }} />
+      <View style={{ position: 'absolute', left: boy * 0.1, top: boy * 0.06, width: boy * 0.3, height: boy * 0.3, borderRadius: boy, backgroundColor: '#ffffff', borderWidth: 2, borderColor: '#2f8a28' }} />
+      <View style={{ position: 'absolute', right: boy * 0.1, top: boy * 0.06, width: boy * 0.3, height: boy * 0.3, borderRadius: boy, backgroundColor: '#ffffff', borderWidth: 2, borderColor: '#2f8a28' }} />
     </View>
   );
 }
@@ -1096,6 +1133,8 @@ export function Parca({ p, H }) {
         <Anahtar H={H} />
       ) : p.tur === BALON_TUR ? (
         <Balon H={H} />
+      ) : p.tur === KURBAGA_TUR ? (
+        <Kurbaga H={H} n={p.kurb || 0} />
       ) : p.kat ? null : p.ozel === 'gokkusagi' || !MEYVELER[p.tur] ? (
         <GokkusagiKure H={H} />
       ) : (

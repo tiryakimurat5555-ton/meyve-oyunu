@@ -32,7 +32,8 @@ Murat'ın meyve temalı 3'lü eşleştirme oyunu (Kasım 2026). Geçici ad "Meyv
   13 Rüzgârlı Tepe (121-130, %78-99), 14 Mantar Ormanı (131-140, %76-100),
   15 Kuş Yuvası (141-150, %67-95), 16 Göl Kıyısı (151-160, %71-100), 17 Gizli Bahçe (161-170, %75-96),
   18 Bukalemun Bahçesi (171-180, %79-100), 19 Balon Festivali (181-190, %70-97), 20 Hasat Pazarı (191-200, %70-98), 21 Bal Kovanı (201-210, %70-97),
-  22 Kış Dönüşü (211-220, mevsim dönüşü: karışık, %75-95; sahne 21 kış) YAPILDI (26 Kasım). Sırada: yeni mekanikler / mevsim dönüşleri (19. bölüm, 181-). Plan: 11 Arı Bahçesi (çiçek
+  22 Kış Dönüşü (211-220, mevsim dönüşü: karışık, %75-95; sahne 21 kış), 23 Kurbağa Gölü (221-230, %72-100)
+  YAPILDI (26 Kasım). Sırada: yeni mekanikler / mevsim dönüşleri (19. bölüm, 181-). Plan: 11 Arı Bahçesi (çiçek
   tozu: üstünde eşleşme = tozlanır), 12 Saat Kulesi (geri sayımlı meyve, sıfırda kaybedilir), 13 Rüzgârlı Tepe (taşıyıcı bant),
   14 Mantar Ormanı (her 3 hamlede çoğalır), 15 Kuş Yuvası (yumurta 2 vuruş → civciv, tohum gibi iner), 16 Göl Kıyısı (akıntı kapıları),
   17 Kafes ve Anahtar, 18 Bukalemun Bahçesi (renk değiştiren meyve); sonra mevsim dönüşleri + yeni mekanikler.
@@ -84,6 +85,10 @@ Murat'ın meyve temalı 3'lü eşleştirme oyunu (Kasım 2026). Geçici ad "Meyv
 - BAL (201-210, Bal Kovanı): zemin değeri M.BAL=20 (düzen 'h'); karEriyen ile silinir (sayac.bal); hamlede hiç bal silinmezse balYay
   yanına yayılır. Hedef kalan-sayılı: kalanlariYaz(toplanan, engel, zemin) → balKalan (KALAN_HEDEF 'bal'). BalZemin/BalUst/BalIkon.
   VO "Ballı çilek", "Bal yayıldı, ...". Sahne 20 (arılar).
+- KURBAĞA (221-230, Kurbağa Gölü): M.KURBAGA=28 (düzen 'q'), engel 'kurb<n>' (serbestMi: takas edilir), eşleşmez, düşer. Her çekiçsiz
+  hamleden sonra kurbagaBeslen: komşu sade meyveyi yer (topla sayılır), KURBAGA_DOY (5) olunca 3x3 patlar (hedef.kurbaga). mantik
+  yercekimiUygula (t/oz/engel birlikte); Oyun dusurDoldur() (cozumle'den ayrıldı) + kurbagaBeslen animasyonu. Kurbag, "n/5" rozeti.
+  VO "Kurbağa, 3 meyve yedi, doymasına 2 kaldı". Bölüm dost mekanik olduğu için kolay; zorluk engellerden.
 - 26 Kasım Murat onayı ("Yap"): 19 Balon, 20 Hasat Pazarı (sırayla sipariş), 21 Bal Kovanı (bal lekesi yayılır), 22 Kış Dönüşü (karışık),
   23 Kurbağa Gölü, 24 Fener Bahçesi (yalnız özel parça yakar), 25 Uzay Bahçesi (yerçekimi yönü), 26 Kovan Arıları (yardımcı arılar),
   27 Yaz Dönüşü (karışık), 28 Domino, 29 Ayna Gölü (hamle aynalanır), 30 Büyük Hasat (karışık, 300. seviye).

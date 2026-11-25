@@ -248,9 +248,21 @@ export const SEVIYELER = [
   { no: 218, hamle: 34, tur: 6, hedef: { kafes: 6, sis: 4, kar: 8 }, yildiz: [6500, 8000], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '....a...', '.gg..gg.', '........', 'cc....cc', 'c......c', 'ssssssss', '........'] },
   { no: 219, hamle: 18, tur: 6, hedef: { topla: { 1: 22, 5: 22 } }, yildiz: [4500, 5500], ozel: { cizgili: true, bomba: true, gokkusagi: true } },
   { no: 220, hamle: 40, tur: 6, hedef: { kar: 16, buz: 8, kasa: 4, sis: 4 }, yildiz: [8250, 10000], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '.gg..gg.', '.bbbbbb.', '.b....b.', '..kkkk..', '........', 'SSSSSSSS', '........'] },
+  // ---- 23. bölüm: Kurbağa Gölü (kurbağa her hamle komşu meyveyi yer; 5 meyvede doyup çevresini patlatır) ----
+  { no: 221, hamle: 10, tur: 6, hedef: { kurbaga: 1 }, yildiz: [2750, 3750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '........', '........', '...q....', '........', '........', '........', '........'], yeni: 'kurbaga' },
+  { no: 222, hamle: 11, tur: 6, hedef: { kurbaga: 2 }, yildiz: [3000, 4000], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '........', '..q..q..', '........', '........', '........', '........', '........'] },
+  { no: 223, hamle: 13, tur: 6, hedef: { kurbaga: 2, buz: 14 }, yildiz: [3750, 4500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['bbbbbbb.', '.bbbbbbb', '........', '..q..q..', '........', '........', '........', '........'] },
+  { no: 224, hamle: 17, tur: 6, hedef: { kurbaga: 2, kasa: 6 }, yildiz: [4000, 5000], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '........', '..q..q..', '........', '........', '.KKKKKK.', '........', '........'] },
+  { no: 225, hamle: 24, tur: 6, hedef: { puan: 6000 }, yildiz: [7250, 8250], ozel: { cizgili: true, bomba: true, gokkusagi: true } },
+  { no: 226, hamle: 14, tur: 6, hedef: { kurbaga: 3, sis: 16 }, yildiz: [3750, 4500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['gggggggg', 'gggggggg', '........', '.q..q..q', '........', '........', '........', '........'] },
+  { no: 227, hamle: 15, tur: 6, hedef: { kurbaga: 2, kar: 12 }, yildiz: [3750, 4500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '........', '..q..q..', '........', 'ssssss..', '..ssssss', '........', '........'] },
+  { no: 228, hamle: 15, tur: 6, hedef: { kurbaga: 3, mantar: 8 }, yildiz: [4000, 4750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['mm....mm', 'm......m', '.q..q..q', '........', '........', 'm......m', '........', '........'] },
+  { no: 229, hamle: 16, tur: 6, hedef: { topla: { 2: 22, 4: 22 } }, yildiz: [3750, 5000], ozel: { cizgili: true, bomba: true, gokkusagi: true } },
+  { no: 230, hamle: 18, tur: 6, hedef: { kurbaga: 4, buz: 8, bal: 4 }, yildiz: [4750, 5500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '.q.bb.q.', '..bbbb..', '...bb...', '.q....q.', '........', '..hhhh..', '........'] },
 ];
 
 export const TANITIM = {
+  kurbaga: { baslik: 'Yeni: Kurbağa', metin: 'Göldeki kurbağa senin dostun! Her hamleden sonra yanındaki bir meyveye zıplayıp onu yer. 5 meyve yiyince doyar ve çevresini patlatır. Kurbağayı da meyveler gibi kaydırabilirsin.' },
   bal: { baslik: 'Yeni: Bal', metin: 'Bazı karelere bal akmış. Ballı karenin üstündeki meyveyi patlat, bal temizlensin. Dikkat: bir hamlede hiç bal temizlemezsen yanındaki kareye yayılır!' },
   siparis: { baslik: 'Yeni: Pazar siparişleri', metin: 'Müşteriler sırayla sipariş veriyor! Hedef kutusunda açık siparişi görürsün: istenen meyveyi topla ya da istenen özel meyveyi yap. Biri bitince sıradaki gelir.' },
   balon: { baslik: 'Yeni: Balon', metin: 'Balonlar düşmez, meyveler yanlarından geçip iner. Balonun yanında eşleşme yap ya da özel meyveyle vur: bir kare yükselir. En üst sıradan uçup gidince sayılır!' },

@@ -434,6 +434,24 @@ const RENKLER = [
       { tip: 'kar' },
     ],
   },
+  // 22: Kurbağa Gölü (nilüferli göl kıyısı: yeşil-mavi, ateş böcekli akşamüstü değil gündüz)
+  {
+    gok: ['#7fd3e6', '#effbf4'],
+    gunes: '#fff2a0',
+    gunesKenar: '#ffd24a',
+    tepeArka: ['#6fc08a', '#5cae78'],
+    tepeArka2: ['#80cc96', '#6bba84'],
+    tepeOn: ['#8fd6c8', '#78c6b6'],
+    tac: ['#3f9a5a', '#33864c', '#58b470'],
+    nokta: ['#ff9cd0', '#ffffff', '#ffd23f'],
+    cicek: ['#ff9cd0', '#ffffff', '#c9b8ff'],
+    parca: [
+      { tip: 'kelebek', renk: '#5ccf4f' },
+      { tip: 'kelebek', renk: '#ff9cd0' },
+      { tip: 'parilti', renk: '#e6fff4' },
+      { tip: 'parilti', renk: '#ffffff' },
+    ],
+  },
 ];
 export const geceMi = (bolum) => !!(RENKLER[bolum] && RENKLER[bolum].gece);
 

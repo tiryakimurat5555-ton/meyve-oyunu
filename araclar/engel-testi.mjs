@@ -295,5 +295,20 @@ for (let i = 0; i < 30; i++) {
   dogru(y && y.zemin.flat().filter((v) => v === M.BAL).length === 2, 'bal yayılmalı');
   dogru(M.kalanlariYaz({}, en, u.zemin).balKalan === 1, 'bal kalan sayısı');
 }
-console.log(hata ? `${hata} HATA` : 'ENGEL TESTLERİ GEÇTİ (kar, tohum sarmaşık, fıçı, sis, delik, çiçek, saat, bant, akıntı kapısı, kafes, bukalemun, balon ve bal dahil)');
+{
+  // Kurbağa: komşu meyveyi yer, 5'te doyar
+  const t = [];
+  for (let r = 0; r < 8; r++) t.push(Array.from({ length: 8 }, (_, c) => (r * 3 + c * 2 + (r % 2)) % 6));
+  t[3][3] = M.KURBAGA;
+  const oz = t.map((s) => s.map(() => null));
+  const en = t.map((s) => s.map(() => null));
+  en[3][3] = 'kurb4';
+  const k = M.kurbagaBeslen(t, oz, en, () => 0.1);
+  dogru(k.sayac.kurbaga === 1 && k.patlamalar.length === 1 && !k.t.flat().includes(M.KURBAGA), 'doyan kurbağa gitmeli');
+  en[3][3] = 'kurb1';
+  const k2 = M.kurbagaBeslen(t, oz, en, () => 0.1);
+  dogru(k2.t.flat().filter((v) => v === M.KURBAGA).length === 1 && k2.engel.flat().includes('kurb2'), 'kurbağa zıplayıp yemeli');
+  dogru(M.serbestMi('kurb3'), 'kurbağa takas edilebilir');
+}
+console.log(hata ? `${hata} HATA` : 'ENGEL TESTLERİ GEÇTİ (kar, tohum sarmaşık, fıçı, sis, delik, çiçek, saat, bant, akıntı kapısı, kafes, bukalemun, balon, bal ve kurbağa dahil)');
 process.exit(hata ? 1 : 0);
