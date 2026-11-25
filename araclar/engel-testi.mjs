@@ -115,5 +115,23 @@ for (let i = 0; i < 30; i++) {
   const x = M.duzenliTahta(d);
   dogru(x.t[1][3] === M.TOHUM && x.zemin[5][3] === 2 && x.zemin[5][2] === 1, 'düzen kar/tohum');
 }
-console.log(hata ? `${hata} HATA` : 'ENGEL TESTLERİ GEÇTİ (kar ve tohum dahil)');
+{
+  // Sarmaşık: eşleşmeyle kesilir (meyve kalır), komşu eşleşme de keser; kesilmezse yayılır
+  const t = [];
+  for (let r = 0; r < 8; r++) t.push(Array.from({ length: 8 }, (_, c) => (r * 3 + c * 2 + (r % 2)) % 6));
+  t[7][0] = 0; t[7][1] = 0; t[7][2] = 0;
+  const oz = t.map((s) => s.map(() => null));
+  const en = t.map((s) => s.map(() => null));
+  en[7][1] = 'sarmasik'; en[6][2] = 'sarmasik'; en[3][3] = 'sarmasik';
+  const ad = M.cozumAdimi(t, oz, { engel: en });
+  const u = M.adimUygula(t, oz, en, ad, () => 0.3);
+  dogru(u.sayac.sarmasik === 2, 'iki sarmaşık kesilmeli: ' + u.sayac.sarmasik);
+  dogru(M.sarmasikSay(u.engel) === 1, 'bir sarmaşık kalmalı');
+  const y = M.sarmasikYay(u.t, u.oz, u.engel, () => 0.1);
+  dogru(y && M.sarmasikSay(y.engel) === 2 && Math.abs(y.hucre[0] - 3) + Math.abs(y.hucre[1] - 3) === 1, 'sarmaşık komşuya yayılmalı: ' + JSON.stringify(y && y.hucre));
+  dogru(!M.tumHamleler(u.t, u.oz, y.engel).some(([a, b]) => (a[0] === y.hucre[0] && a[1] === y.hucre[1]) || (b[0] === y.hucre[0] && b[1] === y.hucre[1])), 'sarmaşıklı meyve takas edilemez');
+  const x = M.duzenliTahta(['........', '...vv...', '........', '........', '........', '........', '........', '........']);
+  dogru(x.engel[1][3] === 'sarmasik' && x.engel[1][4] === 'sarmasik', 'düzen v');
+}
+console.log(hata ? `${hata} HATA` : 'ENGEL TESTLERİ GEÇTİ (kar, tohum ve sarmaşık dahil)');
 process.exit(hata ? 1 : 0);

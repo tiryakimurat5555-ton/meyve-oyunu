@@ -342,6 +342,46 @@ export function BuzKatman({ H }) {
   );
 }
 
+// Sarmaşık: meyvenin üstünden çapraz geçen iki yeşil dal, üzerinde yapraklar (meyvenin yüzü görünür kalır)
+function Yaprakci({ x, y, boy, aci, renk }) {
+  return (
+    <View
+      style={{
+        position: 'absolute',
+        left: x - boy / 2,
+        top: y - boy * 0.3,
+        width: boy,
+        height: boy * 0.6,
+        backgroundColor: renk,
+        borderTopLeftRadius: boy * 0.6,
+        borderBottomRightRadius: boy * 0.6,
+        borderTopRightRadius: 2,
+        borderBottomLeftRadius: 2,
+        borderWidth: 1,
+        borderColor: '#1f6b1a',
+        transform: [{ rotate: `${aci}deg` }],
+      }}
+    />
+  );
+}
+export function SarmasikKatman({ H }) {
+  const b = H * 0.96;
+  const dal = (aci, ust) => (
+    <View style={{ position: 'absolute', left: -b * 0.1, top: ust, width: b * 1.2, height: H * 0.075, borderRadius: H, backgroundColor: '#2f8a28', borderWidth: 1, borderColor: '#1f5f19', transform: [{ rotate: `${aci}deg` }] }} />
+  );
+  return (
+    <View pointerEvents="none" style={{ position: 'absolute', left: (H - b) / 2, top: (H - b) / 2, width: b, height: b, borderRadius: H * 0.2, overflow: 'hidden', borderWidth: 2.5, borderColor: 'rgba(47,138,40,0.85)' }}>
+      {dal(40, b * 0.46)}
+      {dal(-40, b * 0.46)}
+      <Yaprakci x={b * 0.2} y={b * 0.2} boy={H * 0.26} aci={-30} renk="#4fbf3a" />
+      <Yaprakci x={b * 0.8} y={b * 0.22} boy={H * 0.24} aci={200} renk="#5fd14a" />
+      <Yaprakci x={b * 0.2} y={b * 0.8} boy={H * 0.24} aci={30} renk="#5fd14a" />
+      <Yaprakci x={b * 0.8} y={b * 0.8} boy={H * 0.26} aci={150} renk="#4fbf3a" />
+      <Yaprakci x={b * 0.5} y={b * 0.92} boy={H * 0.2} aci={90} renk="#6ad957" />
+    </View>
+  );
+}
+
 // Tahta kasa: tahta kutu, iki yatay tahta çizgisi, köşe çivileri; iki katlıda iki metal kuşak
 export function Kasa({ H, kat }) {
   const b = H * 0.9;
@@ -378,9 +418,10 @@ export function Kirilma({ e, H, bitti }) {
   const cx = e.c * H + H / 2;
   const cy = e.r * H + H / 2;
   const kar = e.tur === 'kar';
+  const yaprak = e.tur === 'yaprak';
   const buz = e.tur === 'buz' || kar;
   const adet = e.az ? 3 : 7;
-  const renkler = kar ? ['#ffffff', '#e4f3ff', '#ffffff'] : buz ? ['#e9f7ff', '#a7dcff', '#ffffff'] : ['#cf8f48', '#8f5a24', '#e0aa66'];
+  const renkler = yaprak ? ['#4fbf3a', '#2f8a28', '#6ad957'] : kar ? ['#ffffff', '#e4f3ff', '#ffffff'] : buz ? ['#e9f7ff', '#a7dcff', '#ffffff'] : ['#cf8f48', '#8f5a24', '#e0aa66'];
   return (
     <>
       {!e.az && (
@@ -392,7 +433,7 @@ export function Kirilma({ e, H, bitti }) {
             width: H * 1.1,
             height: H * 1.1,
             borderRadius: H,
-            backgroundColor: buz ? '#e8f8ff' : '#fff0d0',
+            backgroundColor: yaprak ? '#e4f8dc' : buz ? '#e8f8ff' : '#fff0d0',
             opacity: t.interpolate({ inputRange: [0, 0.35], outputRange: [0.85, 0], extrapolate: 'clamp' }),
             transform: [{ scale: t.interpolate({ inputRange: [0, 0.35], outputRange: [0.5, 1.2], extrapolate: 'clamp' }) }],
           }}
@@ -401,8 +442,8 @@ export function Kirilma({ e, H, bitti }) {
       {Array.from({ length: adet }, (_, i) => {
         const aci = ((i * 360) / adet + 20) * (Math.PI / 180);
         const uz = H * (0.6 + (i % 3) * 0.2);
-        const gen = H * (buz ? 0.2 : 0.3);
-        const yuk = H * (buz ? 0.2 : 0.1);
+        const gen = H * (yaprak ? 0.24 : buz ? 0.2 : 0.3);
+        const yuk = H * (yaprak ? 0.14 : buz ? 0.2 : 0.1);
         return (
           <Animated.View
             key={i}
@@ -412,10 +453,10 @@ export function Kirilma({ e, H, bitti }) {
               top: cy - yuk / 2,
               width: gen,
               height: yuk,
-              borderRadius: kar ? H : buz ? 2 : 3,
+              borderRadius: kar ? H : yaprak ? H * 0.1 : buz ? 2 : 3,
               backgroundColor: renkler[i % 3],
               borderWidth: 1,
-              borderColor: kar ? 'rgba(140,200,240,0.7)' : buz ? 'rgba(90,160,210,0.8)' : '#6b4019',
+              borderColor: yaprak ? '#1f5f19' : kar ? 'rgba(140,200,240,0.7)' : buz ? 'rgba(90,160,210,0.8)' : '#6b4019',
               opacity: t.interpolate({ inputRange: [0, 0.7, 1], outputRange: [1, 1, 0] }),
               transform: [
                 { translateX: t.interpolate({ inputRange: [0, 1], outputRange: [0, Math.cos(aci) * uz] }) },
@@ -536,6 +577,13 @@ export function CicekAcma({ e, H, bitti }) {
 }
 
 // Hedef kutusundaki küçük simgeler
+export function SarmasikIkon({ boy = 26 }) {
+  return (
+    <View style={{ width: boy, height: boy, borderRadius: boy * 0.22, backgroundColor: '#eaf8e4', borderWidth: 2, borderColor: '#2f8a28', overflow: 'hidden' }}>
+      <SarmasikKatman H={boy} />
+    </View>
+  );
+}
 export function KarIkon({ boy = 26 }) {
   return (
     <View style={{ width: boy, height: boy, borderRadius: boy * 0.22, backgroundColor: '#f7fcff', borderWidth: 2, borderColor: '#9fd0f5', overflow: 'hidden', alignItems: 'center', justifyContent: 'center' }}>
@@ -618,6 +666,7 @@ export function Parca({ p, H }) {
       )}
       {(p.ozel === 'satir' || p.ozel === 'sutun') && <Cizgiler key={p.ozel} H={H} yon={p.ozel} renk={MEYVELER[p.tur].koyu} />}
       {p.buz && <BuzKatman H={H} />}
+      {p.sarmasik && <SarmasikKatman H={H} />}
     </Animated.View>
   );
 }

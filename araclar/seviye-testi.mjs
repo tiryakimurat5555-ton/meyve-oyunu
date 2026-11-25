@@ -51,6 +51,11 @@ for (const sv of DENENECEK) {
     const k = sv.duzen.join('').split('').filter((x) => x === 'k' || x === 'K').length;
     const kr = sv.duzen.join('').split('').reduce((a, x) => a + (x === 's' ? 1 : x === 'S' ? 2 : 0), 0);
     const th = sv.duzen.join('').split('').filter((x) => x === 't').length;
+    const sm = sv.duzen.join('').split('').filter((x) => x === 'v').length;
+    if ((sv.hedef.sarmasik || 0) !== sm) {
+      hata++;
+      console.log(`HATA: seviye ${sv.no} düzen ${sm} sarmaşık, hedef ${sv.hedef.sarmasik || 0}`);
+    }
     if ((sv.hedef.buz || 0) !== b || (sv.hedef.kasa || 0) !== k || (sv.hedef.kar || 0) !== kr || (sv.hedef.tohum || 0) !== th) {
       hata++;
       console.log(`HATA: seviye ${sv.no} düzen ${b} buz/${k} kasa/${kr} kar/${th} tohum, hedef ${sv.hedef.buz || 0}/${sv.hedef.kasa || 0}/${sv.hedef.kar || 0}/${sv.hedef.tohum || 0}`);
@@ -65,7 +70,7 @@ for (const sv of DENENECEK) {
   for (let d = 0; d < DENEME; d++) {
     let { t, oz, engel, zemin } = M.duzenliTahta(sv.duzen, rnd);
     let puan = 0;
-    const top = { buz: 0, kasa: 0, kar: 0, tohum: 0 };
+    const top = { buz: 0, kasa: 0, kar: 0, tohum: 0, sarmasikKalan: M.sarmasikSay(engel) };
     let hamle = sv.hamle;
     let bos = 0;
     while (hamle > 0 && !hedefTamam(sv, top, puan)) {
@@ -89,6 +94,7 @@ for (const sv of DENENECEK) {
         if (h2.buz) deger += s.sayac.buz * 150;
         if (h2.kasa) deger += s.sayac.kasa * 150;
         if (h2.kar) deger += s.sayac.kar * 150;
+        if (h2.sarmasik) deger += s.sayac.sarmasik * 170;
         if (h2.tohum) deger += s.sayac.tohum * 400 + (tohumDerin(s.t) - d0) * 60;
         if (h2.puan) deger = s.puan;
         if (!en || deger > en.deger) en = { deger, s };
@@ -123,6 +129,12 @@ for (const sv of DENENECEK) {
       top.kasa += en.s.sayac.kasa;
       top.kar += en.s.sayac.kar;
       top.tohum += en.s.sayac.tohum;
+      // Hiç sarmaşık kesilmediyse sarmaşık yayılır
+      if (sv.hedef.sarmasik && !en.s.sayac.sarmasik && !hedefTamam(sv, { ...top, sarmasikKalan: M.sarmasikSay(engel) }, puan)) {
+        const y = M.sarmasikYay(t, oz, engel, rnd);
+        if (y) engel = y.engel;
+      }
+      top.sarmasikKalan = M.sarmasikSay(engel);
       hamle--;
     }
     const ok = hedefTamam(sv, top, puan);

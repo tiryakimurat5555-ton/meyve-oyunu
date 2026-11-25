@@ -12,6 +12,8 @@ export const KASA = 20;
 // Tohum (4. bölüm sonrası, Çiçek Bahçesi): meyve değil; eşleşmez, patlamaz, takas edilebilir, yerçekimiyle düşer.
 // En alt sıraya inince toplanır (çiçek açar). Özel parçalar ona işlemez.
 export const TOHUM = 21;
+// Sarmaşık (Tropik Bahçe): buz gibi meyveyi sarar (engel 'sarmasik'): takas edilemez; eşleşmeye katılınca, yanında eşleşme olunca
+// ya da özel parça değince kesilir, meyve kalır. Bir hamlede hiç sarmaşık kesilmezse yanındaki bir meyveye yayılır (sarmasikYay).
 // Kar (Kış Bahçesi): parçayla birlikte DÜŞMEYEN zemin katmanı, zemin[r][c] = kat sayısı (0, 1, 2).
 // Üstündeki parça temizlenince (eşleşme, özel parça, kırılan kasa) ya da orada özel parça oluşunca bir kat erir.
 // Buz yanındaki eşleşmeyle de kırılır (Murat 25 Kasım 2026'da onayladı; önceki kural yalnız eşleşmeye katılınca kırıyordu)
@@ -366,7 +368,7 @@ export function genislet(t, oz, baslangic, korunan = []) {
 // (eşleşmeye komşu olanlar ve özel parça alanına girenler).
 export function cozumAdimi(t, oz, { hamle = null, ek = [], izinli = null, engel = null } = {}) {
   const gruplar = eslesmeleriBul(t);
-  const buzlu = (r, c) => engel && engel[r][c] === 'buz';
+  const buzlu = (r, c) => engel && (engel[r][c] === 'buz' || engel[r][c] === 'sarmasik');
   // Yeni özel parça, zaten özel parça olan ya da buzlu bir hücreye konmaz; şeklin başka bir hücresi seçilir
   const olusan = [];
   for (const o of ozelOlusumlari(gruplar, hamle, izinli)) {
@@ -391,7 +393,7 @@ export function cozumAdimi(t, oz, { hamle = null, ek = [], izinli = null, engel 
     const var_ = new Set(hucreler.map(([r, c]) => anahtar(r, c)));
     for (const [r, c] of silinecekler(gruplar))
       for (const [i, j] of [[r - 1, c], [r + 1, c], [r, c - 1], [r, c + 1]])
-        if (i >= 0 && j >= 0 && i < SATIR && j < SUTUN && engel[i][j] === 'buz' && !var_.has(anahtar(i, j))) {
+        if (i >= 0 && j >= 0 && i < SATIR && j < SUTUN && (engel[i][j] === 'buz' || engel[i][j] === 'sarmasik') && !var_.has(anahtar(i, j))) {
           var_.add(anahtar(i, j));
           hucreler.push([i, j]);
         }
@@ -409,7 +411,7 @@ export function karEriyen(adim, engel, zemin) {
   const ekle = ([r, c]) => {
     if (zemin[r][c] > 0) l.set(anahtar(r, c), [r, c]);
   };
-  for (const h of adim.hucreler) if (!(engel && engel[h[0]][h[1]] === 'buz')) ekle(h);
+  for (const h of adim.hucreler) if (!(engel && (engel[h[0]][h[1]] === 'buz' || engel[h[0]][h[1]] === 'sarmasik'))) ekle(h);
   for (const o of adim.olusan) ekle(o.hucre);
   for (const h of adim.kasaVurus) if (!engel || (engel[h[0]][h[1]] || 1) <= 1) ekle(h);
   return [...l.values()];
@@ -423,7 +425,7 @@ export function adimUygula(t, oz, engel, adim, rnd = Math.random, zemin = null) 
   t = kopya(t);
   oz = kopya(oz);
   engel = kopya(engel);
-  const sayac = { topla: {}, buz: 0, kasa: 0, kar: 0, tohum: 0 };
+  const sayac = { topla: {}, buz: 0, kasa: 0, kar: 0, tohum: 0, sarmasik: 0 };
   if (zemin) {
     zemin = kopya(zemin);
     for (const [r, c] of karEriyen(adim, engel, zemin)) {
@@ -440,6 +442,11 @@ export function adimUygula(t, oz, engel, adim, rnd = Math.random, zemin = null) 
     if (engel[r][c] === 'buz') {
       engel[r][c] = null;
       sayac.buz++;
+      continue;
+    }
+    if (engel[r][c] === 'sarmasik') {
+      engel[r][c] = null;
+      sayac.sarmasik++;
       continue;
     }
     if (renkli(t[r][c])) sayac.topla[t[r][c]] = (sayac.topla[t[r][c]] || 0) + 1;
@@ -477,7 +484,7 @@ export function adimUygula(t, oz, engel, adim, rnd = Math.random, zemin = null) 
 }
 
 // Seviye düzeninden (8 satırlık metin: '.' boş, 'b' buz, 'k' kasa, 'K' iki katlı kasa, 's' kar, 'S' iki katlı kar,
-// 't' tohum) başlangıç tahtası kurar. Dönüş: { t, oz, engel, zemin } — eşleşmesiz ve en az bir hamlesi olan.
+// 't' tohum, 'v' sarmaşık) başlangıç tahtası kurar. Dönüş: { t, oz, engel, zemin } — eşleşmesiz ve en az bir hamlesi olan.
 export function duzenliTahta(duzen, rnd = Math.random) {
   for (let d = 0; d < 300; d++) {
     const t = yeniTahta(rnd);
@@ -494,11 +501,39 @@ export function duzenliTahta(duzen, rnd = Math.random) {
             engel[r][c] = h === 'K' ? 2 : 1;
           } else if (h === 's' || h === 'S') zemin[r][c] = h === 'S' ? 2 : 1;
           else if (h === 't') t[r][c] = TOHUM;
+          else if (h === 'v') engel[r][c] = 'sarmasik';
         }
     const kilit = engel.map((s) => s.map((e) => e != null));
     if (!eslesmeleriBul(t).length && hamleBul(t, oz, kilit)) return { t, oz, engel, zemin };
   }
   throw new Error('Düzenli tahta kurulamadı');
+}
+
+// ---------------- Sarmaşık ----------------
+export function sarmasikSay(engel) {
+  let n = 0;
+  for (const s of engel) for (const e of s) if (e === 'sarmasik') n++;
+  return n;
+}
+
+// Sarmaşık yayılır: rastgele bir sarmaşığın yanındaki sade bir meyveyi (engelsiz, özel değil) sarar.
+// Dönüş: { engel, hucre } ya da yayılacak yer yoksa null. Yayıldıktan sonra tahtada hamle kalmazsa o yer seçilmez.
+export function sarmasikYay(t, oz, engel, rnd = Math.random) {
+  const adaylar = [];
+  for (let r = 0; r < SATIR; r++)
+    for (let c = 0; c < SUTUN; c++) {
+      if (engel[r][c] !== 'sarmasik') continue;
+      for (const [i, j] of [[r - 1, c], [r + 1, c], [r, c - 1], [r, c + 1]])
+        if (i >= 0 && j >= 0 && i < SATIR && j < SUTUN && renkli(t[i][j]) && engel[i][j] == null && !oz[i][j]) adaylar.push([i, j]);
+    }
+  while (adaylar.length) {
+    const k = Math.floor(rnd() * adaylar.length);
+    const h = adaylar.splice(k, 1)[0];
+    const y = kopya(engel);
+    y[h[0]][h[1]] = 'sarmasik';
+    if (hamleBul(t, oz, y.map((s) => s.map((e) => e != null)))) return { engel: y, hucre: h };
+  }
+  return null;
 }
 
 // ---------------- Otomatik oyun (bot) ----------------
@@ -518,7 +553,7 @@ export function tumHamleler(t, oz, engel) {
 // Bir hamlenin sonucunu (zincirler dahil) hesaplar: { t, oz, engel, puan, sayac }
 export function hamleSonucu(t, oz, engel, a, b, izinli, rnd = Math.random, zemin = null) {
   let puan = 0;
-  const sayac = { topla: {}, buz: 0, kasa: 0, kar: 0, tohum: 0 };
+  const sayac = { topla: {}, buz: 0, kasa: 0, kar: 0, tohum: 0, sarmasik: 0 };
   const bir = birlesim(t, oz, a, b);
   t = takasla(t, a, b);
   oz = takasla(oz, a, b);
@@ -549,6 +584,7 @@ export function hamleSonucu(t, oz, engel, a, b, izinli, rnd = Math.random, zemin
     sayac.kasa += u.sayac.kasa;
     sayac.kar += u.sayac.kar;
     sayac.tohum += u.sayac.tohum;
+    sayac.sarmasik += u.sayac.sarmasik;
   }
   return { t, oz, engel, puan, sayac, zemin };
 }
@@ -575,6 +611,7 @@ export function enIyiHamle(t, oz, engel, hedef, izinli, enFazla = 30, zemin = nu
     if (hedef.buz) deger += s.sayac.buz * 150;
     if (hedef.kasa) deger += s.sayac.kasa * 150;
     if (hedef.kar) deger += s.sayac.kar * 150;
+    if (hedef.sarmasik) deger += s.sayac.sarmasik * 170;
     if (hedef.tohum) deger += s.sayac.tohum * 400 + (tohumDerinligi(s.t) - derin0) * 60;
     if (hedef.puan) deger = s.puan;
     deger += Math.random() * 0.01; // eşitlikte çeşitlilik

@@ -39,6 +39,8 @@ export const SES_DOSYALARI = {
   ovgu_nice: require('../assets/ses/ovgu_nice.wav'),
   ozel_olustu: require('../assets/ses/ozel_olustu.wav'),
   pling: require('../assets/ses/pling.wav'),
+  sarmasik_kes: require('../assets/ses/sarmasik_kes.wav'),
+  sarmasik_yay: require('../assets/ses/sarmasik_yay.wav'),
   secim: require('../assets/ses/secim.wav'),
   sessiz: require('../assets/ses/sessiz.wav'),
   takas: require('../assets/ses/takas.wav'),

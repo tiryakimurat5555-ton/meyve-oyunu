@@ -2,7 +2,7 @@
 // (ilke: uzun soluklu oyun, ilk seviyelerde oyuncu zorlanmaz; bot ilk 10 seviyeyi en az ~%88 geçmeli).
 // meyve numaraları: 0 çilek, 1 limon, 2 üzüm, 3 portakal, 4 elma, 5 erik
 // hedef: { topla: { tur: adet }, buz: n, kasa: n } ya da { puan: n }; yildiz: [2 yıldız, 3 yıldız] puan eşikleri
-// duzen: 8 satır; '.' boş, 'b' buzlu meyve, 'k' kasa, 'K' iki katlı kasa, 's' kar, 'S' iki katlı kar, 't' tohum
+// duzen: 8 satır; '.' boş, 'b' buzlu meyve, 'k' kasa, 'K' iki katlı kasa, 's' kar, 'S' iki katlı kar, 't' tohum, 'v' sarmaşık
 // (hedefteki buz/kasa/kar katı/tohum sayısı düzendekiyle aynı olmalı)
 // ozel: hangi özel parçalar oluşabilir; yeni: bu seviyede tanıtılan özel parça
 export const SEVIYELER = [
@@ -61,9 +61,21 @@ export const SEVIYELER = [
   { no: 48, hamle: 24, tur: 6, hedef: { topla: { 1: 28, 5: 28 } }, yildiz: [6000, 7000], ozel: { cizgili: true, bomba: true, gokkusagi: true } },
   { no: 49, hamle: 47, tur: 6, hedef: { tohum: 4 }, yildiz: [9000, 10750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', 't.t..t.t', '........', '........', '........', '........', '........', '........'] },
   { no: 50, hamle: 43, tur: 6, hedef: { tohum: 3, kar: 20 }, yildiz: [8250, 10250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '.t..t..t', '........', '........', '........', 'ssSSSSss', 'ssssssss', '........'] },
+  // ---- 6. bölüm: Tropik Bahçe (sarmaşık) ----
+  { no: 51, hamle: 22, tur: 6, hedef: { sarmasik: 4 }, yildiz: [4250, 4500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '........', '........', '...vv...', '...vv...', '........', '........', '........'], yeni: 'sarmasik' },
+  { no: 52, hamle: 24, tur: 6, hedef: { sarmasik: 6 }, yildiz: [4500, 4750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '........', '..vvv...', '..vvv...', '........', '........', '........', '........'] },
+  { no: 53, hamle: 25, tur: 6, hedef: { sarmasik: 5, topla: { 0: 20 } }, yildiz: [5500, 6500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', 'v......v', '........', '...v....', '........', 'v......v', '........', '........'] },
+  { no: 54, hamle: 26, tur: 6, hedef: { puan: 7000 }, yildiz: [8500, 9500], ozel: { cizgili: true, bomba: true, gokkusagi: true } },
+  { no: 55, hamle: 37, tur: 6, hedef: { sarmasik: 8, kar: 12 }, yildiz: [7750, 9750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '........', '.vv..vv.', '.vv..vv.', '........', '........', 'ssssss..', '..ssssss'] },
+  { no: 56, hamle: 30, tur: 6, hedef: { sarmasik: 6, tohum: 2 }, yildiz: [6750, 8500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '..t..t..', '........', 'vvv..vvv', '........', '........', '........', '........'] },
+  { no: 57, hamle: 30, tur: 6, hedef: { sarmasik: 12 }, yildiz: [6250, 7500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['vv....vv', 'v......v', '........', '........', '........', '........', 'v......v', 'vv....vv'] },
+  { no: 58, hamle: 26, tur: 6, hedef: { topla: { 3: 30, 4: 30 } }, yildiz: [6250, 7250], ozel: { cizgili: true, bomba: true, gokkusagi: true } },
+  { no: 59, hamle: 30, tur: 6, hedef: { sarmasik: 8, kasa: 8 }, yildiz: [6000, 7000], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '..vvvv..', '..vvvv..', '........', '........', '........', '.kkkkkk.', '.k....k.'] },
+  { no: 60, hamle: 34, tur: 6, hedef: { sarmasik: 16, buz: 8 }, yildiz: [6750, 8000], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['vvv..vvv', 'v......v', '........', '..bbbb..', '..bbbb..', '........', 'v......v', 'vvv..vvv'] },
 ];
 
 export const TANITIM = {
+  sarmasik: { baslik: 'Yeni: Sarmaşık', metin: 'Sarmaşıklı meyve yer değiştiremez. Yanında ya da üstünde eşleşme yap, sarmaşık kesilsin. Dikkat: bir hamlede hiç sarmaşık kesmezsen yanındaki bir meyveye yayılır!' },
   kar: { baslik: 'Yeni: Kar', metin: 'Bazı karelerin zemini karla kaplı. Karın üstündeki meyveyi patlat, kar erisin. Bütün karı erit!' },
   kar2: { baslik: 'Yeni: Kalın kar', metin: 'Mavi kenarlı kar iki kat: erimesi için üstünde iki kez meyve patlatman gerekir.' },
   tohum: { baslik: 'Yeni: Tohum', metin: 'Tohumlar patlamaz. Altındaki meyveleri patlat, tohum aşağı insin. En alt sıraya ulaşınca çiçek açar!' },
@@ -93,5 +105,7 @@ export function hedefTamam(seviye, toplanan, puan) {
   if (h.kasa && (toplanan.kasa || 0) < h.kasa) return false;
   if (h.kar && (toplanan.kar || 0) < h.kar) return false;
   if (h.tohum && (toplanan.tohum || 0) < h.tohum) return false;
+  // Sarmaşık yayılabildiği için tahtada kalan sayısına bakılır (oyun her hamleden sonra toplanan.sarmasikKalan'ı yazar)
+  if (h.sarmasik && (toplanan.sarmasikKalan == null ? h.sarmasik : toplanan.sarmasikKalan) > 0) return false;
   return Object.entries(h.topla || {}).every(([tur, n]) => (toplanan[tur] || 0) >= n);
 }
