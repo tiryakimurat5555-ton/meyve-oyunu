@@ -463,3 +463,71 @@ export function duzenliTahta(duzen, rnd = Math.random) {
   }
   throw new Error('Düzenli tahta kurulamadı');
 }
+
+// ---------------- Otomatik oyun (bot) ----------------
+// Bütün geçerli hamleler (kilitli hücreler ve kasalar hariç)
+export function tumHamleler(t, oz, engel) {
+  const l = [];
+  const kilitli = (r, c) => t[r][c] === KASA || (engel && engel[r][c] != null);
+  for (let r = 0; r < SATIR; r++)
+    for (let c = 0; c < SUTUN; c++)
+      for (const b of [[r, c + 1], [r + 1, c]]) {
+        if (b[0] >= SATIR || b[1] >= SUTUN || kilitli(r, c) || kilitli(b[0], b[1])) continue;
+        if (birlesim(t, oz, [r, c], b) || eslesmeleriBul(takasla(t, [r, c], b)).length) l.push([[r, c], b]);
+      }
+  return l;
+}
+
+// Bir hamlenin sonucunu (zincirler dahil) hesaplar: { t, oz, engel, puan, sayac }
+export function hamleSonucu(t, oz, engel, a, b, izinli, rnd = Math.random) {
+  let puan = 0;
+  const sayac = { topla: {}, buz: 0, kasa: 0 };
+  const bir = birlesim(t, oz, a, b);
+  t = takasla(t, a, b);
+  oz = takasla(oz, a, b);
+  let ek = [];
+  if (bir) {
+    const merkez = bir.merkez[0] === a[0] && bir.merkez[1] === a[1] ? b : a;
+    for (const d of bir.donusum) if (!(d.hucre[0] === merkez[0] && d.hucre[1] === merkez[1])) oz[d.hucre[0]][d.hucre[1]] = d.ozel;
+    for (const h of [a, b]) if (oz[h[0]][h[1]] === 'gokkusagi' || bir.etki !== 'gokkusagi') oz[h[0]][h[1]] = null;
+    ek = [...etkiAlani(bir.etki, merkez[0], merkez[1], t, bir.hedefTur), a, b];
+  }
+  let zincir = 0;
+  for (;;) {
+    const adim = cozumAdimi(t, oz, { hamle: zincir === 0 ? [a, b] : null, ek, izinli, engel });
+    ek = [];
+    if (!adim.hucreler.length && !adim.olusan.length && !adim.kasaVurus.length) break;
+    zincir++;
+    if (zincir > 60) break;
+    for (const g of adim.gruplar) puan += grupPuani(g.hucreler.length, zincir);
+    const eslesen = new Set(silinecekler(adim.gruplar).map(([r, c]) => anahtar(r, c)));
+    puan += adim.hucreler.filter(([r, c]) => !eslesen.has(anahtar(r, c))).length * OZEL_HUCRE_PUANI * Math.max(1, zincir);
+    const u = adimUygula(t, oz, engel, adim, rnd);
+    t = u.t;
+    oz = u.oz;
+    engel = u.engel;
+    for (const k in u.sayac.topla) sayac.topla[k] = (sayac.topla[k] || 0) + u.sayac.topla[k];
+    sayac.buz += u.sayac.buz;
+    sayac.kasa += u.sayac.kasa;
+  }
+  return { t, oz, engel, puan, sayac };
+}
+
+// Hedefe en çok katkı yapan hamleyi seçer. hedef: seviye hedefi. Hamle yoksa null.
+export function enIyiHamle(t, oz, engel, hedef, izinli, enFazla = 30) {
+  const hl = tumHamleler(t, oz, engel);
+  if (!hl.length) return null;
+  const adaylar = hl.length <= enFazla ? hl : hl.slice().sort(() => Math.random() - 0.5).slice(0, enFazla);
+  let en = null;
+  for (const h of adaylar) {
+    const s = hamleSonucu(t, oz, engel, h[0], h[1], izinli);
+    let deger = s.puan / 100;
+    if (hedef.topla) deger += Object.keys(hedef.topla).reduce((a, k) => a + (s.sayac.topla[k] || 0), 0) * 100;
+    if (hedef.buz) deger += s.sayac.buz * 150;
+    if (hedef.kasa) deger += s.sayac.kasa * 150;
+    if (hedef.puan) deger = s.puan;
+    deger += Math.random() * 0.01; // eşitlikte çeşitlilik
+    if (!en || deger > en.deger) en = { deger, h };
+  }
+  return en.h;
+}

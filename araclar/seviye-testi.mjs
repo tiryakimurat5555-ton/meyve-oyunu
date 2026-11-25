@@ -30,40 +30,8 @@ function hamleler(t, oz, engel) {
   return l;
 }
 
-// Hamleyi uygular, zincirleri çözer.
-export function oyna(t, oz, engel, a, b, izinli) {
-  let puan = 0;
-  const sayac = { topla: {}, buz: 0, kasa: 0 };
-  const bir = M.birlesim(t, oz, a, b);
-  t = M.takasla(t, a, b);
-  oz = M.takasla(oz, a, b);
-  let ek = [];
-  if (bir) {
-    const merkez = bir.merkez[0] === a[0] && bir.merkez[1] === a[1] ? b : a;
-    for (const d of bir.donusum) if (!(d.hucre[0] === merkez[0] && d.hucre[1] === merkez[1])) oz[d.hucre[0]][d.hucre[1]] = d.ozel;
-    for (const h of [a, b]) if (oz[h[0]][h[1]] === 'gokkusagi' || bir.etki !== 'gokkusagi') oz[h[0]][h[1]] = null;
-    ek = [...M.etkiAlani(bir.etki, merkez[0], merkez[1], t, bir.hedefTur), a, b];
-  }
-  let zincir = 0;
-  for (;;) {
-    const adim = M.cozumAdimi(t, oz, { hamle: zincir === 0 ? [a, b] : null, ek, izinli, engel });
-    ek = [];
-    if (!adim.hucreler.length && !adim.olusan.length && !adim.kasaVurus.length) break;
-    zincir++;
-    if (zincir > 60) throw new Error('sonsuz zincir');
-    for (const g of adim.gruplar) puan += M.grupPuani(g.hucreler.length, zincir);
-    const eslesen = new Set(M.silinecekler(adim.gruplar).map(([r, c]) => r * 8 + c));
-    puan += adim.hucreler.filter(([r, c]) => !eslesen.has(r * 8 + c)).length * M.OZEL_HUCRE_PUANI * Math.max(1, zincir);
-    const u = M.adimUygula(t, oz, engel, adim, rnd);
-    t = u.t;
-    oz = u.oz;
-    engel = u.engel;
-    for (const k in u.sayac.topla) sayac.topla[k] = (sayac.topla[k] || 0) + u.sayac.topla[k];
-    sayac.buz += u.sayac.buz;
-    sayac.kasa += u.sayac.kasa;
-  }
-  return { t, oz, engel, puan, sayac };
-}
+// Hamleyi uygular, zincirleri çözer (oyundaki bot ile aynı fonksiyon).
+export const oyna = (t, oz, engel, a, b, izinli) => M.hamleSonucu(t, oz, engel, a, b, izinli, rnd);
 
 const degisik = process.env.SEVIYE ? JSON.parse(process.env.SEVIYE) : null;
 const aralik = process.env.ARALIK ? process.env.ARALIK.split('-').map(Number) : null;

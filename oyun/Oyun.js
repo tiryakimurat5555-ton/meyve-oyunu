@@ -30,6 +30,7 @@ import {
 const OVGU = ['', '', 'Nice!', 'Great!', 'Amazing!', 'Fantastic!'];
 const IPUCU_SURE = 7000;
 const SENLIK_EN_FAZLA = 15;
+const BOT_ARA = 1100; // bot hamleleri arası bekleme (ms)
 const OZEL_AD = { satir: 'satır temizler', sutun: 'sütun temizler', bomba: 'bomba', gokkusagi: '' };
 
 let sonKimlik = 0;
@@ -78,7 +79,7 @@ function kalanMetni(seviye, toplanan, puan) {
   return l.join(', ');
 }
 
-export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki, tekrar }) {
+export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki, tekrar, bot = false, botDegistir }) {
   const ek = useSafeAreaInsets();
   const { width: EG, height: EY } = useWindowDimensions();
   const TAHTA = Math.floor(Math.min(EG - 20, EY * 0.58, 560));
@@ -109,6 +110,9 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
   const ipucuParcalar = useRef([]);
   const HRef = useRef(H);
   HRef.current = H;
+  // Bot (otomatik oyun): ekran görüntüsü ve deneme için. Açıkken her hamleden sonra kısa bekleyip en iyi hamleyi yapar.
+  const botRef = useRef(bot);
+  botRef.current = bot;
 
   const duyur = (metin) => {
     if (voRef.current && metin) AccessibilityInfo.announceForAccessibility(metin);
@@ -237,6 +241,17 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
       clearInterval(canli);
     };
   }, []);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      if (!botRef.current || mesgul.current || bittiRef.current || !izgara.current || asamaRef.current !== 'oyun') return;
+      const h = M.enIyiHamle(turIzgarasi(), ozIzgarasi(), engelIzgarasi(), seviye.hedef, seviye.ozel);
+      if (h) fonk.current.hamleYap(h[0], h[1]);
+    }, BOT_ARA);
+    return () => clearInterval(id);
+  }, []);
+  const asamaRef = useRef('giris');
+  asamaRef.current = asama;
 
   const basla = () => {
     setAsama('oyun');
@@ -887,6 +902,18 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
         {ovgu && <Ovgu key={ovgu.id} metin={ovgu.metin} bitti={() => setOvgu((o) => (o && o.id === ovgu.id ? null : o))} />}
       </Animated.View>
 
+      {/* Bot (otomatik oyun) düğmesi: tahtanın altında (sağ üst köşede Expo Go'nun dişli düğmesi duruyor) */}
+      <Pressable
+        accessibilityRole="switch"
+        accessibilityLabel="Otomatik oyun"
+        accessibilityState={{ checked: !!bot }}
+        onPress={() => botDegistir && botDegistir(!bot)}
+        hitSlop={10}
+        style={({ pressed }) => [yst.geri, yst.bot, bot && yst.botAcik, { marginTop: 16 }, pressed && { opacity: 0.6 }]}
+      >
+        <Text style={[yst.geriYazi, bot && { color: '#ffffff' }]}>{bot ? 'Bot: Açık' : 'Bot: Kapalı'}</Text>
+      </Pressable>
+
       {asama === 'giris' && (
         <View style={st.perde} accessibilityViewIsModal>
           <GirisKart>
@@ -1059,6 +1086,8 @@ const yst = {
   ustSatir: { width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 12, marginBottom: 4 },
   geri: { backgroundColor: 'rgba(255,255,255,0.85)', borderRadius: 18, paddingVertical: 7, paddingHorizontal: 12, minWidth: 96 },
   geriYazi: { fontSize: 15, fontWeight: '800', color: '#2b5876' },
+  bot: { alignItems: 'center' },
+  botAcik: { backgroundColor: '#2fae4f' },
   seviyeBaslik: { fontSize: 20, fontWeight: '900', color: '#24384a' },
   hedefKutu: { minWidth: 110, paddingHorizontal: 10 },
   hedefSayi: { fontSize: 15, fontWeight: '900', color: '#24384a' },

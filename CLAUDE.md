@@ -27,6 +27,9 @@ Murat'ın meyve temalı 3'lü eşleştirme oyunu (Kasım 2026). Geçici ad "Meyv
   Simülasyon mulberry32 üreteci kullanır (eski LCG tekrarlı dizilerle sonuçları çarpıtıyordu).
 - Zincir övgü yazıları İngilizce (Nice!, Great!, Amazing!, Fantastic!) — Murat: global oyun. Ödüllü reklam sonraki aşama.
 - Ekranda VoiceOver'a özel uyarı yazıları olmasın.
+- BOT düğmesi (25 Kasım, Murat istedi): oyun ekranında tahtanın altında "Bot: Kapalı/Açık"; açıkken M.enIyiHamle ile
+  1,1 sn arayla kendi oynar (ekran görüntüsü/video için). Açık kalırsa sonraki seviyede de oynar. Sağ üstte Expo Go dişlisi
+  olduğu için oraya düğme koyma. MAĞAZA SÜRÜMÜNDEN ÖNCE kaldırılmalı ya da gizlenmeli (Murat'a sor).
 
 ## Yayın
 - Murat'ın Expo derleme dakikası yok. main'e her gönderimde `.github/workflows/expo-guncelleme.yml` GitHub Actions'ta

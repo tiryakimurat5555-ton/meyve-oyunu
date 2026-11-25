@@ -16,6 +16,8 @@ const BOS = { acik: 1, yildiz: {}, enIyi: {} };
 export default function App() {
   const [ilerleme, setIlerleme] = useState(null);
   const [ekran, setEkran] = useState({ ad: 'liste' });
+  // Bot açık kalırsa sonraki seviyede de oynamaya devam eder
+  const [bot, setBot] = useState(false);
 
   useEffect(() => {
     sesleriHazirla();
@@ -53,6 +55,8 @@ export default function App() {
         geri={() => setEkran({ ad: 'liste' })}
         sonraki={() => oyna(Math.min(SEVIYELER.length, seviye.no + 1))}
         tekrar={() => oyna(seviye.no)}
+        bot={bot}
+        botDegistir={setBot}
       />
     );
   }
