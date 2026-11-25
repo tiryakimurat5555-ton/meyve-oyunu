@@ -353,5 +353,19 @@ for (let i = 0; i < 30; i++) {
   const z = M.zincirCoz(t, oz, en, null, { rnd: () => 0.3 });
   dogru(z.sayac.ari >= 1 && z.sayac.buz >= 1 && z.t.flat().includes(M.KOVAN), 'kovan kalmalı, arı buzu kırmalı: ' + JSON.stringify(z.sayac));
 }
-console.log(hata ? `${hata} HATA` : 'ENGEL TESTLERİ GEÇTİ (kar, tohum sarmaşık, fıçı, sis, delik, çiçek, saat, bant, akıntı kapısı, kafes, bukalemun, balon, bal, kurbağa, fener, yerçekimi yönü ve kovan dahil)');
+{
+  // Domino: bir tanesine vurulunca bitişik aynı yöndekiler de devrilir, uçlar patlar
+  const t = [];
+  for (let r = 0; r < 8; r++) t.push(Array.from({ length: 8 }, (_, c) => (r * 3 + c * 2 + (r % 2)) % 6));
+  const oz = t.map((s) => s.map(() => null));
+  const en = t.map((s) => s.map(() => null));
+  for (const c of [2, 3, 4]) {
+    t[4][c] = M.DOMINO;
+    en[4][c] = 'domy';
+  }
+  const ad = M.cozumAdimi(t, oz, { engel: en, ek: [[4, 2]] });
+  dogru(ad.dominolar.length === 3, '3 domino devrilmeli: ' + ad.dominolar.length);
+  dogru(ad.hucreler.some(([r, c]) => r === 4 && c === 1) && ad.hucreler.some(([r, c]) => r === 4 && c === 5), 'uçlar patlamalı');
+}
+console.log(hata ? `${hata} HATA` : 'ENGEL TESTLERİ GEÇTİ (kar, tohum sarmaşık, fıçı, sis, delik, çiçek, saat, bant, akıntı kapısı, kafes, bukalemun, balon, bal, kurbağa, fener, yerçekimi yönü, kovan ve domino dahil)');
 process.exit(hata ? 1 : 0);

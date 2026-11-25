@@ -528,6 +528,24 @@ const RENKLER = [
       { tip: 'ari' },
     ],
   },
+  // 27: Domino Bahçesi (oyun parkı: açık gök, düzenli çimenler, renkli yapraklar)
+  {
+    gok: ['#9ad0ff', '#f4f8ff'],
+    gunes: '#ffe680',
+    gunesKenar: '#ffc233',
+    tepeArka: ['#86cc72', '#72ba5e'],
+    tepeArka2: ['#96d47e', '#80c46a'],
+    tepeOn: ['#b0e094', '#9cd480'],
+    tac: ['#4aa04a', '#3a8a3a', '#64b864'],
+    nokta: ['#ffffff', '#24384a', '#ffd23f'],
+    cicek: ['#ffffff', '#ff8fc7', '#ffd23f'],
+    parca: [
+      { tip: 'yaprak', renk: '#ff5c8a' },
+      { tip: 'yaprak', renk: '#4cc3ff' },
+      { tip: 'yaprak', renk: '#ffd21f' },
+      { tip: 'kelebek', renk: '#ffffff' },
+    ],
+  },
 ];
 export const geceMi = (bolum) => !!(RENKLER[bolum] && RENKLER[bolum].gece);
 

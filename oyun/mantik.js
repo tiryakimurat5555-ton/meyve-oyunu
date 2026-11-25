@@ -42,6 +42,11 @@ export const KURBAGA = 28;
 // Fener (Fener Bahçesi): M.FENER; takas edilmez, eşleşmez, düşer. Yanındaki eşleşme işlemez; yalnız özel parça alanına girince
 // (ya da çekiçle) yanar ve gider (hedef.fener). Düzende 'l'.
 export const FENER = 29;
+// Domino (Domino Bahçesi): M.DOMINO, engel 'domy' (yatay) / 'domd' (dikey). Takas yok, eşleşmez, düşer. Yanında eşleşme ya da özel
+// parça değince devrilir: aynı yönde yan yana bitişik bütün dominolar birlikte devrilir ve dizinin iki ucundaki hücreler de patlar
+// (hedef.domino). Düzende 'd' yatay, 'D' dikey.
+export const DOMINO = 32;
+export const dominoMi = (v) => v === DOMINO;
 export const KURBAGA_DOY = 5;
 export const kurbMi = (e) => typeof e === 'string' && e.startsWith('kurb');
 export const kurbDeger = (e) => Number(e.slice(4));
@@ -190,7 +195,7 @@ export function takasla(t, a, b) {
 // Eşleşme oluşturan ilk takası bulur (ipucu ve "hamle kaldı mı" denetimi için). Yoksa null.
 // kilit: takas edilemeyen hücreler (buzlu meyve, kasa). Verilmezse kasalar yine de kilitli sayılır.
 export function hamleBul(t, oz, kilit) {
-  const kilitli = (r, c) => kasaMi(t[r][c]) || gecilmez(t[r][c]) || t[r][c] === FENER || (kilit && kilit[r][c]);
+  const kilitli = (r, c) => kasaMi(t[r][c]) || gecilmez(t[r][c]) || t[r][c] === FENER || t[r][c] === DOMINO || (kilit && kilit[r][c]);
   // Gökkuşağı her komşusuyla takas edilebilir; iki özel parça yan yanaysa birleşim de bir hamledir
   for (let r = 0; r < SATIR; r++)
     for (let c = 0; c < SUTUN; c++) {
@@ -522,7 +527,7 @@ export function cozumAdimi(t, oz, { hamle = null, ek = [], izinli = null, engel 
   for (const [r, c] of silinecekler(gruplar))
     for (const [i, j] of [[r - 1, c], [r + 1, c], [r, c - 1], [r, c + 1]])
       if (i >= 0 && j >= 0 && i < SATIR && j < SUTUN && t[i][j] === BALON) balon.set(anahtar(i, j), [i, j]);
-  let hucreler = g.hucreler.filter(([r, c]) => !kasaMi(t[r][c]) && !inenMi(t[r][c]) && t[r][c] !== BALON && t[r][c] !== KURBAGA && t[r][c] !== FENER && !(engel && engel[r][c] === 'kafes'));
+  let hucreler = g.hucreler.filter(([r, c]) => !kasaMi(t[r][c]) && !inenMi(t[r][c]) && t[r][c] !== BALON && t[r][c] !== KURBAGA && t[r][c] !== FENER && t[r][c] !== DOMINO && !(engel && engel[r][c] === 'kafes'));
   if (buzKomsuKirar && engel) {
     // Eşleşmeye komşu buzlar da kırılır (meyve yerinde kalır): buzlu hücre listeye eklenir
     const var_ = new Set(hucreler.map(([r, c]) => anahtar(r, c)));
@@ -540,7 +545,32 @@ export function cozumAdimi(t, oz, { hamle = null, ek = [], izinli = null, engel 
     if (inenMi(t[r][c])) tohumlar.push([r, c]);
   }
   const fenerler = g.hucreler.filter(([r, c]) => t[r][c] === FENER);
-  return { gruplar, olusan, hucreler, fenerler, tetiklenen: g.tetiklenen, kasaVurus: [...vur.values()], tohumlar, balonlar: [...balon.values()].sort((a, b) => a[0] - b[0]) };
+  // Dominolar: özel parça alanındakiler ve eşleşmeye komşu olanlar; bitişik aynı yöndekilerle birlikte devrilir
+  const dom = new Map();
+  const dVur = [];
+  for (const [r, c] of g.hucreler) if (t[r][c] === DOMINO) dVur.push([r, c]);
+  for (const [r, c] of silinecekler(gruplar))
+    for (const [i, j] of [[r - 1, c], [r + 1, c], [r, c - 1], [r, c + 1]])
+      if (i >= 0 && j >= 0 && i < SATIR && j < SUTUN && t[i][j] === DOMINO) dVur.push([i, j]);
+  const ucHucre = new Map();
+  for (const [r0, c0] of dVur) {
+    if (dom.has(anahtar(r0, c0))) continue;
+    const yatay = !engel || engel[r0][c0] !== 'domd';
+    const [dr, dc] = yatay ? [0, 1] : [1, 0];
+    const ayni = (r, c) => r >= 0 && c >= 0 && r < SATIR && c < SUTUN && t[r][c] === DOMINO && (!engel || (engel[r][c] === 'domd') === !yatay);
+    let [ar, ac] = [r0, c0];
+    while (ayni(ar - dr, ac - dc)) [ar, ac] = [ar - dr, ac - dc];
+    let [br, bc] = [r0, c0];
+    while (ayni(br + dr, bc + dc)) [br, bc] = [br + dr, bc + dc];
+    for (let r = ar, c = ac; ; r += dr, c += dc) {
+      dom.set(anahtar(r, c), [r, c]);
+      if (r === br && c === bc) break;
+    }
+    for (const [ur, uc] of [[ar - dr, ac - dc], [br + dr, bc + dc]])
+      if (ur >= 0 && uc >= 0 && ur < SATIR && uc < SUTUN && renkli(t[ur][uc]) && !(engel && engel[ur][uc] === 'kafes')) ucHucre.set(anahtar(ur, uc), [ur, uc]);
+  }
+  for (const [k, h] of ucHucre) if (!hucreler.some(([r, c]) => anahtar(r, c) === k)) hucreler.push(h);
+  return { gruplar, olusan, hucreler, fenerler, dominolar: [...dom.values()], tetiklenen: g.tetiklenen, kasaVurus: [...vur.values()], tohumlar, balonlar: [...balon.values()].sort((a, b) => a[0] - b[0]) };
 }
 
 // Çiçek (Arı Bahçesi): zemin değeri CICEK + meyve türü (10-15). Parçayla düşmez. Üstünde KENDİ RENGİNDEKİ meyve temizlenince
@@ -570,7 +600,7 @@ export function karEriyen(adim, engel, zemin, t = null) {
   return [...l.values()];
 }
 
-export const adimBos = (adim) => !adim.hucreler.length && !adim.olusan.length && !adim.kasaVurus.length && !(adim.tohumlar && adim.tohumlar.length) && !(adim.balonlar && adim.balonlar.length) && !(adim.fenerler && adim.fenerler.length);
+export const adimBos = (adim) => !adim.hucreler.length && !adim.olusan.length && !adim.kasaVurus.length && !(adim.tohumlar && adim.tohumlar.length) && !(adim.balonlar && adim.balonlar.length) && !(adim.fenerler && adim.fenerler.length) && !(adim.dominolar && adim.dominolar.length);
 
 // Bir çözüm adımını ızgaralara uygular (bot ve testler için; oyun ekranı aynı kuralları animasyonla uygular).
 // Dönüş: { t, oz, engel, sayac: { topla:{tur:n}, buz, kasa } } — yerçekimi ve yeni meyveler dahil.
@@ -677,6 +707,12 @@ export function adimUygula(t, oz, engel, adim, rnd = Math.random, zemin = null) 
     const k = 'ozel_' + ozelSiparisAdi(o.ozel);
     sayac[k] = (sayac[k] || 0) + 1;
   }
+  for (const [r, c] of adim.dominolar || []) {
+    t[r][c] = -1;
+    oz[r][c] = null;
+    engel[r][c] = null;
+    sayac.domino = (sayac.domino || 0) + 1;
+  }
   for (const [r, c] of adim.fenerler || []) {
     t[r][c] = -1;
     oz[r][c] = null;
@@ -695,7 +731,7 @@ export function adimUygula(t, oz, engel, adim, rnd = Math.random, zemin = null) 
 const ODUL_OZEL = ['satir', 'sutun', 'bomba'];
 
 // Seviye düzeninden (8 satırlık metin: '.' boş, 'b' buz, 'k' kasa, 'K' iki katlı kasa, 's' kar, 'S' iki katlı kar,
-// 't' tohum, 'v' sarmaşık, 'g' sis, 'x' delik, 'o' balon, 'h' bal, 'q' kurbağa, 'l' fener, 'w' arı kovanı, 'z' saatli meyve, 'm' mantar, 'y' yumurta (2 kat, içinden civciv), 'c' kafesli meyve, 'a' anahtar, 'u' bukalemun, '1'-'6' çiçek (çilek, limon, üzüm, portakal, elma, erik), 'f' fıçı, 'F' ödüllü fıçı) başlangıç tahtası kurar. Dönüş: { t, oz, engel, zemin } — eşleşmesiz ve en az bir hamlesi olan.
+// 't' tohum, 'v' sarmaşık, 'g' sis, 'x' delik, 'o' balon, 'h' bal, 'q' kurbağa, 'l' fener, 'w' arı kovanı, 'd'/'D' yatay/dikey domino, 'z' saatli meyve, 'm' mantar, 'y' yumurta (2 kat, içinden civciv), 'c' kafesli meyve, 'a' anahtar, 'u' bukalemun, '1'-'6' çiçek (çilek, limon, üzüm, portakal, elma, erik), 'f' fıçı, 'F' ödüllü fıçı) başlangıç tahtası kurar. Dönüş: { t, oz, engel, zemin } — eşleşmesiz ve en az bir hamlesi olan.
 export function duzenliTahta(duzen, rnd = Math.random) {
   for (let d = 0; d < 300; d++) {
     const t = yeniTahta(rnd);
@@ -723,6 +759,10 @@ export function duzenliTahta(duzen, rnd = Math.random) {
           else if (h === 'x') t[r][c] = DELIK;
           else if (h === 'o') t[r][c] = BALON;
           else if (h === 'l') t[r][c] = FENER;
+          else if (h === 'd' || h === 'D') {
+            t[r][c] = DOMINO;
+            engel[r][c] = h === 'd' ? 'domy' : 'domd';
+          }
           else if (h === 'w') {
             t[r][c] = KOVAN;
             engel[r][c] = 9;
@@ -1024,7 +1064,7 @@ export function inenDerinligi(t) {
 export const inenDegeri = (s, d0) => INEN_SAYAC.reduce((a, k) => a + (s.sayac[k] || 0) * 400, 0) + (inenDerinligi(s.t) - d0) * 60;
 
 // Bot: hamle sonucunun hedefe katkısı
-export const HEDEF_AGIRLIK = { buz: 150, kasa: 150, kar: 150, sarmasik: 170, fici: 200, sis: 160, cicek: 180, saat: 220, mantar: 180, kafes: 300, bukalemun: 200, balon: 400, bal: 170, fener: 500, ari: 120 };
+export const HEDEF_AGIRLIK = { buz: 150, kasa: 150, kar: 150, sarmasik: 170, fici: 200, sis: 160, cicek: 180, saat: 220, mantar: 180, kafes: 300, bukalemun: 200, balon: 400, bal: 170, fener: 500, ari: 120, domino: 220 };
 export function hamleDegeri(s, hedef, derin0 = 0) {
   if (hedef.puan) return s.puan;
   let d = s.puan / 100;
@@ -1063,7 +1103,7 @@ export function sayacEkle(hedef, ek) {
 }
 
 // Düzen harfi -> hedef anahtarı ve sayısı (düzen ile hedef tutarlı mı denetimi için)
-const DUZEN_HEDEF = { b: ['buz', 1], k: ['kasa', 1], K: ['kasa', 1], s: ['kar', 1], S: ['kar', 2], t: ['tohum', 1], v: ['sarmasik', 1], f: ['fici', 1], F: ['fici', 1], g: ['sis', 1], 1: ['cicek', 1], 2: ['cicek', 1], 3: ['cicek', 1], 4: ['cicek', 1], 5: ['cicek', 1], 6: ['cicek', 1], z: ['saat', 1], m: ['mantar', 1], y: ['civciv', 1], c: ['kafes', 1], u: ['bukalemun', 1], o: ['balon', 1], h: ['bal', 1], q: ['kurbaga', 1], l: ['fener', 1] };
+const DUZEN_HEDEF = { b: ['buz', 1], k: ['kasa', 1], K: ['kasa', 1], s: ['kar', 1], S: ['kar', 2], t: ['tohum', 1], v: ['sarmasik', 1], f: ['fici', 1], F: ['fici', 1], g: ['sis', 1], 1: ['cicek', 1], 2: ['cicek', 1], 3: ['cicek', 1], 4: ['cicek', 1], 5: ['cicek', 1], 6: ['cicek', 1], z: ['saat', 1], m: ['mantar', 1], y: ['civciv', 1], c: ['kafes', 1], u: ['bukalemun', 1], o: ['balon', 1], h: ['bal', 1], q: ['kurbaga', 1], l: ['fener', 1], d: ['domino', 1], D: ['domino', 1] };
 export const DUZEN_HEDEF_ANAHTAR = [...new Set(Object.values(DUZEN_HEDEF).map((x) => x[0]))];
 export function duzenSayilari(duzen) {
   const say = {};

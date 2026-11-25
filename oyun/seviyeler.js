@@ -303,9 +303,21 @@ export const SEVIYELER = [
   { no: 268, hamle: 30, tur: 6, hedef: { bukalemun: 6, cicek: 6 }, yildiz: [7000, 8500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '.u.uu.u.', '........', '..1..2..', '..3..4..', '..5..6..', '..u..u..', '........'] },
   { no: 269, hamle: 14, tur: 6, hedef: { topla: { 0: 20, 2: 20 } }, yildiz: [4000, 5000], ozel: { cizgili: true, bomba: true, gokkusagi: true }, bant: [{ satir: 3, yon: -1 }] },
   { no: 270, hamle: 26, tur: 6, hedef: { cicek: 6, mantar: 4, bukalemun: 4, buz: 6 }, yildiz: [7250, 8750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, bant: [{ satir: 4, yon: 1 }], duzen: ['m......m', '..u..u..', '..1..2..', '.bbbbbb.', '........', '..3..4..', 'm.5..6.m', '..u..u..'] },
+  // ---- 28. bölüm: Domino Bahçesi (domino: vurulunca bitişik aynı yöndekilerle devrilir, uçlardaki meyveleri de patlatır) ----
+  { no: 271, hamle: 10, tur: 6, hedef: { domino: 4 }, yildiz: [2250, 2500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '........', '........', '..dddd..', '........', '........', '........', '........'], yeni: 'domino' },
+  { no: 272, hamle: 9, tur: 6, hedef: { domino: 8 }, yildiz: [2000, 2500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '.dddd...', '........', '........', '...dddd.', '........', '........', '........'] },
+  { no: 273, hamle: 10, tur: 6, hedef: { domino: 6, topla: { 2: 14 } }, yildiz: [2500, 3250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '...D....', '...D....', '...D....', '....D...', '....D...', '....D...', '........'] },
+  { no: 274, hamle: 10, tur: 6, hedef: { domino: 6, buz: 8 }, yildiz: [2250, 2750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '.bbbbbb.', '.b....b.', '........', '.ddd.ddd', '........', '........', '........'] },
+  { no: 275, hamle: 22, tur: 6, hedef: { puan: 5500 }, yildiz: [6750, 8000], ozel: { cizgili: true, bomba: true, gokkusagi: true } },
+  { no: 276, hamle: 12, tur: 6, hedef: { domino: 14 }, yildiz: [2750, 3250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['dddd....', '....dddd', '........', 'D......D', 'D......D', 'D......D', '........', '........'] },
+  { no: 277, hamle: 20, tur: 6, hedef: { domino: 8, kar: 8 }, yildiz: [4750, 6000], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '.dddddd.', '........', '...DD...', '........', '........', 'ssssssss', '........'] },
+  { no: 278, hamle: 12, tur: 6, hedef: { domino: 8, kasa: 4 }, yildiz: [2500, 3250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', 'dd....dd', '........', '..D..D..', '..D..D..', '........', '..kkkk..', '........'] },
+  { no: 279, hamle: 15, tur: 6, hedef: { topla: { 1: 20, 4: 20 } }, yildiz: [3750, 5000], ozel: { cizgili: true, bomba: true, gokkusagi: true } },
+  { no: 280, hamle: 20, tur: 6, hedef: { domino: 12, sis: 4, buz: 6 }, yildiz: [4250, 5000], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['gg....gg', 'dddd....', '....dddd', '.bbbbbb.', '........', 'D......D', 'D......D', '........'] },
 ];
 
 export const TANITIM = {
+  domino: { baslik: 'Yeni: Domino', metin: 'Domino taşlarından birinin yanında eşleşme yap ya da özel meyveyle vur: aynı yönde yan yana dizilmiş bütün dominolar birlikte devrilir ve dizinin iki ucundaki meyveleri de patlatır!' },
   kovan: { baslik: 'Yeni: Arı kovanı', metin: 'Arı kovanı kırılmaz, ama yanında eşleşme yapınca ya da özel meyve değince içinden yardımcı bir arı çıkar. Arı tahtadaki rastgele bir engele uçup vurur: buz, kar, sis, kasa, bal ya da fener!' },
   uzay: { baslik: 'Yeni: Uzay yerçekimi', metin: 'Uzay bahçesinde yerçekimi döner! Birkaç hamlede bir meyveler başka yöne düşmeye başlar: yukarı, sola ya da sağa. Başlıktaki ok yönü gösterir; yön değişince sesli olarak da söylenir. Tohumlar da o yöndeki kenara iner.' },
   fener: { baslik: 'Yeni: Fener', metin: 'Gece bahçesinde sönük fenerler var. Fener yanındaki eşleşmeyle yanmaz: çizgili, bomba ya da gökkuşağı meyvenin patlaması değmeli. Çekiç de yakar. Bütün fenerleri yak!' },

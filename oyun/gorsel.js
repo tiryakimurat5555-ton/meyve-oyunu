@@ -10,6 +10,7 @@ export const BALON_TUR = 27; // mantik.js BALON
 export const KURBAGA_TUR = 28; // mantik.js KURBAGA
 export const FENER_TUR = 29; // mantik.js FENER
 export const KOVAN_TUR = 31; // mantik.js KOVAN
+export const DOMINO_TUR = 32; // mantik.js DOMINO
 const KURBAGA_DOY = 5;
 export const FICI_TUR = 22; // mantik.js FICI
 export const FICI_ODUL_TUR = 23; // mantik.js FICI_ODUL
@@ -540,6 +541,32 @@ export function BukalemunIkon({ boy = 26 }) {
   );
 }
 
+// ---------- Domino ----------
+export function Domino({ H, dikey = false }) {
+  const uzun = H * 0.88;
+  const kisa = H * 0.48;
+  const w = dikey ? kisa : uzun;
+  const h = dikey ? uzun : kisa;
+  const d = H * 0.085;
+  // Yatay için (x, y) oranları; dikeyde eksenler yer değiştirir. Sol yarıda 2, sağ yarıda 3 nokta.
+  const noktalar = [[0.2, 0.3], [0.34, 0.7], [0.68, 0.27], [0.79, 0.5], [0.9, 0.73]];
+  return (
+    <View style={{ width: H, height: H, alignItems: 'center', justifyContent: 'center' }}>
+      <View style={{ width: w, height: h, borderRadius: H * 0.1, backgroundColor: '#fffdf6', borderWidth: 2.5, borderColor: '#24384a' }}>
+        <View style={dikey ? { position: 'absolute', left: w * 0.12, right: w * 0.12, top: h / 2 - 1.5, height: 2.5, backgroundColor: '#24384a' } : { position: 'absolute', top: h * 0.12, bottom: h * 0.12, left: w / 2 - 1.5, width: 2.5, backgroundColor: '#24384a' }} />
+        {noktalar.map(([a, b], i) => {
+          const x = dikey ? b * w : a * w;
+          const y = dikey ? a * h : b * h;
+          return <View key={i} style={{ position: 'absolute', left: x - d / 2 - 2.5, top: y - d / 2 - 2.5, width: d, height: d, borderRadius: d, backgroundColor: '#24384a' }} />;
+        })}
+      </View>
+    </View>
+  );
+}
+export function DominoIkon({ boy = 26 }) {
+  return <Domino H={boy * 1.1} />;
+}
+
 // ---------- Arı kovanı ----------
 export function Kovan({ H }) {
   const b = H * 0.86;
@@ -761,7 +788,7 @@ export function Kirilma({ e, H, bitti }) {
   const yaprak = e.tur === 'yaprak' || mantar;
   const buz = e.tur === 'buz' || kar;
   const adet = e.az ? 3 : 7;
-  const renkler = bal ? ['#ffb726', '#ffd36b', '#e89a00'] : civciv ? (e.tur === 'kafes' ? ['#7f8e9c', '#c4ced8', '#ffd23f'] : e.tur === 'yumurta' ? ['#fff7e6', '#e3d2a8', '#ffffff'] : ['#ffd93a', '#ffe680', '#ffc61a']) : mantar ? ['#e8402e', '#ffffff', '#c9a77a'] : yaprak ? ['#4fbf3a', '#2f8a28', '#6ad957'] : sis ? ['#d3d7ee', '#ffffff', '#b9bfdc'] : kar ? ['#ffffff', '#e4f3ff', '#ffffff'] : buz ? ['#e9f7ff', '#a7dcff', '#ffffff'] : ['#cf8f48', '#8f5a24', '#e0aa66'];
+  const renkler = e.tur === 'domino' ? ['#fffdf6', '#24384a', '#e8e2d0'] : bal ? ['#ffb726', '#ffd36b', '#e89a00'] : civciv ? (e.tur === 'kafes' ? ['#7f8e9c', '#c4ced8', '#ffd23f'] : e.tur === 'yumurta' ? ['#fff7e6', '#e3d2a8', '#ffffff'] : ['#ffd93a', '#ffe680', '#ffc61a']) : mantar ? ['#e8402e', '#ffffff', '#c9a77a'] : yaprak ? ['#4fbf3a', '#2f8a28', '#6ad957'] : sis ? ['#d3d7ee', '#ffffff', '#b9bfdc'] : kar ? ['#ffffff', '#e4f3ff', '#ffffff'] : buz ? ['#e9f7ff', '#a7dcff', '#ffffff'] : ['#cf8f48', '#8f5a24', '#e0aa66'];
   return (
     <>
       {!e.az && (
@@ -1192,6 +1219,8 @@ export function Parca({ p, H }) {
         <Anahtar H={H} />
       ) : p.tur === BALON_TUR ? (
         <Balon H={H} />
+      ) : p.tur === DOMINO_TUR ? (
+        <Domino H={H} dikey={p.dom === 'domd'} />
       ) : p.tur === FENER_TUR ? (
         <Fener H={H} />
       ) : p.tur === KURBAGA_TUR ? (

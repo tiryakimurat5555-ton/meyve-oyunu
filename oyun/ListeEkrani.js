@@ -35,6 +35,7 @@ const BOLUMLER = [
   { ad: 'Uzay Bahçesi', ilk: 241, son: 250, renk: '#6a5ab0' },
   { ad: 'Kovan Arıları', ilk: 251, son: 260, renk: '#f0b02a' },
   { ad: 'Yaz Dönüşü', ilk: 261, son: 270, renk: '#ffb31c' },
+  { ad: 'Domino Bahçesi', ilk: 271, son: 280, renk: '#24384a' },
 ];
 
 export default function ListeEkrani({ ilerleme, sec, ayarlarAc }) {
