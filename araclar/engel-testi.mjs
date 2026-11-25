@@ -323,5 +323,22 @@ for (let i = 0; i < 30; i++) {
   const u = M.adimUygula(t, oz, en, ad, () => 0.3);
   dogru(ad.fenerler.length === 1 && u.sayac.fener === 1, 'özel parça alanı feneri yakmalı');
 }
-console.log(hata ? `${hata} HATA` : 'ENGEL TESTLERİ GEÇTİ (kar, tohum sarmaşık, fıçı, sis, delik, çiçek, saat, bant, akıntı kapısı, kafes, bukalemun, balon, bal, kurbağa ve fener dahil)');
+{
+  // Uzay: yerçekimi sola dönünce boşluk sağdan dolar, meyve sola kayar
+  const t = [];
+  for (let r = 0; r < 8; r++) t.push(Array.from({ length: 8 }, (_, c) => (r * 3 + c * 2 + (r % 2)) % 6));
+  M.yonAyarla('sol');
+  const t2 = t.map((s) => s.slice());
+  t2[4][0] = -1;
+  const y = M.yercekimi(t2, () => 0.2);
+  dogru(y.kaymalar.some((k) => k.eski[0] === 4 && k.eski[1] === 1 && k.yeni[1] === 0), 'sola düşmeli');
+  dogru(y.yeniler.length === 1 && y.yeniler[0].yeni[1] === 7 && y.yeniler[0].yeni[0] === 4, 'yeni meyve sağ kenardan gelmeli');
+  M.yonAyarla('yukari');
+  const t3 = t.map((s) => s.slice());
+  t3[0][2] = -1;
+  const y3 = M.yercekimi(t3, () => 0.2);
+  dogru(y3.yeniler[0].yeni[0] === 7 && y3.kaymalar.some((k) => k.eski[0] === 1 && k.yeni[0] === 0), 'yukarı düşmeli');
+  M.yonAyarla('asagi');
+}
+console.log(hata ? `${hata} HATA` : 'ENGEL TESTLERİ GEÇTİ (kar, tohum sarmaşık, fıçı, sis, delik, çiçek, saat, bant, akıntı kapısı, kafes, bukalemun, balon, bal, kurbağa, fener ve yerçekimi yönü dahil)');
 process.exit(hata ? 1 : 0);

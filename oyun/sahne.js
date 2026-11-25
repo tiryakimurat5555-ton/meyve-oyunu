@@ -472,6 +472,26 @@ const RENKLER = [
       { tip: 'atesbocegi' },
     ],
   },
+  // 24: Uzay Bahçesi (gece: derin mor-lacivert uzay, yıldızlar, parlayan sporlar)
+  {
+    gece: true,
+    gok: ['#140f3a', '#4a2f7a'],
+    gunes: '#fff4c2',
+    gunesKenar: '#e8d98a',
+    tepeArka: ['#3b2f6b', '#32285e'],
+    tepeArka2: ['#47387a', '#3c2f6c'],
+    tepeOn: ['#5a4a8a', '#4e3f7c'],
+    tac: ['#6a5ab0', '#5a4a9a', '#8a7ad0'],
+    nokta: ['#9ff0ff', '#ffd6f4', '#ffffff'],
+    cicek: ['#9ff0ff', '#ffd6f4', '#ffffff'],
+    parca: [
+      { tip: 'parilti', renk: '#9ff0ff' },
+      { tip: 'parilti', renk: '#ffd6f4' },
+      { tip: 'parilti', renk: '#ffffff' },
+      { tip: 'parilti', renk: '#fff59a' },
+      { tip: 'parilti', renk: '#9ff0ff' },
+    ],
+  },
 ];
 export const geceMi = (bolum) => !!(RENKLER[bolum] && RENKLER[bolum].gece);
 

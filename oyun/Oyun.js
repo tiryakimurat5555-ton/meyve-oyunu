@@ -244,6 +244,8 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
   const bittiRef = useRef(false);
   const ipucuZaman = useRef(null);
   const kayipNeden = useRef(null);
+  const yonSayac = useRef(0);
+  const [yon, setYon] = useState('asagi');
   const mantarSayac = useRef(0); // çekiçsiz hamle sayısı (mantar her 3 hamlede yayılır)
   const bantYazi = bantYaziKur(seviye); // 'Saat doldu' gibi; boşsa 'Hamleler bitti'
   const ipucuParcalar = useRef([]);
@@ -382,6 +384,8 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
     zemin.current = kur.zemin || kur.t.map((s) => s.map(() => 0));
     toplananRef.current = M.baslangicToplanan(seviye, kur.engel || kur.t.map((s) => s.map(() => null)));
     mantarSayac.current = 0;
+    yonSayac.current = 0;
+    setYon(M.yercekimiYonu());
     izgara.current = kur.t.map((satir, r) =>
       satir.map((tur, c) => yeniParca(tur, r, c, r - M.SATIR - 1, kur.oz ? kur.oz[r][c] : null, kur.engel ? kur.engel[r][c] : null).id)
     );
@@ -547,13 +551,20 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
         const bas = -1 - kapidan * 0.6;
         p.poz.setValue({ x: k.yeni[1], y: bas });
         dusenler.push([p, k.yeni[0], k.yeni[1], k.yeni[0] - bas, 60 * kapidan]);
-      } else dusenler.push([p, k.yeni[0], k.yeni[1], k.yeni[0] - k.eski[0], 0]);
+      } else dusenler.push([p, k.yeni[0], k.yeni[1], Math.abs(k.yeni[0] - k.eski[0]) + Math.abs(k.yeni[1] - k.eski[1]), 0]);
     }
     if (kapidan) cal('kapi', 0.7);
+    const yon = M.yercekimiYonu();
     for (const n of s.yeniler) {
       const p = yeniParca(n.tur, n.yeni[0], n.yeni[1], -n.kacinci);
       yeniIzgara[n.yeni[0]][n.yeni[1]] = p.id;
-      dusenler.push([p, n.yeni[0], n.yeni[1], n.yeni[0] + n.kacinci, 40]);
+      // Yeni meyve yerçekiminin tersindeki kenardan girer
+      let bas = { x: n.yeni[1], y: -n.kacinci };
+      if (yon === 'yukari') bas = { x: n.yeni[1], y: M.SATIR - 1 + n.kacinci };
+      else if (yon === 'sol') bas = { x: M.SUTUN - 1 + n.kacinci, y: n.yeni[0] };
+      else if (yon === 'sag') bas = { x: -n.kacinci, y: n.yeni[0] };
+      p.poz.setValue(bas);
+      dusenler.push([p, n.yeni[0], n.yeni[1], Math.abs(n.yeni[0] - bas.y) + Math.abs(n.yeni[1] - bas.x), 40]);
     }
     izgara.current = yeniIzgara;
     yenile();
@@ -1244,6 +1255,19 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
   };
 
   const hamleSonrasi = async (sonuc, cekicle = false) => {
+    // Uzay: yerçekimi her N çekiçsiz hamlede bir döner
+    let yonDegisti = null;
+    if (seviye.yercekimi && !cekicle) {
+      yonSayac.current += 1;
+      if (yonSayac.current % seviye.yercekimi.aralik === 0) {
+        const l = seviye.yercekimi.yonler;
+        M.yonAyarla(l[(l.indexOf(M.yercekimiYonu()) + 1) % l.length]);
+        yonDegisti = M.yercekimiYonu();
+        setYon(yonDegisti);
+        cal('ruzgar');
+        titret('orta');
+      }
+    }
     // Kurbağalar yer
     if (seviye.hedef.kurbaga && !cekicle && !hedefTamam(seviye, toplananRef.current, puanRef.current)) {
       const k = await kurbagaBeslen();
@@ -1297,7 +1321,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
     const p = Object.entries(sonuc.patlayan).map(([tur, n]) => `${n} ${MEYVELER[tur].isim}`);
     const o = sonuc.olusanlar.map((x) => (x.ozel === 'gokkusagi' ? 'Gökkuşağı oluştu' : `${MEYVELER[x.tur].isim} ${OZEL_AD[x.ozel]} oluştu`));
     duyur(
-      [p.length ? p.join(', ') + ' patladı' : '', sonuc.buz ? `${sonuc.buz} buz kırıldı` : '', sonuc.kasa ? `${sonuc.kasa} kasa kırıldı` : '', sonuc.fici ? `${sonuc.fici} fıçı kırıldı` : '', sonuc.sarmasik ? `${sonuc.sarmasik} sarmaşık kesildi` : '', sonuc.sis ? `${sonuc.sis} sis dağıldı` : '', ...EK_HEDEF.map((e) => (sonuc[e.k] ? e.olay(sonuc[e.k]) : '')), sonuc.kar ? `${sonuc.kar} kat kar eridi` : '', sonuc.tohum ? (sonuc.tohum > 1 ? `${sonuc.tohum} tohum çiçek açtı` : 'Tohum çiçek açtı') : '', ...o, sonuc.zincir >= 2 ? `${sonuc.zincir} zincir` : '', bukDegisti ? 'Bukalemunlar renk değiştirdi' : '', siparisBitti ? (siparisBitti === 'son' ? 'Son sipariş tamam!' : `Sipariş tamam! Sıradaki: ${siparisAdi(siparisBitti, siparisBitti.n)}`) : '', seviye.hedef.mantar && !cekicle && toplananRef.current.mantarKalan > 0 && (mantarSayac.current + 1) % M.MANTAR_ARALIK ? `Mantarlar ${M.MANTAR_ARALIK - ((mantarSayac.current + 1) % M.MANTAR_ARALIK)} hamle sonra çoğalacak` : '', saatDoldu ? 'Saat doldu!' : enAzSaat != null && enAzSaat <= 3 ? `Dikkat, saatli meyvede ${enAzSaat} hamle kaldı` : '', kalanMetni(seviye, toplananRef.current, puanRef.current), `${hamleRef.current} hamle`]
+      [p.length ? p.join(', ') + ' patladı' : '', sonuc.buz ? `${sonuc.buz} buz kırıldı` : '', sonuc.kasa ? `${sonuc.kasa} kasa kırıldı` : '', sonuc.fici ? `${sonuc.fici} fıçı kırıldı` : '', sonuc.sarmasik ? `${sonuc.sarmasik} sarmaşık kesildi` : '', sonuc.sis ? `${sonuc.sis} sis dağıldı` : '', ...EK_HEDEF.map((e) => (sonuc[e.k] ? e.olay(sonuc[e.k]) : '')), sonuc.kar ? `${sonuc.kar} kat kar eridi` : '', sonuc.tohum ? (sonuc.tohum > 1 ? `${sonuc.tohum} tohum çiçek açtı` : 'Tohum çiçek açtı') : '', ...o, sonuc.zincir >= 2 ? `${sonuc.zincir} zincir` : '', bukDegisti ? 'Bukalemunlar renk değiştirdi' : '', yonDegisti ? `Yerçekimi döndü, meyveler artık ${M.YON_AD[yonDegisti]} düşüyor` : '', siparisBitti ? (siparisBitti === 'son' ? 'Son sipariş tamam!' : `Sipariş tamam! Sıradaki: ${siparisAdi(siparisBitti, siparisBitti.n)}`) : '', seviye.hedef.mantar && !cekicle && toplananRef.current.mantarKalan > 0 && (mantarSayac.current + 1) % M.MANTAR_ARALIK ? `Mantarlar ${M.MANTAR_ARALIK - ((mantarSayac.current + 1) % M.MANTAR_ARALIK)} hamle sonra çoğalacak` : '', saatDoldu ? 'Saat doldu!' : enAzSaat != null && enAzSaat <= 3 ? `Dikkat, saatli meyvede ${enAzSaat} hamle kaldı` : '', kalanMetni(seviye, toplananRef.current, puanRef.current), `${hamleRef.current} hamle`]
         .filter(Boolean)
         .join('. ')
     );
@@ -1565,8 +1589,9 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
         <Pressable accessibilityRole="button" accessibilityLabel="Seviyelere dön" onPress={geri} hitSlop={10} style={({ pressed }) => [yst.geri, pressed && { opacity: 0.6 }]}>
           <Text style={yst.geriYazi}>‹ Seviyeler</Text>
         </Pressable>
-        <Text style={[yst.seviyeBaslik, geceMi(bolumNo(seviye.no)) && yst.geceYazi]} accessibilityRole="header">
+        <Text style={[yst.seviyeBaslik, geceMi(bolumNo(seviye.no)) && yst.geceYazi]} accessibilityRole="header" accessibilityLabel={`Seviye ${seviye.no}${seviye.yercekimi ? `, yerçekimi ${M.YON_AD[yon]}` : ''}`}>
           Seviye {seviye.no}
+          {seviye.yercekimi ? ` ${{ asagi: '⬇️', yukari: '⬆️', sol: '⬅️', sag: '➡️' }[yon]}` : ''}
         </Text>
         <View style={{ width: 96 }} />
       </View>

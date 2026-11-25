@@ -223,12 +223,28 @@ export function hamleBul(t, oz, kilit) {
 // kacinci: o sütunda yukarıdan düşen kaçıncı yeni meyve (1 = en alttaki); başlangıç yüksekliği için.
 // Akış zincirleri: her zincir, parçaların düştüğü hücrelerin aşağıdan yukarı sırasıdır. Delikler atlanır; akıntı kapısının
 // girişindeki (sütunun en alt hücresi) parçalar çıkış hücresine (başka sütunun en üst hücresi) akar.
+// Yerçekimi yönü (Uzay Bahçesi): 'asagi' | 'yukari' | 'sol' | 'sag'. Döndürülmüş çerçevede (a, b) hücresi: a = düşüş ekseni.
+let yerYonu = 'asagi';
+export const yercekimiYonu = () => yerYonu;
+export function yonAyarla(y) {
+  yerYonu = y || 'asagi';
+}
+// Döndürülmüş çerçeve (a: yukarıdan aşağı, b: soldan sağa) → gerçek [r, c]
+function gercekHucre(a, b) {
+  if (yerYonu === 'yukari') return [SATIR - 1 - a, SUTUN - 1 - b];
+  if (yerYonu === 'sol') return [b, SUTUN - 1 - a];
+  if (yerYonu === 'sag') return [SATIR - 1 - b, a];
+  return [a, b];
+}
+export const YON_AD = { asagi: 'aşağı', yukari: 'yukarı', sol: 'sola', sag: 'sağa' };
+
 export function akisZincirleri(t) {
   const alt = new Map();
   const ust = new Map();
-  for (let c = 0; c < SUTUN; c++) {
+  for (let b = 0; b < SUTUN; b++) {
     let onceki = null;
-    for (let r = 0; r < SATIR; r++) {
+    for (let a = 0; a < SATIR; a++) {
+      const [r, c] = gercekHucre(a, b);
       if (gecilmez(t[r][c])) continue;
       if (onceki) {
         alt.set(anahtar(onceki[0], onceki[1]), [r, c]);
@@ -237,7 +253,7 @@ export function akisZincirleri(t) {
       onceki = [r, c];
     }
   }
-  for (const k of kapilar) {
+  if (yerYonu === 'asagi') for (const k of kapilar) {
     const [gr, gc] = k.giris;
     const [cr, cc] = k.cikis;
     if (alt.has(anahtar(gr, gc)) || ust.has(anahtar(cr, cc))) continue; // geçersiz kapı (giriş en alt, çıkış en üst olmalı)
@@ -1068,6 +1084,7 @@ let etkinSeviye = null;
 let kapilar = [];
 export function seviyeKur(seviye) {
   etkinSeviye = seviye;
+  yonAyarla(seviye && seviye.yercekimi ? seviye.yercekimi.yonler[0] : 'asagi');
   siparisSifirla(seviye);
   kapilar = (seviye && seviye.kapilar) || [];
 }
@@ -1105,6 +1122,12 @@ export function hamleSonrasiKurallar(durum, seviye, ctx, rnd = Math.random) {
       engel = y.engel;
       olaylar.push({ tip: 'mantarYay', hucre: y.hucre });
     }
+  }
+  // Yerçekimi yönü her N hamlede bir sıradaki yöne döner (boşluk varsa parçalar yeni yöne kayar)
+  if (seviye.yercekimi && ctx.yapilan % seviye.yercekimi.aralik === 0) {
+    const l = seviye.yercekimi.yonler;
+    yonAyarla(l[(l.indexOf(yerYonu) + 1) % l.length]);
+    olaylar.push({ tip: 'yon', yon: yerYonu });
   }
   // Kurbağa: komşu meyveyi yer; doyan kurbağa çevresini patlatır
   if (h.kurbaga && t.some((s) => s.includes(KURBAGA))) {
