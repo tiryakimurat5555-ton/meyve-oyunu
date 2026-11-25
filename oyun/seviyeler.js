@@ -54,7 +54,7 @@ export const SEVIYELER = [
   { no: 41, hamle: 20, tur: 6, hedef: { tohum: 1 }, yildiz: [4000, 4750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '........', '........', '...t....', '........', '........', '........', '........'], yeni: 'tohum' },
   { no: 42, hamle: 24, tur: 6, hedef: { tohum: 2 }, yildiz: [5250, 6250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '........', '..t..t..', '........', '........', '........', '........', '........'] },
   { no: 43, hamle: 28, tur: 6, hedef: { tohum: 2, topla: { 3: 20 } }, yildiz: [6250, 7250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '........', '.t....t.', '........', '........', '........', '........', '........'] },
-  { no: 44, hamle: 28, tur: 6, hedef: { puan: 6500 }, yildiz: [8250, 9500], ozel: { cizgili: true, bomba: true, gokkusagi: true } },
+  { no: 44, hamle: 28, tur: 6, hedef: { puan: 5000 }, yildiz: [8250, 9500], ozel: { cizgili: true, bomba: true, gokkusagi: true } },
   { no: 45, hamle: 34, tur: 6, hedef: { tohum: 2, kar: 12 }, yildiz: [6250, 8000], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '...tt...', '........', '........', '........', '........', 'ssssssss', '..ssss..'] },
   { no: 46, hamle: 38, tur: 6, hedef: { tohum: 3, buz: 8 }, yildiz: [8000, 9750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', 't..t..t.', '........', 'bb....bb', 'bb....bb', '........', '........', '........'] },
   { no: 47, hamle: 34, tur: 6, hedef: { tohum: 2, kasa: 8 }, yildiz: [6750, 8750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '..t..t..', '........', '........', '........', '........', '.kkkkkk.', '.k....k.'] },
@@ -314,9 +314,21 @@ export const SEVIYELER = [
   { no: 278, hamle: 12, tur: 6, hedef: { domino: 8, kasa: 4 }, yildiz: [2500, 3250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', 'dd....dd', '........', '..D..D..', '..D..D..', '........', '..kkkk..', '........'] },
   { no: 279, hamle: 15, tur: 6, hedef: { topla: { 1: 20, 4: 20 } }, yildiz: [3750, 5000], ozel: { cizgili: true, bomba: true, gokkusagi: true } },
   { no: 280, hamle: 20, tur: 6, hedef: { domino: 12, sis: 4, buz: 6 }, yildiz: [4250, 5000], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['gg....gg', 'dddd....', '....dddd', '.bbbbbb.', '........', 'D......D', 'D......D', '........'] },
+  // ---- 29. bölüm: Ayna Gölü (ayna: hamlenin aynası öbür yarıda eşleşme yapıyorsa kendiliğinden yapılır) ----
+  { no: 281, hamle: 22, tur: 6, hedef: { buz: 10 }, yildiz: [4500, 5000], ozel: { cizgili: true, bomba: true, gokkusagi: true }, ayna: true, duzen: ['........', '.bb..bb.', '.bb..bb.', '.b....b.', '........', '........', '........', '........'], yeni: 'ayna' },
+  { no: 282, hamle: 25, tur: 6, hedef: { kar: 16 }, yildiz: [5750, 7250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, ayna: true, duzen: ['........', '........', 'ss....ss', 'ss....ss', '........', 'ss....ss', 'ss....ss', '........'] },
+  { no: 283, hamle: 24, tur: 6, hedef: { sis: 10, topla: { 0: 12 } }, yildiz: [4500, 5500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, ayna: true, duzen: ['ggg..ggg', 'g......g', '........', '........', '........', '........', 'g......g', '........'] },
+  { no: 284, hamle: 24, tur: 6, hedef: { kasa: 8, buz: 8 }, yildiz: [5000, 5750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, ayna: true, duzen: ['........', '.bb..bb.', '.bb..bb.', '........', '........', '.kk..kk.', '.kk..kk.', '........'] },
+  { no: 285, hamle: 25, tur: 6, hedef: { puan: 6500 }, yildiz: [8000, 9000], ozel: { cizgili: true, bomba: true, gokkusagi: true }, ayna: true },
+  { no: 286, hamle: 36, tur: 6, hedef: { cicek: 8 }, yildiz: [8750, 10750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, ayna: true, duzen: ['........', '.1....1.', '.2....2.', '........', '........', '.3....3.', '.4....4.', '........'] },
+  { no: 287, hamle: 26, tur: 6, hedef: { mantar: 8, kar: 8 }, yildiz: [5750, 6750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, ayna: true, duzen: ['mm....mm', 'm......m', '........', '........', 'ssss....', '....ssss', 'm......m', '........'] },
+  { no: 288, hamle: 28, tur: 6, hedef: { tohum: 2, buz: 8 }, yildiz: [6250, 7750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, ayna: true, duzen: ['........', '.t....t.', '........', 'bbb..bbb', '.b....b.', '........', '........', '........'] },
+  { no: 289, hamle: 18, tur: 6, hedef: { topla: { 2: 20, 3: 20 } }, yildiz: [4250, 5500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, ayna: true },
+  { no: 290, hamle: 32, tur: 6, hedef: { buz: 8, sis: 8, kasa: 4, kar: 8 }, yildiz: [6750, 8250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, ayna: true, duzen: ['gg....gg', 'gg....gg', '.bb..bb.', '.bb..bb.', '........', '.kk..kk.', 'ssss....', '....ssss'] },
 ];
 
 export const TANITIM = {
+  ayna: { baslik: 'Yeni: Ayna Gölü', metin: 'Tahtanın ortasında bir ayna çizgisi var. Bir hamle yaptığında, aynası tahtanın öbür yarısında eşleşme oluşturuyorsa o da kendiliğinden yapılır: bir hamleye iki hamle!' },
   domino: { baslik: 'Yeni: Domino', metin: 'Domino taşlarından birinin yanında eşleşme yap ya da özel meyveyle vur: aynı yönde yan yana dizilmiş bütün dominolar birlikte devrilir ve dizinin iki ucundaki meyveleri de patlatır!' },
   kovan: { baslik: 'Yeni: Arı kovanı', metin: 'Arı kovanı kırılmaz, ama yanında eşleşme yapınca ya da özel meyve değince içinden yardımcı bir arı çıkar. Arı tahtadaki rastgele bir engele uçup vurur: buz, kar, sis, kasa, bal ya da fener!' },
   uzay: { baslik: 'Yeni: Uzay yerçekimi', metin: 'Uzay bahçesinde yerçekimi döner! Birkaç hamlede bir meyveler başka yöne düşmeye başlar: yukarı, sola ya da sağa. Başlıktaki ok yönü gösterir; yön değişince sesli olarak da söylenir. Tohumlar da o yöndeki kenara iner.' },

@@ -367,5 +367,23 @@ for (let i = 0; i < 30; i++) {
   dogru(ad.dominolar.length === 3, '3 domino devrilmeli: ' + ad.dominolar.length);
   dogru(ad.hucreler.some(([r, c]) => r === 4 && c === 1) && ad.hucreler.some(([r, c]) => r === 4 && c === 5), 'uçlar patlamalı');
 }
-console.log(hata ? `${hata} HATA` : 'ENGEL TESTLERİ GEÇTİ (kar, tohum sarmaşık, fıçı, sis, delik, çiçek, saat, bant, akıntı kapısı, kafes, bukalemun, balon, bal, kurbağa, fener, yerçekimi yönü, kovan ve domino dahil)');
+{
+  // Ayna: sol yarıdaki hamlenin aynası sağ yarıda eşleşme yapıyorsa döner, yapmıyorsa null
+  const t = [];
+  for (let r = 0; r < 8; r++) t.push(Array.from({ length: 8 }, (_, c) => (r * 3 + c * 2 + (r % 2)) % 6));
+  const oz = t.map((s) => s.map(() => null));
+  const en = t.map((s) => s.map(() => null));
+  const sim = (x) => { for (let r = 0; r < 8; r++) for (let c = 0; c < 4; c++) x[r][7 - c] = x[r][c]; };
+  sim(t);
+  const h = M.tumHamleler(t, oz, en).find(([a, b]) => a[1] < 4 && b[1] < 4);
+  dogru(!!h, 'simetrik tahtada sol yarıda hamle olmalı');
+  if (h) {
+    const m = M.aynaHamlesi(h, t, oz, en);
+    dogru(m && m[0][1] === 7 - h[0][1] && m[1][1] === 7 - h[1][1], 'ayna hamlesi bulunmalı: ' + JSON.stringify(m));
+  }
+  const t2 = t.map((s) => s.slice());
+  for (let r = 0; r < 8; r++) for (let c = 4; c < 8; c++) t2[r][c] = M.KASA;
+  if (h) dogru(M.aynaHamlesi(h, t2, oz, en) === null, 'sağ yarı kasa doluyken ayna olmamalı');
+}
+console.log(hata ? `${hata} HATA` : 'ENGEL TESTLERİ GEÇTİ (kar, tohum sarmaşık, fıçı, sis, delik, çiçek, saat, bant, akıntı kapısı, kafes, bukalemun, balon, bal, kurbağa, fener, yerçekimi yönü, kovan, domino ve ayna dahil)');
 process.exit(hata ? 1 : 0);

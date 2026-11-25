@@ -546,6 +546,24 @@ const RENKLER = [
       { tip: 'kelebek', renk: '#ffffff' },
     ],
   },
+  // 28: Ayna Gölü (durgun göl: açık mavi-lila gök, gümüşi tepeler, parıltılar)
+  {
+    gok: ['#a8d8f5', '#f2eeff'],
+    gunes: '#fff6c0',
+    gunesKenar: '#ffe08a',
+    tepeArka: ['#9ccfc8', '#88bdb6'],
+    tepeArka2: ['#b0d8e8', '#9cc8da'],
+    tepeOn: ['#c8e6f4', '#b4daee'],
+    tac: ['#5aa88a', '#4a9478', '#74c0a0'],
+    nokta: ['#ffffff', '#c9b8ff', '#a8d8f5'],
+    cicek: ['#ffffff', '#c9b8ff', '#ffd6f4'],
+    parca: [
+      { tip: 'parilti', renk: '#ffffff' },
+      { tip: 'parilti', renk: '#c9e8ff' },
+      { tip: 'parilti', renk: '#e8dcff' },
+      { tip: 'kelebek', renk: '#c9b8ff' },
+    ],
+  },
 ];
 export const geceMi = (bolum) => !!(RENKLER[bolum] && RENKLER[bolum].gece);
 

@@ -984,6 +984,16 @@ export function ariHedefleri(t, engel, zemin, n, rnd = Math.random) {
   return l;
 }
 
+// Ayna Gölü: hamlenin aynası (sütun 7 - c). Geçerli (eşleşme/birleşim yapan) ve hamlenin kendisinden farklıysa döner, yoksa null.
+export function aynaHamlesi(h, t, oz, engel) {
+  const [a, b] = h;
+  const m = [[a[0], SUTUN - 1 - a[1]], [b[0], SUTUN - 1 - b[1]]];
+  const ayni = (x, y) => x[0] === y[0] && x[1] === y[1];
+  if ((ayni(m[0], a) && ayni(m[1], b)) || (ayni(m[0], b) && ayni(m[1], a))) return null;
+  const k = (x, y) => tumHamleler(t, oz, engel).some(([p, q]) => (ayni(p, x) && ayni(q, y)) || (ayni(p, y) && ayni(q, x)));
+  return k(m[0], m[1]) ? m : null;
+}
+
 // Balonu bir kare yükseltir (üstündeki parçayla yer değiştirir; yerinde değiştirir). En üstteyse uçar: 'uctu'.
 export function balonYukselt(t, oz, engel, r, c) {
   if (t[r][c] !== BALON) return null;
@@ -1187,6 +1197,17 @@ export function hamleSonrasiKurallar(durum, seviye, ctx, rnd = Math.random) {
     if (y) {
       engel = y.engel;
       olaylar.push({ tip: 'mantarYay', hucre: y.hucre });
+    }
+  }
+  // Ayna: hamlenin aynası eşleşme yapıyorsa kendiliğinden yapılır
+  if (seviye.ayna && ctx.sonHamle) {
+    const m = aynaHamlesi(ctx.sonHamle, t, oz, engel);
+    if (m) {
+      const a = hamleSonucu(t, oz, engel, m[0], m[1], seviye.ozel, rnd, zemin);
+      ({ t, oz, engel, zemin } = a);
+      puan += a.puan;
+      sayacBirlestir(sayac, a.sayac);
+      olaylar.push({ tip: 'ayna' });
     }
   }
   // Yerçekimi yönü her N hamlede bir sıradaki yöne döner (boşluk varsa parçalar yeni yöne kayar)

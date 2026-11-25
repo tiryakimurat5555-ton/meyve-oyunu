@@ -138,7 +138,7 @@ for (const sv of DENENECEK) {
       hamle--;
       yapilan++;
       // Hamle sonrası kurallar (sarmaşık/mantar yayılır, bant kayar, bukalemun renk değiştirir, saatler azalır)
-      const k = M.hamleSonrasiKurallar({ t, oz, engel, zemin }, sv, { yapilan, kesilen: en.s.sayac, top, puan, hedefTamam }, rnd);
+      const k = M.hamleSonrasiKurallar({ t, oz, engel, zemin }, sv, { yapilan, kesilen: en.s.sayac, top, puan, hedefTamam, sonHamle: en.h }, rnd);
       ({ t, oz, engel, zemin } = k.durum);
       puan += k.puan;
       M.sayacEkle(top, k.sayac);

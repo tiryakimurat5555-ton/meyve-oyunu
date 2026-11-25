@@ -249,6 +249,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
   const ipucuZaman = useRef(null);
   const kayipNeden = useRef(null);
   const yonSayac = useRef(0);
+  const sonHamle = useRef(null); // Ayna Gölü: oyuncunun son takası
   const [yon, setYon] = useState('asagi');
   const mantarSayac = useRef(0); // çekiçsiz hamle sayısı (mantar her 3 hamlede yayılır)
   const bantYazi = bantYaziKur(seviye); // 'Saat doldu' gibi; boşsa 'Hamleler bitti'
@@ -1293,6 +1294,22 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
   };
 
   const hamleSonrasi = async (sonuc, cekicle = false) => {
+    // Ayna: oyuncunun hamlesinin aynası (öbür yarıda) eşleşme oluşturuyorsa kendiliğinden yapılır
+    let aynaYapildi = false;
+    if (seviye.ayna && !cekicle && sonHamle.current && !hedefTamam(seviye, toplananRef.current, puanRef.current)) {
+      const m = M.aynaHamlesi(sonHamle.current, turIzgarasi(), ozIzgarasi(), engelIzgarasi());
+      sonHamle.current = null;
+      if (m) {
+        await bekle(200);
+        cal('kapi', 0.8);
+        efektEkle({ tip: 'donusum', r: m[0][0], c: m[0][1] });
+        const z = await hamleYap(m[0], m[1], true);
+        if (z) {
+          aynaYapildi = true;
+          sonuc = sonucBirlestir(sonuc, z);
+        }
+      }
+    }
     // Uzay: yerçekimi her N çekiçsiz hamlede bir döner
     let yonDegisti = null;
     if (seviye.yercekimi && !cekicle) {
@@ -1359,7 +1376,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
     const p = Object.entries(sonuc.patlayan).map(([tur, n]) => `${n} ${MEYVELER[tur].isim}`);
     const o = sonuc.olusanlar.map((x) => (x.ozel === 'gokkusagi' ? 'Gökkuşağı oluştu' : `${MEYVELER[x.tur].isim} ${OZEL_AD[x.ozel]} oluştu`));
     duyur(
-      [p.length ? p.join(', ') + ' patladı' : '', sonuc.buz ? `${sonuc.buz} buz kırıldı` : '', sonuc.kasa ? `${sonuc.kasa} kasa kırıldı` : '', sonuc.fici ? `${sonuc.fici} fıçı kırıldı` : '', sonuc.sarmasik ? `${sonuc.sarmasik} sarmaşık kesildi` : '', sonuc.sis ? `${sonuc.sis} sis dağıldı` : '', ...EK_HEDEF.map((e) => (sonuc[e.k] ? e.olay(sonuc[e.k]) : '')), sonuc.kar ? `${sonuc.kar} kat kar eridi` : '', sonuc.tohum ? (sonuc.tohum > 1 ? `${sonuc.tohum} tohum çiçek açtı` : 'Tohum çiçek açtı') : '', ...o, sonuc.zincir >= 2 ? `${sonuc.zincir} zincir` : '', bukDegisti ? 'Bukalemunlar renk değiştirdi' : '', yonDegisti ? `Yerçekimi döndü, meyveler artık ${M.YON_AD[yonDegisti]} düşüyor` : '', siparisBitti ? (siparisBitti === 'son' ? 'Son sipariş tamam!' : `Sipariş tamam! Sıradaki: ${siparisAdi(siparisBitti, siparisBitti.n)}`) : '', seviye.hedef.mantar && !cekicle && toplananRef.current.mantarKalan > 0 && (mantarSayac.current + 1) % M.MANTAR_ARALIK ? `Mantarlar ${M.MANTAR_ARALIK - ((mantarSayac.current + 1) % M.MANTAR_ARALIK)} hamle sonra çoğalacak` : '', saatDoldu ? 'Saat doldu!' : enAzSaat != null && enAzSaat <= 3 ? `Dikkat, saatli meyvede ${enAzSaat} hamle kaldı` : '', kalanMetni(seviye, toplananRef.current, puanRef.current), `${hamleRef.current} hamle`]
+      [p.length ? p.join(', ') + ' patladı' : '', sonuc.buz ? `${sonuc.buz} buz kırıldı` : '', sonuc.kasa ? `${sonuc.kasa} kasa kırıldı` : '', sonuc.fici ? `${sonuc.fici} fıçı kırıldı` : '', sonuc.sarmasik ? `${sonuc.sarmasik} sarmaşık kesildi` : '', sonuc.sis ? `${sonuc.sis} sis dağıldı` : '', ...EK_HEDEF.map((e) => (sonuc[e.k] ? e.olay(sonuc[e.k]) : '')), sonuc.kar ? `${sonuc.kar} kat kar eridi` : '', sonuc.tohum ? (sonuc.tohum > 1 ? `${sonuc.tohum} tohum çiçek açtı` : 'Tohum çiçek açtı') : '', ...o, sonuc.zincir >= 2 ? `${sonuc.zincir} zincir` : '', bukDegisti ? 'Bukalemunlar renk değiştirdi' : '', aynaYapildi ? 'Ayna hamlesi yapıldı' : '', yonDegisti ? `Yerçekimi döndü, meyveler artık ${M.YON_AD[yonDegisti]} düşüyor` : '', siparisBitti ? (siparisBitti === 'son' ? 'Son sipariş tamam!' : `Sipariş tamam! Sıradaki: ${siparisAdi(siparisBitti, siparisBitti.n)}`) : '', seviye.hedef.mantar && !cekicle && toplananRef.current.mantarKalan > 0 && (mantarSayac.current + 1) % M.MANTAR_ARALIK ? `Mantarlar ${M.MANTAR_ARALIK - ((mantarSayac.current + 1) % M.MANTAR_ARALIK)} hamle sonra çoğalacak` : '', saatDoldu ? 'Saat doldu!' : enAzSaat != null && enAzSaat <= 3 ? `Dikkat, saatli meyvede ${enAzSaat} hamle kaldı` : '', kalanMetni(seviye, toplananRef.current, puanRef.current), `${hamleRef.current} hamle`]
         .filter(Boolean)
         .join('. ')
     );
@@ -1444,9 +1461,10 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
     ipucuKur();
   };
 
-  const hamleYap = async (a, b) => {
-    if (mesgul.current || bittiRef.current) return;
-    if (gucModuRef.current) return; // çekiç seçiliyken kaydırma takas yapmaz
+  // ayna: Ayna Gölü'nde kendiliğinden yapılan aynalanmış hamle (hamle harcamaz, sonucu döndürür)
+  const hamleYap = async (a, b, ayna = false) => {
+    if (!ayna && (mesgul.current || bittiRef.current)) return;
+    if (!ayna && gucModuRef.current) return; // çekiç seçiliyken kaydırma takas yapmaz
     if (a[0] < 0 || a[1] < 0 || b[0] < 0 || b[1] < 0 || a[0] >= M.SATIR || b[0] >= M.SATIR || a[1] >= M.SUTUN || b[1] >= M.SUTUN) return;
     const pa = parcaAt(a[0], a[1]);
     const pb = parcaAt(b[0], b[1]);
@@ -1495,8 +1513,11 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
     if (bir) {
       // Birleşim: takastan sonra merkez öbür hücrededir
       const merkez = bir.merkez[0] === a[0] && bir.merkez[1] === a[1] ? b : a;
-      hamleRef.current -= 1;
-      setHamle(hamleRef.current);
+      if (!ayna) {
+        hamleRef.current -= 1;
+        setHamle(hamleRef.current);
+        sonHamle.current = [a, b];
+      }
       // Gökkuşağı + özel parça: o renkteki meyveler önce özel parçaya dönüşür
       for (const d of bir.donusum) {
         const p = parcaAt(d.hucre[0], d.hucre[1]);
@@ -1519,6 +1540,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
       ozelEfekti(bir.etki, merkez[0], merkez[1], diger.tur, alan);
       await bekle(bir.etki === 'gokkusagi' || bir.etki === 'hepsi' ? 380 : 120);
       const sonuc = await cozumle({ hamleHucre: [a, b], ek: [...alan, a, b] });
+      if (ayna) return sonuc;
       await hamleSonrasi(sonuc);
       return;
     }
@@ -1537,9 +1559,13 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
       return;
     }
 
-    hamleRef.current -= 1;
-    setHamle(hamleRef.current);
+    if (!ayna) {
+      hamleRef.current -= 1;
+      setHamle(hamleRef.current);
+      sonHamle.current = [a, b];
+    }
     const sonuc = await cozumle({ hamleHucre: [a, b] });
+    if (ayna) return sonuc;
     await hamleSonrasi(sonuc);
   };
 
@@ -1660,6 +1686,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
             )}
           </View>
           <View style={TAM} pointerEvents="none" importantForAccessibility="no-hide-descendants" accessibilityElementsHidden>
+            {seviye.ayna ? <View style={{ position: 'absolute', left: H * 4 - 2, top: 0, width: 4, height: H * 8, backgroundColor: 'rgba(120,200,255,0.55)', borderRadius: 2 }} /> : null}
             {(seviye.bant || []).map(({ satir: r, yon }) => (
               <BantSerit key={`b${r}`} r={r} yon={yon} H={H} />
             ))}
