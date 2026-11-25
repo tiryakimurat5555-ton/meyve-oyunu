@@ -24,7 +24,7 @@ function hamleler(t, oz, engel) {
     for (let c = 0; c < 8; c++)
       for (const b of [[r, c + 1], [r + 1, c]]) {
         if (b[0] > 7 || b[1] > 7) continue;
-        if (k[r][c] || k[b[0]][b[1]] || t[r][c] === M.KASA || t[b[0]][b[1]] === M.KASA) continue;
+        if (k[r][c] || k[b[0]][b[1]] || M.kasaMi(t[r][c]) || M.kasaMi(t[b[0]][b[1]])) continue;
         if (M.birlesim(t, oz, [r, c], b) || M.eslesmeleriBul(M.takasla(t, [r, c], b)).length) l.push([[r, c], b]);
       }
   return l;
@@ -52,6 +52,11 @@ for (const sv of DENENECEK) {
     const kr = sv.duzen.join('').split('').reduce((a, x) => a + (x === 's' ? 1 : x === 'S' ? 2 : 0), 0);
     const th = sv.duzen.join('').split('').filter((x) => x === 't').length;
     const sm = sv.duzen.join('').split('').filter((x) => x === 'v').length;
+    const fc = sv.duzen.join('').split('').filter((x) => x === 'f' || x === 'F').length;
+    if ((sv.hedef.fici || 0) !== fc) {
+      hata++;
+      console.log(`HATA: seviye ${sv.no} düzen ${fc} fıçı, hedef ${sv.hedef.fici || 0}`);
+    }
     if ((sv.hedef.sarmasik || 0) !== sm) {
       hata++;
       console.log(`HATA: seviye ${sv.no} düzen ${sm} sarmaşık, hedef ${sv.hedef.sarmasik || 0}`);
@@ -70,7 +75,7 @@ for (const sv of DENENECEK) {
   for (let d = 0; d < DENEME; d++) {
     let { t, oz, engel, zemin } = M.duzenliTahta(sv.duzen, rnd);
     let puan = 0;
-    const top = { buz: 0, kasa: 0, kar: 0, tohum: 0, sarmasikKalan: M.sarmasikSay(engel) };
+    const top = { buz: 0, kasa: 0, kar: 0, tohum: 0, fici: 0, sarmasikKalan: M.sarmasikSay(engel) };
     let hamle = sv.hamle;
     let bos = 0;
     while (hamle > 0 && !hedefTamam(sv, top, puan)) {
@@ -79,7 +84,7 @@ for (const sv of DENENECEK) {
         // Karıştır: kilitli olmayan meyveleri yeniden dağıt
         if (++bos > 50) break;
         const k = M.karistir(t, rnd);
-        for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) if (engel[r][c] == null && !oz[r][c] && t[r][c] !== M.TOHUM && t[r][c] !== M.KASA) t[r][c] = k[r][c];
+        for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) if (engel[r][c] == null && !oz[r][c] && t[r][c] !== M.TOHUM && !M.kasaMi(t[r][c])) t[r][c] = k[r][c];
         continue;
       }
       // Bütün hamleleri dener (en çok 30); hedefe en çok katkı yapanı seçer. BOT_ADAY ile sınırlanabilir.
@@ -95,6 +100,7 @@ for (const sv of DENENECEK) {
         if (h2.kasa) deger += s.sayac.kasa * 150;
         if (h2.kar) deger += s.sayac.kar * 150;
         if (h2.sarmasik) deger += s.sayac.sarmasik * 170;
+        if (h2.fici) deger += s.sayac.fici * 200 + s.sayac.vurus * 60;
         if (h2.tohum) deger += s.sayac.tohum * 400 + (tohumDerin(s.t) - d0) * 60;
         if (h2.puan) deger = s.puan;
         if (!en || deger > en.deger) en = { deger, s };
@@ -129,6 +135,7 @@ for (const sv of DENENECEK) {
       top.kasa += en.s.sayac.kasa;
       top.kar += en.s.sayac.kar;
       top.tohum += en.s.sayac.tohum;
+      top.fici += en.s.sayac.fici;
       // Hiç sarmaşık kesilmediyse sarmaşık yayılır
       if (sv.hedef.sarmasik && !en.s.sayac.sarmasik && !hedefTamam(sv, { ...top, sarmasikKalan: M.sarmasikSay(engel) }, puan)) {
         const y = M.sarmasikYay(t, oz, engel, rnd);

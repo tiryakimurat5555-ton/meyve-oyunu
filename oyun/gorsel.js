@@ -3,6 +3,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Image, StyleSheet, Text, View } from 'react-native';
 
 export const TOHUM_TUR = 21; // mantik.js TOHUM ile aynı
+export const FICI_TUR = 22; // mantik.js FICI
+export const FICI_ODUL_TUR = 23; // mantik.js FICI_ODUL
 
 export const MEYVELER = [
   { ad: 'cilek', koyu: '#a3122a', isim: 'Çilek', renk: '#ff3b4e', resim: require('../assets/meyve/cilek.png') },
@@ -409,6 +411,35 @@ export function Kasa({ H, kat }) {
   );
 }
 
+// Fıçı (Bağ Bozumu): yanları yuvarlak ahşap fıçı, dikey tahta çıtalar, iki metal çember.
+// Kat azaldıkça çatlaklar belirir; ödüllü fıçının önünde altın yıldızlı bir mühür var.
+export function Fici({ H, kat = 3, odul = false }) {
+  const b = H * 0.9;
+  const catlak = (x, y, a, u) => <View style={{ position: 'absolute', left: b * x, top: b * y, width: b * u, height: 2.5, borderRadius: 2, backgroundColor: '#3d2208', transform: [{ rotate: a + 'deg' }] }} />;
+  return (
+    <View style={{ width: b, height: b, alignItems: 'center', justifyContent: 'center' }}>
+      <View style={{ width: b * 0.86, height: b, borderRadius: b * 0.3, backgroundColor: '#b06a2c', borderWidth: 2.5, borderColor: '#5e3212', overflow: 'hidden' }}>
+        {[0.2, 0.4, 0.6, 0.8].map((x) => (
+          <View key={x} style={{ position: 'absolute', top: 0, bottom: 0, left: b * 0.86 * x - 1, width: 2, backgroundColor: '#7c4518' }} />
+        ))}
+        <View style={{ position: 'absolute', left: b * 0.08, top: b * 0.06, width: b * 0.14, bottom: b * 0.06, borderRadius: b, backgroundColor: 'rgba(255,215,160,0.35)' }} />
+        {[0.17, 0.75].map((y) => (
+          <View key={y} style={{ position: 'absolute', left: 0, right: 0, top: b * y, height: b * 0.09, backgroundColor: '#8a96a0', borderTopWidth: 1.5, borderBottomWidth: 1.5, borderColor: '#4b555e' }} />
+        ))}
+        {kat <= 2 && catlak(0.18, 0.4, 35, 0.32)}
+        {kat <= 2 && catlak(0.32, 0.5, -25, 0.22)}
+        {kat <= 1 && catlak(0.45, 0.32, -40, 0.3)}
+        {kat <= 1 && catlak(0.5, 0.58, 30, 0.26)}
+      </View>
+      {odul && (
+        <View style={{ position: 'absolute', width: b * 0.4, height: b * 0.4, borderRadius: b, backgroundColor: '#ffd23f', borderWidth: 2, borderColor: '#b07800', alignItems: 'center', justifyContent: 'center' }}>
+          <Text style={{ fontSize: b * 0.26, lineHeight: b * 0.32, color: '#b4570a', fontWeight: 'bold' }}>★</Text>
+        </View>
+      )}
+    </View>
+  );
+}
+
 // Kırılma efekti: buz için mavi kristal parçaları, kasa için tahta kıymıkları (az = sadece çatlama)
 export function Kirilma({ e, H, bitti }) {
   const t = useRef(new Animated.Value(0)).current;
@@ -604,6 +635,9 @@ export function BuzIkon({ boy = 26 }) {
 export function KasaIkon({ boy = 26 }) {
   return <Kasa H={boy / 0.9} kat={1} />;
 }
+export function FiciIkon({ boy = 26 }) {
+  return <Fici H={boy / 0.9} kat={3} />;
+}
 
 // ---------- Yıldızlar ----------
 export function Yildiz({ dolu, boy = 22, renk = '#ffc21a' }) {
@@ -649,7 +683,11 @@ export function Parca({ p, H }) {
       }}
     >
       {p.kat ? (
-        <Kasa H={H} kat={p.kat} />
+        p.tur === FICI_TUR || p.tur === FICI_ODUL_TUR ? (
+          <Fici H={H} kat={p.kat} odul={p.tur === FICI_ODUL_TUR} />
+        ) : (
+          <Kasa H={H} kat={p.kat} />
+        )
       ) : null}
       {p.ozel === 'bomba' && <BombaHale key="b" H={H} renk={MEYVELER[p.tur].renk} />}
       {p.tur === TOHUM_TUR ? (

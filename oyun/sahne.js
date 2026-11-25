@@ -5,7 +5,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { AccessibilityInfo, Animated, Easing, View } from 'react-native';
 
-export const bolumNo = (seviyeNo) => Math.min(6, Math.floor((seviyeNo - 1) / 10));
+export const bolumNo = (seviyeNo) => Math.min(7, Math.floor((seviyeNo - 1) / 10));
 
 const RENKLER = [
   // 0: İlkbahar
@@ -147,6 +147,25 @@ const RENKLER = [
       { tip: 'yaprak', renk: '#ffb7d5' },
       { tip: 'yaprak', renk: '#ffc4dd' },
       { tip: 'kelebek', renk: '#ffffff' },
+    ],
+  },
+  // 7: Bağ Bozumu (akşamüstü altın ışık, asma yaprakları, üzüm salkımları)
+  {
+    gok: ['#f7b267', '#fff1d6'],
+    gunes: '#ffd36b',
+    gunesKenar: '#ff9f43',
+    tepeArka: ['#9bbf5a', '#86ab48'],
+    tepeArka2: ['#a8c766', '#8fb350'],
+    tepeOn: ['#d8c27a', '#c8ad62'],
+    tac: ['#6f9e3a', '#5a8a2c', '#88b54c'],
+    nokta: ['#7b3fa0', '#9c5cc4', '#5b2a7a'],
+    cicek: ['#9c5cc4', '#ffd23f', '#7b3fa0'],
+    parca: [
+      { tip: 'yaprak', renk: '#c9a227' },
+      { tip: 'yaprak', renk: '#d9822b' },
+      { tip: 'yaprak', renk: '#88b54c' },
+      { tip: 'yaprak', renk: '#b5542b' },
+      { tip: 'kelebek', renk: '#9c5cc4' },
     ],
   },
 ];

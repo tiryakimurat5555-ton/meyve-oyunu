@@ -133,5 +133,22 @@ for (let i = 0; i < 30; i++) {
   const x = M.duzenliTahta(['........', '...vv...', '........', '........', '........', '........', '........', '........']);
   dogru(x.engel[1][3] === 'sarmasik' && x.engel[1][4] === 'sarmasik', 'düzen v');
 }
-console.log(hata ? `${hata} HATA` : 'ENGEL TESTLERİ GEÇTİ (kar, tohum ve sarmaşık dahil)');
+{
+  // Fıçı: 3 vuruşta kırılır; ödüllü fıçıdan özel meyve çıkar
+  const t = [];
+  for (let r = 0; r < 8; r++) t.push(Array.from({ length: 8 }, (_, c) => (r * 3 + c * 2 + (r % 2)) % 6));
+  t[7][0] = 0; t[7][1] = 0; t[7][2] = 0;
+  t[6][0] = M.FICI; t[6][1] = M.FICI_ODUL;
+  const oz = t.map((s) => s.map(() => null));
+  const en = t.map((s) => s.map(() => null));
+  en[6][0] = 3; en[6][1] = 1;
+  const ad = M.cozumAdimi(t, oz, { engel: en });
+  dogru(ad.kasaVurus.length === 2, 'iki fıçı vurulmalı');
+  const u = M.adimUygula(t, oz, en, ad, () => 0.4);
+  dogru(u.sayac.fici === 1 && u.sayac.vurus === 2, 'ödüllü fıçı kırılmalı: ' + JSON.stringify(u.sayac));
+  dogru(M.ficiMi(u.t[7][0]) && u.engel[7][0] === 2, 'fıçı düşüp 2 kat kalmalı');
+  dogru(!!u.oz[7][1] && u.t[7][1] >= 0 && u.t[7][1] < 6, 'ödüllü fıçıdan özel meyve çıkmalı: ' + u.oz[7][1]);
+  dogru(M.duzenliTahta(['........', '........', '........', '........', '........', '........', '..fF....', '........']).engel[6][2] === 3, 'düzen f/F');
+}
+console.log(hata ? `${hata} HATA` : 'ENGEL TESTLERİ GEÇTİ (kar, tohum sarmaşık ve fıçı dahil)');
 process.exit(hata ? 1 : 0);
