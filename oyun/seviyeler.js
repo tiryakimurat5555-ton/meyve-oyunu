@@ -1,4 +1,5 @@
-// Seviyeler. Murat 25 Kasım 2026'da ilk 10 seviyeyi onayladı.
+// Seviyeler. Murat 25 Kasım 2026'da ilk 10 seviyeyi onayladı; aynı gün 7, 9 ve 10 kolaylaştırıldı
+// (ilke: uzun soluklu oyun, ilk seviyelerde oyuncu zorlanmaz; bot ilk 10 seviyeyi en az ~%88 geçmeli).
 // meyve numaraları: 0 çilek, 1 limon, 2 üzüm, 3 portakal, 4 elma, 5 erik
 // hedef: { topla: { tur: adet } } ya da { puan: n }; yildiz: [2 yıldız, 3 yıldız] puan eşikleri
 // ozel: hangi özel parçalar oluşabilir; yeni: bu seviyede tanıtılan özel parça
@@ -9,10 +10,10 @@ export const SEVIYELER = [
   { no: 4, hamle: 20, tur: 6, hedef: { topla: { 2: 15 } }, yildiz: [2500, 3800], ozel: { cizgili: true }, yeni: 'cizgili' },
   { no: 5, hamle: 22, tur: 6, hedef: { topla: { 3: 20, 5: 20 } }, yildiz: [3000, 4500], ozel: { cizgili: true } },
   { no: 6, hamle: 20, tur: 6, hedef: { puan: 3000 }, yildiz: [4000, 5500], ozel: { cizgili: true, bomba: true }, yeni: 'bomba' },
-  { no: 7, hamle: 18, tur: 6, hedef: { topla: { 0: 25 } }, yildiz: [3000, 4500], ozel: { cizgili: true, bomba: true } },
+  { no: 7, hamle: 20, tur: 6, hedef: { topla: { 0: 25 } }, yildiz: [3000, 4500], ozel: { cizgili: true, bomba: true } },
   { no: 8, hamle: 22, tur: 6, hedef: { topla: { 1: 15, 2: 15, 4: 15 } }, yildiz: [3500, 5000], ozel: { cizgili: true, bomba: true } },
-  { no: 9, hamle: 20, tur: 6, hedef: { puan: 5000 }, yildiz: [6000, 8000], ozel: { cizgili: true, bomba: true, gokkusagi: true }, yeni: 'gokkusagi' },
-  { no: 10, hamle: 25, tur: 6, hedef: { topla: { 5: 30, 3: 30 } }, yildiz: [5000, 7000], ozel: { cizgili: true, bomba: true, gokkusagi: true } },
+  { no: 9, hamle: 22, tur: 6, hedef: { puan: 3500 }, yildiz: [4500, 6000], ozel: { cizgili: true, bomba: true, gokkusagi: true }, yeni: 'gokkusagi' },
+  { no: 10, hamle: 28, tur: 6, hedef: { topla: { 5: 30, 3: 30 } }, yildiz: [5000, 7000], ozel: { cizgili: true, bomba: true, gokkusagi: true } },
 ];
 
 export const TANITIM = {

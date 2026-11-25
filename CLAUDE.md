@@ -16,7 +16,9 @@ Murat'ın meyve temalı 3'lü eşleştirme oyunu (Kasım 2026). Geçici ad "Meyv
   puan 30/60/100 × zincir + özel parçanın temizlediği meyve başına 20 × zincir, seviye sonu şenliği (kalan hamleler
   çizgiliye dönüşüp patlar, en çok 15; fazlası 100 puan), can sistemi yok, ilk 3 seviye 5 tür meyve,
   ilk 10 seviye oyun/seviyeler.js'teki gibi. Özel parçalar seviye 4 (çizgili), 6 (bomba), 9 (gökkuşağı) itibarıyla açılır.
-  Bot simülasyonu (araclar/seviye-testi.mjs): 9. seviye (20 hamle, 5000 puan) zor, bot %33 geçiyor; Murat'a soruldu.
+  25 Kasım: 7. seviye 20 hamle, 9. seviye 22 hamle/3500 puan (yıldız 4500/6000), 10. seviye 28 hamle (onaylandı).
+  İLKE (Murat): uzun soluklu oyun; ilk seviyelerde oyuncu zorlanmaz, zorluk çok yavaş artar, arada kolay seviyeler.
+  Bot simülasyonu: `bun araclar/seviye-testi.mjs` (SEVIYE='{"no":9,"hamle":22}' ile tek seviye denenir).
 - Engeller (buz vb.) ve ödüllü reklam sonraki aşama. 11-30. seviyeler önerilecek.
 - Ekranda VoiceOver'a özel uyarı yazıları olmasın.
 

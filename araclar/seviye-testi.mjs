@@ -66,13 +66,16 @@ function oyna(t, oz, a, b, izinli) {
   return { t, oz, puan, toplanan };
 }
 
+// İsteğe bağlı: SEVIYE='{"no":9,"hamle":22,"hedef":{"puan":3500}}' yalnız o seviyeyi değiştirilmiş haliyle dener
+const degisik = process.env.SEVIYE ? JSON.parse(process.env.SEVIYE) : null;
+const DENENECEK = degisik ? [{ ...SEVIYELER.find((s) => s.no === degisik.no), ...degisik }] : SEVIYELER;
 let hata = 0;
 const ozelSay = { satir: 0, sutun: 0, bomba: 0, gokkusagi: 0 };
-for (const sv of SEVIYELER) {
+for (const sv of DENENECEK) {
   M.turSayisiAyarla(sv.tur);
   let gecen = 0;
   let yildizToplam = 0;
-  const DENEME = 40;
+  const DENEME = degisik ? 80 : 40;
   for (let d = 0; d < DENEME; d++) {
     let t = M.yeniTahta(rnd);
     let oz = t.map((s) => s.map(() => null));
