@@ -638,6 +638,20 @@ export function CicekIkon({ boy = 26, tur = null }) {
     </View>
   );
 }
+// ---------- Taşıyıcı bant / rüzgâr (Rüzgârlı Tepe) ----------
+// Satırın arkasında açık mavi şerit ve her karede yön okları (meyvelerin altında kalır, kenarlarda görünür)
+export function BantSerit({ r, yon, H }) {
+  return (
+    <View pointerEvents="none" style={{ position: 'absolute', left: 0, top: r * H + 1, width: H * 8, height: H - 2, borderRadius: H * 0.2, backgroundColor: 'rgba(120,180,230,0.35)', borderTopWidth: 2, borderBottomWidth: 2, borderColor: 'rgba(90,150,210,0.55)' }}>
+      {Array.from({ length: 8 }, (_, c) => (
+        <Text key={c} style={{ position: 'absolute', left: c * H + H * (yon > 0 ? 0.62 : 0.06), top: H * 0.3, fontSize: H * 0.34, lineHeight: H * 0.4, fontWeight: '900', color: 'rgba(40,110,180,0.85)' }}>
+          {yon > 0 ? '»' : '«'}
+        </Text>
+      ))}
+    </View>
+  );
+}
+
 // ---------- Saat (Saat Kulesi) ----------
 // Meyvenin sağ üst köşesinde kalan hamleyi gösteren saat rozeti; 3 ve altında kırmızı
 export function SaatRozet({ H, n }) {

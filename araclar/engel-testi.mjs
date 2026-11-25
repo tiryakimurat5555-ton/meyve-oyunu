@@ -200,5 +200,23 @@ for (let i = 0; i < 30; i++) {
   const ad2 = M.cozumAdimi(t, oz, { engel: en, ek: [[7, 1]] });
   dogru(M.karEriyen({ ...ad2, gruplar: [] }, en, z, t).some(([r, c]) => c === 1), 'özel parça her rengi tozlamalı');
 }
-console.log(hata ? `${hata} HATA` : 'ENGEL TESTLERİ GEÇTİ (kar, tohum sarmaşık, fıçı, sis, delik ve çiçek dahil)');
+{
+  // Bant: satır kayar, uçtan çıkan öbür uçtan girer; engel ve özel hal birlikte taşınır
+  const t = [];
+  for (let r = 0; r < 8; r++) t.push(Array.from({ length: 8 }, (_, c) => (r * 3 + c * 2 + (r % 2)) % 6));
+  const oz = t.map((s) => s.map(() => null));
+  const en = t.map((s) => s.map(() => null));
+  en[3][7] = 'buz';
+  oz[3][2] = 'bomba';
+  const b = M.bantKaydir(t, oz, en, [{ satir: 3, yon: 1 }]);
+  dogru(b.t[3][0] === t[3][7] && b.engel[3][0] === 'buz' && b.oz[3][3] === 'bomba' && b.t[3][1] === t[3][0], 'bant sağa kaydırmalı');
+  const b2 = M.bantKaydir(t, oz, en, [{ satir: 3, yon: -1 }]);
+  dogru(b2.t[3][7] === t[3][0] && b2.engel[3][6] === 'buz', 'bant sola kaydırmalı');
+  // Saat: her hamlede azalır, sıfırda kaybedilir
+  const e2 = t.map((s) => s.map(() => null));
+  e2[0][0] = 'saat1';
+  const k = M.hamleSonrasiKurallar({ t, oz, engel: e2, zemin: null }, { hedef: { saat: 1 } }, { top: {}, puan: 0, hedefTamam: () => false }, () => 0.5);
+  dogru(k.kaybetti, 'saat sıfırda kaybettirmeli');
+}
+console.log(hata ? `${hata} HATA` : 'ENGEL TESTLERİ GEÇTİ (kar, tohum sarmaşık, fıçı, sis, delik, çiçek, saat ve bant dahil)');
 process.exit(hata ? 1 : 0);

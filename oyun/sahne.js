@@ -247,6 +247,26 @@ const RENKLER = [
       { tip: 'kelebek', renk: '#ff9a6b' },
     ],
   },
+  // 12: Rüzgârlı Tepe (serin mavi gök, yeşil tepeler, rüzgârda uçuşan yapraklar)
+  {
+    gok: ['#5fb3ee', '#dff2ff'],
+    gunes: '#fff08a',
+    gunesKenar: '#ffd24a',
+    tepeArka: ['#7cc46a', '#68b058'],
+    tepeArka2: ['#8fd07a', '#78bc66'],
+    tepeOn: ['#a9de8e', '#93cf78'],
+    tac: ['#4f9e48', '#3f8a3a', '#6bbb5e'],
+    nokta: ['#ffffff', '#ffd23f', '#a7d8ff'],
+    cicek: ['#ffffff', '#a7d8ff', '#ffd23f'],
+    parca: [
+      { tip: 'yaprak', renk: '#6bbb5e', buyuk: true },
+      { tip: 'yaprak', renk: '#8fd07a' },
+      { tip: 'yaprak', renk: '#4f9e48' },
+      { tip: 'yaprak', renk: '#a9de8e', buyuk: true },
+      { tip: 'yaprak', renk: '#6bbb5e' },
+      { tip: 'yaprak', renk: '#ffd23f' },
+    ],
+  },
 ];
 export const geceMi = (bolum) => !!(RENKLER[bolum] && RENKLER[bolum].gece);
 

@@ -660,9 +660,18 @@ export function hamleSonucu(t, oz, engel, a, b, izinli, rnd = Math.random, zemin
     for (const h of [a, b]) if (oz[h[0]][h[1]] === 'gokkusagi' || bir.etki !== 'gokkusagi') oz[h[0]][h[1]] = null;
     ek = [...etkiAlani(bir.etki, merkez[0], merkez[1], t, bir.hedefTur), a, b];
   }
+  const z = zincirCoz(t, oz, engel, zemin, { hamle: [a, b], ek, izinli, rnd });
+  sayacBirlestir(sayac, z.sayac);
+  return z.sonuc(puan, sayac);
+}
+
+// Tahtadaki eşleşmeleri zincirleme çözer (hamle sonrası, bant kayması, renk değişimi vb.)
+export function zincirCoz(t, oz, engel, zemin, { hamle = null, ek = [], izinli = null, rnd = Math.random } = {}) {
+  let puan = 0;
+  const sayac = { topla: {} };
   let zincir = 0;
   for (;;) {
-    const adim = cozumAdimi(t, oz, { hamle: zincir === 0 ? [a, b] : null, ek, izinli, engel });
+    const adim = cozumAdimi(t, oz, { hamle: zincir === 0 ? hamle : null, ek, izinli, engel });
     ek = [];
     if (adimBos(adim)) break;
     zincir++;
@@ -675,11 +684,43 @@ export function hamleSonucu(t, oz, engel, a, b, izinli, rnd = Math.random, zemin
     oz = u.oz;
     engel = u.engel;
     zemin = u.zemin;
-    sayacEkle(sayac, u.sayac);
+    sayacBirlestir(sayac, u.sayac);
   }
   let enAzSaat = null;
   for (const s of engel) for (const e of s) if (saatMi(e)) enAzSaat = enAzSaat == null ? saatDeger(e) : Math.min(enAzSaat, saatDeger(e));
-  return { t, oz, engel, puan, sayac, zemin, enAzSaat };
+  return {
+    t,
+    oz,
+    engel,
+    puan,
+    sayac,
+    zemin,
+    zincir,
+    // hamleSonucu için: önceki puan/sayaçla birleştirip tek sonuç döndürür
+    sonuc: (p0, s0) => ({ t, oz, engel, puan: p0 + puan, sayac: s0, zemin, enAzSaat }),
+  };
+}
+
+// Taşıyıcı bant (Rüzgârlı Tepe): seviye.bant = [{ satir, yon: 1 (sağa) | -1 (sola) }]. Her hamleden sonra o satırdaki parçalar
+// (meyve, engeli ve özel hali ile) bir kare kayar; uçtan çıkan öbür uçtan girer. Zemin (kar, çiçek) yerinde kalır.
+export function bantKaydir(t, oz, engel, bantlar) {
+  t = kopya(t);
+  oz = kopya(oz);
+  engel = kopya(engel);
+  const tasimalar = [];
+  for (const { satir: r, yon } of bantlar) {
+    const yt = t[r].slice();
+    const yo = oz[r].slice();
+    const ye = engel[r].slice();
+    for (let c = 0; c < SUTUN; c++) {
+      const y = (c + yon + SUTUN) % SUTUN;
+      t[r][y] = yt[c];
+      oz[r][y] = yo[c];
+      engel[r][y] = ye[c];
+      tasimalar.push({ eski: [r, c], yeni: [r, y], sarma: Math.abs(y - c) > 1 });
+    }
+  }
+  return { t, oz, engel, tasimalar };
 }
 
 // Hedefe en çok katkı yapan hamleyi seçer. hedef: seviye hedefi. Hamle yoksa null.
@@ -712,7 +753,17 @@ export function hamleDegeri(s, hedef, derin0 = 0) {
   return d;
 }
 
-// Sayaçları toplar (topla iç içe)
+// İç sayaçları birleştirir (topla iç içe kalır): hamle/zincir sonuçları için
+export function sayacBirlestir(a, b) {
+  for (const k in b) {
+    if (k === 'topla') {
+      a.topla = a.topla || {};
+      for (const t in b.topla) a.topla[t] = (a.topla[t] || 0) + b.topla[t];
+    } else if (typeof b[k] === 'number') a[k] = (a[k] || 0) + b[k];
+  }
+  return a;
+}
+// Toplanan hedef sayaçlarına ekler (meyve türleri düz anahtar olur: toplanan[0] = çilek sayısı)
 export function sayacEkle(hedef, ek) {
   for (const k in ek) {
     if (k === 'topla') for (const t in ek.topla) hedef[t] = (hedef[t] || 0) + ek.topla[t];
@@ -777,6 +828,15 @@ export function hamleSonrasiKurallar(durum, seviye, ctx, rnd = Math.random) {
       engel = y.engel;
       olaylar.push({ tip: 'sarmasikYay', hucre: y.hucre });
     }
+  }
+  // Taşıyıcı bant: satırlar kayar, oluşan eşleşmeler çözülür
+  if (seviye.bant && seviye.bant.length) {
+    const b = bantKaydir(t, oz, engel, seviye.bant);
+    const z = zincirCoz(b.t, b.oz, b.engel, zemin, { izinli: seviye.ozel, rnd });
+    ({ t, oz, engel, zemin } = z);
+    puan += z.puan;
+    sayacBirlestir(sayac, z.sayac);
+    olaylar.push({ tip: 'bant' });
   }
   // Saatler: her hamlede bir azalır; sıfıra inen varsa kaybedilir
   let kaybetti = false;

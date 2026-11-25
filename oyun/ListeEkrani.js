@@ -20,6 +20,7 @@ const BOLUMLER = [
   { ad: 'Kristal Bahçe', ilk: 91, son: 100, renk: '#3fb7d6' },
   { ad: 'Arı Bahçesi', ilk: 101, son: 110, renk: '#e6a800' },
   { ad: 'Saat Kulesi', ilk: 111, son: 120, renk: '#e0704a' },
+  { ad: 'Rüzgârlı Tepe', ilk: 121, son: 130, renk: '#3f8fd6' },
 ];
 
 export default function ListeEkrani({ ilerleme, sec, ayarlarAc }) {

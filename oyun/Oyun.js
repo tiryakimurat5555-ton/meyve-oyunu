@@ -17,6 +17,7 @@ import {
   CicekUst,
   CicekIkon,
   AriEfekt,
+  BantSerit,
   SaatIkon,
   KarZemin,
   TohumIkon,
@@ -66,6 +67,14 @@ export function parcaAdi(p) {
   if (p.sarmasik) return 'Sarmaşıklı ' + MEYVELER[p.tur].isim.toLocaleLowerCase('tr');
   if (p.ozel === 'gokkusagi' || !MEYVELER[p.tur]) return 'Gökkuşağı';
   return MEYVELER[p.tur].isim + (p.ozel ? ' ' + OZEL_AD[p.ozel] : '') + (p.saat ? `, saatli, ${p.saat} hamle` : '');
+}
+
+// Taşıyıcı bant satırı (rüzgâr) için hücre etiketine ek
+function bantYaziKur(seviye) {
+  return (r) => {
+    const b = (seviye.bant || []).find((x) => x.satir === r);
+    return b ? `, rüzgâr ${b.yon > 0 ? 'sağa' : 'sola'}` : '';
+  };
 }
 
 // Kar varsa durum başa gelir: "Karlı çilek", "İki kat karlı tohum"
@@ -182,7 +191,8 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
   const voRef = useRef(false);
   const bittiRef = useRef(false);
   const ipucuZaman = useRef(null);
-  const kayipNeden = useRef(null); // 'Saat doldu' gibi; boşsa 'Hamleler bitti'
+  const kayipNeden = useRef(null);
+  const bantYazi = bantYaziKur(seviye); // 'Saat doldu' gibi; boşsa 'Hamleler bitti'
   const ipucuParcalar = useRef([]);
   const HRef = useRef(H);
   HRef.current = H;
@@ -935,7 +945,50 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
   };
 
   // ---------- hamle ----------
+  // İki çözüm sonucunu birleştirir (hamle + bant kayması gibi)
+  const sonucBirlestir = (a, b) => {
+    const y = { ...a, patlayan: { ...a.patlayan }, olusanlar: [...a.olusanlar, ...b.olusanlar], zincir: Math.max(a.zincir, b.zincir) };
+    for (const [k, v] of Object.entries(b.patlayan)) y.patlayan[k] = (y.patlayan[k] || 0) + v;
+    for (const k of Object.keys(b)) if (typeof b[k] === 'number' && k !== 'zincir') y[k] = (a[k] || 0) + b[k];
+    return y;
+  };
+  // Taşıyıcı bant: bant satırları bir kare kayar (uçtan çıkan öbür uçtan girer), sonra oluşan eşleşmeler çözülür
+  const bantKaydir = async () => {
+    cal('ruzgar');
+    const yeni = izgara.current.map((s) => s.slice());
+    const animler = [];
+    const sarmalar = [];
+    for (const { satir: r, yon } of seviye.bant)
+      for (let c = 0; c < M.SUTUN; c++) {
+        const id = izgara.current[r][c];
+        const y = (c + yon + M.SUTUN) % M.SUTUN;
+        yeni[r][y] = id;
+        const p = parcalar.current.get(id);
+        if (!p) continue;
+        if (Math.abs(y - c) > 1) {
+          sarmalar.push([p, r, y, yon]);
+          animler.push(Animated.timing(p.poz, { toValue: { x: c + yon, y: r }, duration: 220, easing: Easing.inOut(Easing.quad), useNativeDriver: true }));
+        } else animler.push(tasi(p, r, y, 220, Easing.inOut(Easing.quad)));
+      }
+    await oynat(Animated.parallel(animler));
+    await oynat(
+      Animated.parallel(
+        sarmalar.map(([p, r, y, yon]) => {
+          p.poz.setValue({ x: y - yon, y: r });
+          return tasi(p, r, y, 160);
+        })
+      )
+    );
+    izgara.current = yeni;
+    yenile();
+    return cozumle();
+  };
+
   const hamleSonrasi = async (sonuc, cekicle = false) => {
+    // Rüzgâr: bant satırları kayar
+    if (seviye.bant && seviye.bant.length && !cekicle && !hedefTamam(seviye, toplananRef.current, puanRef.current)) {
+      sonuc = sonucBirlestir(sonuc, await bantKaydir());
+    }
     // Saatler: her (çekiçsiz) hamlede bir azalır
     let saatDoldu = false;
     let enAzSaat = null;
@@ -1219,6 +1272,9 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
             )}
           </View>
           <View style={TAM} pointerEvents="none" importantForAccessibility="no-hide-descendants" accessibilityElementsHidden>
+            {(seviye.bant || []).map(({ satir: r, yon }) => (
+              <BantSerit key={`b${r}`} r={r} yon={yon} H={H} />
+            ))}
             {zemin.current.map((satir, r) => satir.map((k, c) => (k > 0 ? (M.cicekMi(k) ? <CicekZemin key={`k${r}-${c}`} H={H} tur={k - M.CICEK} r={r} c={c} /> : <KarZemin key={`k${r}-${c}`} H={H} kat={k} r={r} c={c} />) : null)))}
           </View>
           {secili && <SeciliHalka r={secili[0]} c={secili[1]} H={H} />}
@@ -1255,7 +1311,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
                     key={`h${r}-${c}`}
                     accessible
                     accessibilityRole="button"
-                    accessibilityLabel={`${karliAd(zemin.current[r][c], parcaAdi(p))}${sec ? ' seçili' : ''}, ${r + 1}. satır ${c + 1}. sütun`}
+                    accessibilityLabel={`${karliAd(zemin.current[r][c], parcaAdi(p))}${sec ? ' seçili' : ''}, ${r + 1}. satır ${c + 1}. sütun${bantYazi(r)}`}
                     onPress={() => hucreDokun([r, c])}
                     style={{ position: 'absolute', left: c * H, top: r * H, width: H, height: H }}
                   />
