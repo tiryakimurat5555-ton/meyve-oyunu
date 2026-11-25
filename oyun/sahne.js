@@ -396,6 +396,24 @@ const RENKLER = [
       { tip: 'yaprak', renk: '#b0611f', buyuk: true },
     ],
   },
+  // 20: Bal Kovanı (bal rengi ışık, çiçekli çayır, kovanın etrafında uçan arılar)
+  {
+    gok: ['#ffd06b', '#fff8e0'],
+    gunes: '#fff0a0',
+    gunesKenar: '#ffc233',
+    tepeArka: ['#b4d46a', '#a0c458'],
+    tepeArka2: ['#c2dc7a', '#adcd66'],
+    tepeOn: ['#dbe89a', '#cbdd86'],
+    tac: ['#7fb04a', '#6a9a3c', '#98c462'],
+    nokta: ['#ffb726', '#ffffff', '#ff8fc7'],
+    cicek: ['#ffb726', '#ffffff', '#ff8fc7'],
+    parca: [
+      { tip: 'ari' },
+      { tip: 'ari' },
+      { tip: 'ari' },
+      { tip: 'ari' },
+    ],
+  },
 ];
 export const geceMi = (bolum) => !!(RENKLER[bolum] && RENKLER[bolum].gece);
 

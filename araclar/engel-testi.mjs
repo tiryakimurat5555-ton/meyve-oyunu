@@ -278,5 +278,22 @@ for (let i = 0; i < 30; i++) {
   const u2 = M.adimUygula(t2, oz, en, ad2, () => 0.3);
   dogru(u2.sayac.balon === 1 && !u2.t.flat().includes(M.BALON), 'en üstteki balon uçmalı');
 }
-console.log(hata ? `${hata} HATA` : 'ENGEL TESTLERİ GEÇTİ (kar, tohum sarmaşık, fıçı, sis, delik, çiçek, saat, bant, akıntı kapısı, kafes, bukalemun ve balon dahil)');
+{
+  // Bal: üstünde temizlenince silinir; yayılır
+  const t = [];
+  for (let r = 0; r < 8; r++) t.push(Array.from({ length: 8 }, (_, c) => (r * 3 + c * 2 + (r % 2)) % 6));
+  t[7][0] = 0; t[7][1] = 0; t[7][2] = 0;
+  const oz = t.map((s) => s.map(() => null));
+  const en = t.map((s) => s.map(() => null));
+  const z = t.map((s) => s.map(() => 0));
+  z[7][1] = M.BAL;
+  z[3][3] = M.BAL;
+  const ad = M.cozumAdimi(t, oz, { engel: en });
+  const u = M.adimUygula(t, oz, en, ad, () => 0.3, z);
+  dogru(u.sayac.bal === 1 && u.zemin[7][1] === 0, 'bal silinmeli');
+  const y = M.balYay(t, u.zemin, () => 0.1);
+  dogru(y && y.zemin.flat().filter((v) => v === M.BAL).length === 2, 'bal yayılmalı');
+  dogru(M.kalanlariYaz({}, en, u.zemin).balKalan === 1, 'bal kalan sayısı');
+}
+console.log(hata ? `${hata} HATA` : 'ENGEL TESTLERİ GEÇTİ (kar, tohum sarmaşık, fıçı, sis, delik, çiçek, saat, bant, akıntı kapısı, kafes, bukalemun, balon ve bal dahil)');
 process.exit(hata ? 1 : 0);

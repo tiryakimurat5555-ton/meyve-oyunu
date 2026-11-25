@@ -662,11 +662,12 @@ export function Kirilma({ e, H, bitti }) {
   const sis = e.tur === 'sis';
   const kar = e.tur === 'kar' || sis;
   const mantar = e.tur === 'mantar';
+  const bal = e.tur === 'bal';
   const civciv = e.tur === 'civciv' || e.tur === 'yumurta' || e.tur === 'kafes';
   const yaprak = e.tur === 'yaprak' || mantar;
   const buz = e.tur === 'buz' || kar;
   const adet = e.az ? 3 : 7;
-  const renkler = civciv ? (e.tur === 'kafes' ? ['#7f8e9c', '#c4ced8', '#ffd23f'] : e.tur === 'yumurta' ? ['#fff7e6', '#e3d2a8', '#ffffff'] : ['#ffd93a', '#ffe680', '#ffc61a']) : mantar ? ['#e8402e', '#ffffff', '#c9a77a'] : yaprak ? ['#4fbf3a', '#2f8a28', '#6ad957'] : sis ? ['#d3d7ee', '#ffffff', '#b9bfdc'] : kar ? ['#ffffff', '#e4f3ff', '#ffffff'] : buz ? ['#e9f7ff', '#a7dcff', '#ffffff'] : ['#cf8f48', '#8f5a24', '#e0aa66'];
+  const renkler = bal ? ['#ffb726', '#ffd36b', '#e89a00'] : civciv ? (e.tur === 'kafes' ? ['#7f8e9c', '#c4ced8', '#ffd23f'] : e.tur === 'yumurta' ? ['#fff7e6', '#e3d2a8', '#ffffff'] : ['#ffd93a', '#ffe680', '#ffc61a']) : mantar ? ['#e8402e', '#ffffff', '#c9a77a'] : yaprak ? ['#4fbf3a', '#2f8a28', '#6ad957'] : sis ? ['#d3d7ee', '#ffffff', '#b9bfdc'] : kar ? ['#ffffff', '#e4f3ff', '#ffffff'] : buz ? ['#e9f7ff', '#a7dcff', '#ffffff'] : ['#cf8f48', '#8f5a24', '#e0aa66'];
   return (
     <>
       {!e.az && (
@@ -783,6 +784,39 @@ export function Tohum({ H }) {
 }
 
 // Tohum en alt sıraya inince açan çiçek (büyüyüp yukarı süzülür ve kaybolur)
+// ---------- Bal (Bal Kovanı) ----------
+// Zeminde parlak kehribar bal birikintisi; meyvenin üstünde üst kenardan sarkan damlalar
+export function BalZemin({ H, r, c }) {
+  const b = H - 3;
+  return (
+    <View pointerEvents="none" style={{ position: 'absolute', left: c * H + 1.5, top: r * H + 1.5, width: b, height: b, borderRadius: H * 0.22, overflow: 'hidden', backgroundColor: '#ffb726', borderWidth: 2, borderColor: '#d98a00' }}>
+      <View style={{ position: 'absolute', left: b * 0.1, top: b * 0.08, width: b * 0.35, height: b * 0.14, borderRadius: b, backgroundColor: 'rgba(255,240,180,0.8)' }} />
+      <View style={{ position: 'absolute', right: b * 0.1, bottom: b * 0.1, width: b * 0.18, height: b * 0.18, borderRadius: b, backgroundColor: 'rgba(255,240,180,0.6)' }} />
+    </View>
+  );
+}
+export function BalUst({ H, r, c }) {
+  const b = H - 3;
+  return (
+    <View pointerEvents="none" style={{ position: 'absolute', left: c * H + 1.5, top: r * H + 1.5, width: b, height: b, borderRadius: H * 0.22, overflow: 'hidden', borderWidth: 2.5, borderColor: 'rgba(217,138,0,0.9)' }}>
+      <View style={{ position: 'absolute', left: 0, right: 0, top: 0, height: b * 0.12, backgroundColor: '#ffb726' }} />
+      {[[0.12, 0.2], [0.42, 0.28], [0.74, 0.18]].map(([x, h], i) => (
+        <View key={i} style={{ position: 'absolute', left: b * x, top: 0, width: b * 0.13, height: b * h, borderBottomLeftRadius: b, borderBottomRightRadius: b, backgroundColor: '#ffb726', borderWidth: 1, borderTopWidth: 0, borderColor: '#d98a00' }} />
+      ))}
+    </View>
+  );
+}
+export function BalIkon({ boy = 26 }) {
+  return (
+    <View style={{ width: boy, height: boy, borderRadius: boy * 0.25, backgroundColor: '#ffb726', borderWidth: 2, borderColor: '#d98a00', overflow: 'hidden' }}>
+      {[[0.15, 0.4], [0.5, 0.55], [0.78, 0.35]].map(([x, h], i) => (
+        <View key={i} style={{ position: 'absolute', left: boy * x - boy * 0.08, top: 0, width: boy * 0.16, height: boy * h, borderBottomLeftRadius: boy, borderBottomRightRadius: boy, backgroundColor: '#e89a00' }} />
+      ))}
+      <View style={{ position: 'absolute', left: boy * 0.2, bottom: boy * 0.15, width: boy * 0.25, height: boy * 0.12, borderRadius: boy, backgroundColor: 'rgba(255,240,180,0.8)' }} />
+    </View>
+  );
+}
+
 // ---------- Çiçek (Arı Bahçesi) ----------
 // Zemindeki çiçek: meyvenin arkasında, taç yaprakları meyvenin kenarlarından taşar (renk = tozlanması için gereken meyve)
 export function CicekZemin({ H, tur, r, c }) {

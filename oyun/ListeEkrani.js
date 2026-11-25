@@ -28,6 +28,7 @@ const BOLUMLER = [
   { ad: 'Bukalemun Bahçesi', ilk: 171, son: 180, renk: '#22b39a' },
   { ad: 'Balon Festivali', ilk: 181, son: 190, renk: '#ff5c8a' },
   { ad: 'Hasat Pazarı', ilk: 191, son: 200, renk: '#e0913c' },
+  { ad: 'Bal Kovanı', ilk: 201, son: 210, renk: '#e89a00' },
 ];
 
 export default function ListeEkrani({ ilerleme, sec, ayarlarAc }) {

@@ -82,7 +82,7 @@ for (const sv of DENENECEK) {
     M.siparisSifirla(sv);
     let { t, oz, engel, zemin } = durum;
     let puan = 0;
-    const top = M.baslangicToplanan(sv, engel);
+    const top = M.kalanlariYaz(M.baslangicToplanan(sv, engel), engel, zemin);
     let hamle = sv.hamle;
     let yapilan = 0;
     let bos = 0;
@@ -142,7 +142,7 @@ for (const sv of DENENECEK) {
       ({ t, oz, engel, zemin } = k.durum);
       puan += k.puan;
       M.sayacEkle(top, k.sayac);
-      M.kalanlariYaz(top, engel);
+      M.kalanlariYaz(top, engel, zemin);
       if (k.kaybetti) {
         kaybetti = true;
         kayipNeden.saat = (kayipNeden.saat || 0) + 1;

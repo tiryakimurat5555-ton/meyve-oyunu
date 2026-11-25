@@ -226,9 +226,21 @@ export const SEVIYELER = [
   { no: 198, hamle: 30, tur: 6, hedef: { siparis: 3, mantar: 4 }, yildiz: [7500, 8750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, siparisler: [{ ozel: 'cizgili', n: 2 }, { tur: 1, n: 16 }, { ozel: 'bomba', n: 2 }], duzen: ['........', 'm......m', '........', '........', '........', '........', 'm......m', '........'] },
   { no: 199, hamle: 17, tur: 6, hedef: { topla: { 3: 20, 5: 20 } }, yildiz: [4000, 5000], ozel: { cizgili: true, bomba: true, gokkusagi: true } },
   { no: 200, hamle: 43, tur: 6, hedef: { siparis: 5, sis: 4, balon: 2 }, yildiz: [9750, 11500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, siparisler: [{ tur: 0, n: 15 }, { ozel: 'bomba', n: 1 }, { tur: 2, n: 15 }, { ozel: 'cizgili', n: 2 }, { tur: 4, n: 15 }], duzen: ['........', '.gg..gg.', '........', '........', '........', '........', '..o..o..', '........'] },
+  // ---- 21. bölüm: Bal Kovanı (bal: üstünde eşleşme silinir; bir hamlede hiç silinmezse yayılır) ----
+  { no: 201, hamle: 22, tur: 6, hedef: { bal: 4 }, yildiz: [4250, 4750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '........', '........', '...hh...', '...hh...', '........', '........', '........'], yeni: 'bal' },
+  { no: 202, hamle: 21, tur: 6, hedef: { bal: 6 }, yildiz: [4500, 5250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '........', '.hh..hh.', '........', '........', '..h..h..', '........', '........'] },
+  { no: 203, hamle: 26, tur: 6, hedef: { bal: 8, topla: { 1: 12 } }, yildiz: [5250, 6250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '........', '..hhhh..', '..hhhh..', '........', '........', '........', '........'] },
+  { no: 204, hamle: 22, tur: 6, hedef: { bal: 6, buz: 8 }, yildiz: [4750, 5250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '.bbbbbb.', '.b....b.', '........', '..hhhh..', '...hh...', '........', '........'] },
+  { no: 205, hamle: 24, tur: 6, hedef: { puan: 6000 }, yildiz: [7250, 8250], ozel: { cizgili: true, bomba: true, gokkusagi: true } },
+  { no: 206, hamle: 24, tur: 6, hedef: { bal: 10 }, yildiz: [5000, 5750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '.hh..hh.', '.hh..hh.', '........', '........', '..h..h..', '........', '........'] },
+  { no: 207, hamle: 30, tur: 6, hedef: { bal: 8, kar: 8 }, yildiz: [6250, 7500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '..hhhh..', '..hhhh..', '........', '........', '........', 'ssssssss', '........'] },
+  { no: 208, hamle: 30, tur: 6, hedef: { bal: 6, cicek: 4 }, yildiz: [6500, 8000], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '.hh..hh.', '..1..2..', '..3..4..', '........', '.h....h.', '........', '........'] },
+  { no: 209, hamle: 16, tur: 6, hedef: { topla: { 0: 20, 4: 20 } }, yildiz: [4000, 5000], ozel: { cizgili: true, bomba: true, gokkusagi: true } },
+  { no: 210, hamle: 40, tur: 6, hedef: { bal: 10, sis: 4, mantar: 2 }, yildiz: [7750, 9250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['hh....hh', '.gg..gg.', '........', '...hh...', 'm..hh..m', '........', 'h......h', '........'] },
 ];
 
 export const TANITIM = {
+  bal: { baslik: 'Yeni: Bal', metin: 'Bazı karelere bal akmış. Ballı karenin üstündeki meyveyi patlat, bal temizlensin. Dikkat: bir hamlede hiç bal temizlemezsen yanındaki kareye yayılır!' },
   siparis: { baslik: 'Yeni: Pazar siparişleri', metin: 'Müşteriler sırayla sipariş veriyor! Hedef kutusunda açık siparişi görürsün: istenen meyveyi topla ya da istenen özel meyveyi yap. Biri bitince sıradaki gelir.' },
   balon: { baslik: 'Yeni: Balon', metin: 'Balonlar düşmez, meyveler yanlarından geçip iner. Balonun yanında eşleşme yap ya da özel meyveyle vur: bir kare yükselir. En üst sıradan uçup gidince sayılır!' },
   bukalemun: { baslik: 'Yeni: Bukalemun meyve', metin: 'Gökkuşağı halkalı meyveler bukalemun: her hamleden sonra bir sonraki renge geçer (çilek, limon, üzüm, portakal, elma, erik). Değişince eşleşme olursa kendiliğinden patlar. Hepsini patlat!' },
@@ -279,4 +291,4 @@ export function hedefTamam(seviye, toplanan, puan) {
   }
   return Object.entries(h.topla || {}).every(([tur, n]) => (toplanan[tur] || 0) >= n);
 }
-export const KALAN_HEDEF = ['sarmasik', 'mantar'];
+export const KALAN_HEDEF = ['sarmasik', 'mantar', 'bal'];
