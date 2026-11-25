@@ -50,6 +50,19 @@ class AraDeger {
   }
 }
 
+class Toplam {
+  constructor(a, b) {
+    this.a = a;
+    this.b = b;
+  }
+  __al() {
+    return deger(this.a) + deger(this.b);
+  }
+  interpolate(cfg) {
+    return new AraDeger(this, cfg);
+  }
+}
+
 class Carpim {
   constructor(a, b) {
     this.a = a;
@@ -113,6 +126,7 @@ const Animated = {
   Value: AnimDeger,
   ValueXY: AnimDegerXY,
   multiply: (a, b) => new Carpim(a, b),
+  add: (a, b) => new Toplam(a, b),
   timing: (v, cfg) => anim(() => hedefAta(v, cfg.toValue)),
   spring: (v, cfg) => anim(() => hedefAta(v, cfg.toValue)),
   delay: () => anim(() => {}),

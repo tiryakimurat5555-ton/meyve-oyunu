@@ -78,6 +78,9 @@ function Oyun() {
       tur,
       poz: new Animated.ValueXY({ x: c, y: baslangicSatir }),
       olcek: new Animated.Value(1),
+      ez: new Animated.Value(0), // +1 ezilmiş (yere değince), -1 uzamış (düşerken)
+      don: new Animated.Value(0), // sallanma (-1..1)
+      zip: new Animated.Value(0), // zıplama (hücre biriminde, eksi = yukarı)
     };
     parcalar.current.set(p.id, p);
     return p;
@@ -89,6 +92,60 @@ function Oyun() {
 
   const tasi = (p, r, c, sure, yumusak = Easing.out(Easing.quad)) =>
     Animated.timing(p.poz, { toValue: { x: c, y: r }, duration: sure, easing: yumusak, useNativeDriver: true });
+
+  // Yere değince ezilip jöle gibi geri gelir
+  const inis = (p, guc = 1) =>
+    Animated.sequence([
+      Animated.timing(p.ez, { toValue: 0.9 * guc, duration: 70, easing: Easing.out(Easing.quad), useNativeDriver: true }),
+      Animated.spring(p.ez, { toValue: 0, speed: 22, bounciness: 14, useNativeDriver: true }),
+    ]);
+
+  // Düşer (uzayarak), yere değince ezilir. Söz düşüş bitince çözülür; esneme arkada sürer.
+  const dusur = (p, r, c, mesafe, gecikme = 0) =>
+    new Promise((coz) => {
+      p.zip.stopAnimation();
+      p.zip.setValue(0);
+      const sure = 160 + 55 * mesafe;
+      Animated.sequence([
+        Animated.delay(gecikme),
+        Animated.parallel([
+          tasi(p, r, c, sure, Easing.in(Easing.quad)),
+          Animated.timing(p.ez, { toValue: -Math.min(0.6, 0.15 * mesafe), duration: sure * 0.6, useNativeDriver: true }),
+        ]),
+      ]).start(() => {
+        inis(p, Math.min(1, 0.45 + 0.12 * mesafe)).start();
+        coz();
+      });
+    });
+
+  // Hafif zıplama (seçimde ve boşta)
+  const zipla = (p, yukseklik = 0.18) =>
+    Animated.sequence([
+      Animated.parallel([
+        Animated.timing(p.zip, { toValue: -yukseklik, duration: 130, easing: Easing.out(Easing.quad), useNativeDriver: true }),
+        Animated.timing(p.ez, { toValue: -0.4, duration: 130, useNativeDriver: true }),
+      ]),
+      Animated.parallel([
+        Animated.timing(p.zip, { toValue: 0, duration: 140, easing: Easing.in(Easing.quad), useNativeDriver: true }),
+        Animated.timing(p.ez, { toValue: 0, duration: 140, useNativeDriver: true }),
+      ]),
+      inis(p, 0.6),
+    ]);
+
+  // "Hayır" sallanması
+  const salla = (p) =>
+    Animated.sequence([-1, 1, -0.7, 0.7, -0.3, 0].map((v) => Animated.timing(p.don, { toValue: v, duration: 45, useNativeDriver: true })));
+
+  // Ekran sarsıntısı ve ışık parlaması (büyük zincirlerde)
+  const sarsinti = useRef(new Animated.Value(0)).current;
+  const flas = useRef(new Animated.Value(0)).current;
+  const sars = (guc) => {
+    Animated.sequence([guc, -guc, guc * 0.7, -guc * 0.7, guc * 0.35, 0].map((v) => Animated.timing(sarsinti, { toValue: v, duration: 40, useNativeDriver: true }))).start();
+  };
+  const parlat = () => {
+    flas.setValue(0.45);
+    Animated.timing(flas, { toValue: 0, duration: 380, easing: Easing.out(Easing.quad), useNativeDriver: true }).start();
+  };
 
   const seciliAyarla = (h) => {
     seciliRef.current = h;
@@ -109,12 +166,11 @@ function Oyun() {
     setEfektler([]);
     mesgul.current = true;
     yenile();
-    // Açılışta meyveler yukarıdan yağar
-    const animler = [];
+    // Açılışta meyveler yukarıdan yağar, yere değince esner
+    const sozler = [];
     for (let r = 0; r < M.SATIR; r++)
-      for (let c = 0; c < M.SUTUN; c++)
-        animler.push(Animated.sequence([Animated.delay((M.SATIR - 1 - r) * 45 + c * 18), tasi(parcaAt(r, c), r, c, 420, Easing.out(Easing.back(1.2)))]));
-    Animated.parallel(animler).start(() => {
+      for (let c = 0; c < M.SUTUN; c++) sozler.push(dusur(parcaAt(r, c), r, c, 4, (M.SATIR - 1 - r) * 55 + c * 22));
+    Promise.all(sozler).then(() => {
       mesgul.current = false;
       ipucuKur();
     });
@@ -135,9 +191,18 @@ function Oyun() {
       voRef.current = a;
       setVo(a);
     });
+    // Boşta: arada bir rastgele bir meyve hafifçe zıplar (tahta canlı görünsün)
+    const canli = setInterval(() => {
+      if (mesgul.current || !izgara.current || voRef.current) return;
+      const r = Math.floor(Math.random() * M.SATIR);
+      const c = Math.floor(Math.random() * M.SUTUN);
+      const p = parcaAt(r, c);
+      if (p && !ipucuParcalar.current.includes(p)) zipla(p, 0.12).start();
+    }, 1600);
     return () => {
       dinle && dinle.remove && dinle.remove();
       clearTimeout(ipucuZaman.current);
+      clearInterval(canli);
     };
   }, []);
 
@@ -200,22 +265,37 @@ function Oyun() {
         setOvgu({ id: ++sonKimlik, metin });
       }
       titret(zincir >= 3 ? 'guclu' : 'orta');
+      const enBuyuk = Math.max(...gruplar.map((g) => g.hucreler.length));
+      if (zincir >= 3 || enBuyuk >= 5) {
+        sars(Math.min(9, 3 + zincir * 1.5));
+        parlat();
+      } else if (zincir === 2 || enBuyuk === 4) {
+        sars(3);
+      }
 
-      // Patlat
+      // Patlat: önce sevinçle şişip sallanır, sonra patlar
       const sil = M.silinecekler(gruplar);
       const animler = [];
       for (const [r, c] of sil) {
         const p = parcaAt(r, c);
         patlayan[p.tur] = (patlayan[p.tur] || 0) + 1;
-        efektEkle({ tip: 'patlama', x: c, y: r, renk: MEYVELER[p.tur].renk });
         animler.push(
           Animated.sequence([
-            Animated.timing(p.olcek, { toValue: 1.25, duration: 70, useNativeDriver: true }),
-            Animated.timing(p.olcek, { toValue: 0, duration: 150, easing: Easing.in(Easing.quad), useNativeDriver: true }),
+            Animated.parallel([
+              Animated.spring(p.olcek, { toValue: 1.28, speed: 40, bounciness: 10, useNativeDriver: true }),
+              Animated.sequence([-0.6, 0.6, 0].map((v) => Animated.timing(p.don, { toValue: v, duration: 45, useNativeDriver: true }))),
+            ]),
+            Animated.timing(p.olcek, { toValue: 0, duration: 120, easing: Easing.in(Easing.back(2)), useNativeDriver: true }),
           ])
         );
       }
-      await oynat(Animated.parallel(animler));
+      const patlat = oynat(Animated.parallel(animler));
+      await bekle(150);
+      for (const [r, c] of sil) {
+        const p = parcaAt(r, c);
+        efektEkle({ tip: 'patlama', x: c, y: r, renk: MEYVELER[p.tur].renk });
+      }
+      await patlat;
       for (const [r, c] of sil) {
         parcalar.current.delete(izgara.current[r][c]);
         izgara.current[r][c] = null;
@@ -230,20 +310,20 @@ function Oyun() {
         yeniIzgara[k.eski[0]][k.eski[1]] = null;
         yeniIzgara[k.yeni[0]][k.yeni[1]] = id;
       }
+      const dusenler = [];
       for (const k of s.kaymalar) {
         const p = parcalar.current.get(yeniIzgara[k.yeni[0]][k.yeni[1]]);
-        const mesafe = k.yeni[0] - k.eski[0];
-        dusus.push(tasi(p, k.yeni[0], k.yeni[1], 170 + 55 * mesafe, Easing.out(Easing.back(1.1))));
+        dusenler.push([p, k.yeni[0], k.yeni[1], k.yeni[0] - k.eski[0], 0]);
       }
       for (const n of s.yeniler) {
         const p = yeniParca(n.tur, n.yeni[0], n.yeni[1], -n.kacinci);
         yeniIzgara[n.yeni[0]][n.yeni[1]] = p.id;
-        const mesafe = n.yeni[0] + n.kacinci;
-        dusus.push(tasi(p, n.yeni[0], n.yeni[1], 170 + 55 * mesafe, Easing.out(Easing.back(1.1))));
+        dusenler.push([p, n.yeni[0], n.yeni[1], n.yeni[0] + n.kacinci, 40]);
       }
       izgara.current = yeniIzgara;
       yenile();
-      await oynat(Animated.parallel(dusus));
+      for (const [p, r, c, mesafe, gecikme] of dusenler) dusus.push(dusur(p, r, c, mesafe, gecikme + c * 12));
+      await Promise.all(dusus);
     }
     puanRef.current += toplam;
     setPuan(puanRef.current);
@@ -289,16 +369,37 @@ function Oyun() {
     seciliAyarla(null);
     const pa = parcaAt(a[0], a[1]);
     const pb = parcaAt(b[0], b[1]);
+    for (const p of [pa, pb]) {
+      p.zip.stopAnimation();
+      p.zip.setValue(0);
+      p.ez.stopAnimation();
+      p.ez.setValue(0);
+    }
     cal('takas', 0.7);
     titret('hafif');
-    await oynat(Animated.parallel([tasi(pa, b[0], b[1], 150), tasi(pb, a[0], a[1], 150)]));
+    // Tutulan meyve hafifçe büyüyerek öbürünün üstünden geçer
+    await oynat(
+      Animated.parallel([
+        tasi(pa, b[0], b[1], 160, Easing.inOut(Easing.quad)),
+        tasi(pb, a[0], a[1], 160, Easing.inOut(Easing.quad)),
+        Animated.sequence([
+          Animated.timing(pa.olcek, { toValue: 1.15, duration: 80, useNativeDriver: true }),
+          Animated.timing(pa.olcek, { toValue: 1, duration: 80, useNativeDriver: true }),
+        ]),
+        Animated.sequence([
+          Animated.timing(pb.olcek, { toValue: 0.88, duration: 80, useNativeDriver: true }),
+          Animated.timing(pb.olcek, { toValue: 1, duration: 80, useNativeDriver: true }),
+        ]),
+      ])
+    );
     izgara.current[a[0]][a[1]] = pb.id;
     izgara.current[b[0]][b[1]] = pa.id;
 
     if (!M.eslesmeleriBul(turIzgarasi()).length) {
       cal('gecersiz');
       titret('hata');
-      await oynat(Animated.parallel([tasi(pa, a[0], a[1], 150), tasi(pb, b[0], b[1], 150)]));
+      await oynat(Animated.parallel([salla(pa), salla(pb)]));
+      await oynat(Animated.parallel([tasi(pa, a[0], a[1], 170, Easing.out(Easing.back(1.6))), tasi(pb, b[0], b[1], 170, Easing.out(Easing.back(1.6)))]));
       izgara.current[a[0]][a[1]] = pa.id;
       izgara.current[b[0]][b[1]] = pb.id;
       duyur('Eşleşme olmadı');
@@ -336,6 +437,7 @@ function Oyun() {
       seciliAyarla(h);
       cal('secim');
       titret('hafif');
+      zipla(parcaAt(h[0], h[1]), 0.2).start();
       duyur(`${MEYVELER[parcaAt(h[0], h[1]).tur].isim} seçildi`);
       return;
     }
@@ -350,6 +452,7 @@ function Oyun() {
     }
     seciliAyarla(h);
     cal('secim');
+    zipla(parcaAt(h[0], h[1]), 0.2).start();
     duyur(`${MEYVELER[parcaAt(h[0], h[1]).tur].isim} seçildi`);
   };
 
@@ -406,7 +509,7 @@ function Oyun() {
   return (
     <View style={[st.kok, { paddingTop: ek.top + 8, paddingBottom: ek.bottom + 8 }]}>
       <View style={st.tepe} pointerEvents="none" importantForAccessibility="no-hide-descendants" accessibilityElementsHidden>
-        <View style={[st.tepe2, { width: EG * 1.6, height: EG * 0.9, borderRadius: EG, bottom: -EG * 0.45 }]} />
+        <View style={[st.tepe2, { left: -EG * 0.3, width: EG * 1.6, height: EG * 0.9, borderRadius: EG * 0.8, top: EY - EG * 0.32 }]} />
       </View>
 
       <View style={st.ust}>
@@ -415,7 +518,7 @@ function Oyun() {
         <Kutu baslik="En iyi" deger={enIyi} etiket={`En iyi puan ${enIyi}`} />
       </View>
 
-      <View style={[st.cerceve, { width: TAHTA + 12, height: TAHTA + 12 }]}>
+      <Animated.View style={[st.cerceve, { width: TAHTA + 12, height: TAHTA + 12, transform: [{ translateX: sarsinti }] }]}>
         <View
           ref={tahtaGorunum}
           onLayout={tahtaYerlesti}
@@ -482,8 +585,14 @@ function Oyun() {
               })
             )}
         </View>
+        <Animated.View
+          pointerEvents="none"
+          importantForAccessibility="no-hide-descendants"
+          accessibilityElementsHidden
+          style={[StyleSheet.absoluteFill, { borderRadius: 18, backgroundColor: '#ffffff', opacity: flas }]}
+        />
         {ovgu && <Ovgu key={ovgu.id} metin={ovgu.metin} bitti={() => setOvgu(null)} />}
-      </View>
+      </Animated.View>
 
       <View style={st.alt}>
         <Pressable
@@ -498,7 +607,7 @@ function Oyun() {
 
       {bitti && (
         <View style={st.perde} accessibilityViewIsModal>
-          <View style={st.kart}>
+          <GirisKart>
             <Text style={st.kartBaslik} accessibilityRole="header">
               Hamleler bitti!
             </Text>
@@ -507,10 +616,25 @@ function Oyun() {
             <Pressable accessibilityRole="button" accessibilityLabel="Tekrar oyna" onPress={kur} style={({ pressed }) => [st.dugme, st.dugmeBuyuk, pressed && { transform: [{ scale: 0.96 }] }]}>
               <Text style={[st.dugmeYazi, { fontSize: 20 }]}>Tekrar oyna</Text>
             </Pressable>
-          </View>
+          </GirisKart>
         </View>
       )}
     </View>
+  );
+}
+
+// Oyun sonu kartı yaylanarak gelir
+function GirisKart({ children }) {
+  const t = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    Animated.spring(t, { toValue: 1, speed: 12, bounciness: 12, useNativeDriver: true }).start();
+  }, []);
+  return (
+    <Animated.View
+      style={[st.kart, { opacity: t.interpolate({ inputRange: [0, 0.3, 1], outputRange: [0, 1, 1] }), transform: [{ scale: t.interpolate({ inputRange: [0, 1], outputRange: [0.6, 1] }) }] }]}
+    >
+      {children}
+    </Animated.View>
   );
 }
 
@@ -519,7 +643,11 @@ function Parca({ p, H }) {
   if (p.H !== H) {
     p.H = H;
     p.tx = Animated.multiply(p.poz.x, H);
-    p.ty = Animated.multiply(p.poz.y, H);
+    // Ezilince alt kenar yerinde kalsın diye hafifçe aşağı kayar
+    p.ty = Animated.add(Animated.multiply(Animated.add(p.poz.y, p.zip), H), Animated.multiply(p.ez, H * 0.06));
+    p.sx = p.ez.interpolate({ inputRange: [-1, 0, 1], outputRange: [0.86, 1, 1.16] });
+    p.sy = p.ez.interpolate({ inputRange: [-1, 0, 1], outputRange: [1.14, 1, 0.82] });
+    p.rot = p.don.interpolate({ inputRange: [-1, 1], outputRange: ['-16deg', '16deg'] });
   }
   return (
     <Animated.View
@@ -531,7 +659,7 @@ function Parca({ p, H }) {
         height: H,
         alignItems: 'center',
         justifyContent: 'center',
-        transform: [{ translateX: p.tx }, { translateY: p.ty }, { scale: p.olcek }],
+        transform: [{ translateX: p.tx }, { translateY: p.ty }, { scale: p.olcek }, { scaleX: p.sx }, { scaleY: p.sy }, { rotate: p.rot }],
       }}
     >
       <Image source={MEYVELER[p.tur].resim} style={{ width: H * 0.9, height: H * 0.9 }} resizeMode="contain" />
@@ -571,17 +699,32 @@ function SeciliHalka({ r, c, H }) {
   );
 }
 
-const PARCACIK_ACI = [0, 45, 90, 135, 180, 225, 270, 315];
+// Patlama: meyve rengi damlalar (parlak noktalı), beyaz yıldız pırıltıları ve genişleyen ışık halkası
+const DAMLALAR = [0, 40, 80, 125, 165, 205, 250, 290, 330].map((aci, i) => ({ aci, uzak: 0.7 + ((i * 37) % 10) / 22, boy: 0.13 + ((i * 53) % 7) / 70 }));
+const PIRILTILAR = [20, 140, 260].map((aci, i) => ({ aci, uzak: 0.55 + i * 0.12 }));
 function Patlama({ e, H, bitti }) {
   const t = useRef(new Animated.Value(0)).current;
   useEffect(() => {
-    Animated.timing(t, { toValue: 1, duration: 520, easing: Easing.out(Easing.quad), useNativeDriver: true }).start(() => bitti(e.id));
+    Animated.timing(t, { toValue: 1, duration: 600, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start(() => bitti(e.id));
   }, []);
   const cx = e.x * H + H / 2;
   const cy = e.y * H + H / 2;
-  const nokta = H * 0.16;
+  const sondur = t.interpolate({ inputRange: [0, 0.55, 1], outputRange: [1, 1, 0] });
   return (
     <>
+      <Animated.View
+        style={{
+          position: 'absolute',
+          left: cx - H * 0.5,
+          top: cy - H * 0.5,
+          width: H,
+          height: H,
+          borderRadius: H / 2,
+          backgroundColor: e.renk,
+          opacity: t.interpolate({ inputRange: [0, 0.25, 1], outputRange: [0.45, 0.2, 0] }),
+          transform: [{ scale: t.interpolate({ inputRange: [0, 1], outputRange: [0.5, 1.3] }) }],
+        }}
+      />
       <Animated.View
         style={{
           position: 'absolute',
@@ -593,32 +736,65 @@ function Patlama({ e, H, bitti }) {
           borderWidth: 3,
           borderColor: '#ffffff',
           opacity: t.interpolate({ inputRange: [0, 1], outputRange: [0.95, 0] }),
-          transform: [{ scale: t.interpolate({ inputRange: [0, 1], outputRange: [0.3, 1.5] }) }],
+          transform: [{ scale: t.interpolate({ inputRange: [0, 1], outputRange: [0.3, 1.6] }) }],
         }}
       />
-      {PARCACIK_ACI.map((aci, i) => {
-        const rad = (aci * Math.PI) / 180;
-        const uzak = H * (i % 2 ? 0.75 : 0.95);
+      {DAMLALAR.map((d) => {
+        const rad = (d.aci * Math.PI) / 180;
+        const b = H * d.boy;
+        const ux = Math.cos(rad) * H * d.uzak;
+        const uy = Math.sin(rad) * H * d.uzak;
         return (
           <Animated.View
-            key={aci}
+            key={d.aci}
             style={{
               position: 'absolute',
-              left: cx - nokta / 2,
-              top: cy - nokta / 2,
-              width: nokta,
-              height: nokta,
-              borderRadius: i % 2 ? nokta / 2 : 2,
-              backgroundColor: i % 3 === 0 ? '#ffffff' : e.renk,
-              opacity: t.interpolate({ inputRange: [0, 0.6, 1], outputRange: [1, 1, 0] }),
+              left: cx - b / 2,
+              top: cy - b / 2,
+              width: b,
+              height: b,
+              borderRadius: b / 2,
+              backgroundColor: e.renk,
+              opacity: sondur,
               transform: [
-                { translateX: t.interpolate({ inputRange: [0, 1], outputRange: [0, Math.cos(rad) * uzak] }) },
-                { translateY: t.interpolate({ inputRange: [0, 1], outputRange: [0, Math.sin(rad) * uzak] }) },
-                { rotate: t.interpolate({ inputRange: [0, 1], outputRange: ['0deg', `${120 + i * 20}deg`] }) },
-                { scale: t.interpolate({ inputRange: [0, 1], outputRange: [1, 0.4] }) },
+                { translateX: t.interpolate({ inputRange: [0, 1], outputRange: [0, ux] }) },
+                // Damlalar önce dışarı fırlar, sonra hafifçe aşağı düşer
+                { translateY: t.interpolate({ inputRange: [0, 0.6, 1], outputRange: [0, uy, uy + H * 0.35] }) },
+                { scale: t.interpolate({ inputRange: [0, 0.2, 1], outputRange: [0.4, 1.1, 0.5] }) },
               ],
             }}
-          />
+          >
+            <View style={{ position: 'absolute', left: b * 0.2, top: b * 0.16, width: b * 0.32, height: b * 0.32, borderRadius: b, backgroundColor: 'rgba(255,255,255,0.85)' }} />
+          </Animated.View>
+        );
+      })}
+      {PIRILTILAR.map((p) => {
+        const rad = (p.aci * Math.PI) / 180;
+        const b = H * 0.34;
+        return (
+          <Animated.View
+            key={'p' + p.aci}
+            style={{
+              position: 'absolute',
+              left: cx - b / 2,
+              top: cy - b / 2,
+              width: b,
+              height: b,
+              alignItems: 'center',
+              justifyContent: 'center',
+              opacity: t.interpolate({ inputRange: [0, 0.15, 0.6, 1], outputRange: [0, 1, 1, 0] }),
+              transform: [
+                { translateX: t.interpolate({ inputRange: [0, 1], outputRange: [0, Math.cos(rad) * H * p.uzak] }) },
+                { translateY: t.interpolate({ inputRange: [0, 1], outputRange: [0, Math.sin(rad) * H * p.uzak] }) },
+                { rotate: t.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '90deg'] }) },
+                { scale: t.interpolate({ inputRange: [0, 0.3, 1], outputRange: [0.2, 1, 0.3] }) },
+              ],
+            }}
+          >
+            <View style={{ position: 'absolute', width: b, height: b * 0.16, borderRadius: b, backgroundColor: '#ffffff' }} />
+            <View style={{ position: 'absolute', width: b * 0.16, height: b, borderRadius: b, backgroundColor: '#ffffff' }} />
+            <View style={{ position: 'absolute', width: b * 0.3, height: b * 0.3, borderRadius: b, backgroundColor: '#fffbe0' }} />
+          </Animated.View>
         );
       })}
     </>
@@ -676,18 +852,64 @@ function Ovgu({ metin, bitti }) {
   );
 }
 
+// Değer değişince sayaç gibi yükselir ve kutu hafifçe zıplar; vurgu açıkken kalp gibi atar
 function Kutu({ baslik, deger, etiket, vurgu, buyuk }) {
+  const [gosterilen, setGosterilen] = useState(deger);
+  const onceki = useRef(deger);
+  const olcek = useRef(new Animated.Value(1)).current;
+  useEffect(() => {
+    const bas = onceki.current;
+    onceki.current = deger;
+    if (bas === deger) return;
+    Animated.sequence([
+      Animated.timing(olcek, { toValue: 1.12, duration: 90, useNativeDriver: true }),
+      Animated.spring(olcek, { toValue: 1, speed: 20, bounciness: 12, useNativeDriver: true }),
+    ]).start();
+    if (deger < bas) {
+      setGosterilen(deger);
+      return;
+    }
+    const t0 = Date.now();
+    const sure = 450;
+    const id = setInterval(() => {
+      const k = Math.min(1, (Date.now() - t0) / sure);
+      setGosterilen(Math.round(bas + (deger - bas) * (1 - Math.pow(1 - k, 3))));
+      if (k >= 1) clearInterval(id);
+    }, 30);
+    return () => clearInterval(id);
+  }, [deger]);
+  const atis = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    if (!vurgu) return;
+    const d = Animated.loop(
+      Animated.sequence([
+        Animated.timing(atis, { toValue: 1, duration: 140, useNativeDriver: true }),
+        Animated.timing(atis, { toValue: 0, duration: 140, useNativeDriver: true }),
+        Animated.timing(atis, { toValue: 0.6, duration: 120, useNativeDriver: true }),
+        Animated.timing(atis, { toValue: 0, duration: 400, useNativeDriver: true }),
+      ])
+    );
+    d.start();
+    return () => {
+      d.stop();
+      atis.setValue(0);
+    };
+  }, [vurgu]);
   return (
-    <View style={[st.kutu, buyuk && st.kutuBuyuk]} accessible accessibilityLabel={etiket}>
+    <Animated.View
+      style={[st.kutu, buyuk && st.kutuBuyuk, { transform: [{ scale: Animated.add(olcek, Animated.multiply(atis, 0.08)) }] }]}
+      accessible
+      accessibilityLabel={etiket}
+    >
       <Text style={st.kutuBaslik}>{baslik}</Text>
-      <Text style={[st.kutuDeger, buyuk && { fontSize: 34 }, vurgu && { color: '#e8364a' }]}>{deger}</Text>
-    </View>
+      <Text style={[st.kutuDeger, buyuk && { fontSize: 34 }, vurgu && { color: '#e8364a' }]}>{gosterilen}</Text>
+    </Animated.View>
   );
 }
 
 const st = StyleSheet.create({
   kok: { flex: 1, backgroundColor: '#bfe7ff', alignItems: 'center', justifyContent: 'center' },
-  tepe: { ...StyleSheet.absoluteFillObject, overflow: 'hidden', alignItems: 'center' },
+  tepe: { ...StyleSheet.absoluteFillObject, overflow: 'hidden' },
   tepe2: { position: 'absolute', backgroundColor: '#c9eeb0' },
   ust: { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'center', marginTop: 8, marginBottom: 14 },
   kutu: {
