@@ -36,6 +36,9 @@ export const balonMi = (v) => v === BALON;
 // sade bir meyveye zıplayıp onu yer (meyve toplanmış sayılır). KURBAGA_DOY meyve yiyince doyar: çevresindeki 3x3 patlar, kurbağa gider
 // (hedef.kurbaga). Düzende 'q'.
 export const KURBAGA = 28;
+// Fener (Fener Bahçesi): M.FENER; takas edilmez, eşleşmez, düşer. Yanındaki eşleşme işlemez; yalnız özel parça alanına girince
+// (ya da çekiçle) yanar ve gider (hedef.fener). Düzende 'l'.
+export const FENER = 29;
 export const KURBAGA_DOY = 5;
 export const kurbMi = (e) => typeof e === 'string' && e.startsWith('kurb');
 export const kurbDeger = (e) => Number(e.slice(4));
@@ -184,7 +187,7 @@ export function takasla(t, a, b) {
 // Eşleşme oluşturan ilk takası bulur (ipucu ve "hamle kaldı mı" denetimi için). Yoksa null.
 // kilit: takas edilemeyen hücreler (buzlu meyve, kasa). Verilmezse kasalar yine de kilitli sayılır.
 export function hamleBul(t, oz, kilit) {
-  const kilitli = (r, c) => kasaMi(t[r][c]) || gecilmez(t[r][c]) || (kilit && kilit[r][c]);
+  const kilitli = (r, c) => kasaMi(t[r][c]) || gecilmez(t[r][c]) || t[r][c] === FENER || (kilit && kilit[r][c]);
   // Gökkuşağı her komşusuyla takas edilebilir; iki özel parça yan yanaysa birleşim de bir hamledir
   for (let r = 0; r < SATIR; r++)
     for (let c = 0; c < SUTUN; c++) {
@@ -500,7 +503,7 @@ export function cozumAdimi(t, oz, { hamle = null, ek = [], izinli = null, engel 
   for (const [r, c] of silinecekler(gruplar))
     for (const [i, j] of [[r - 1, c], [r + 1, c], [r, c - 1], [r, c + 1]])
       if (i >= 0 && j >= 0 && i < SATIR && j < SUTUN && t[i][j] === BALON) balon.set(anahtar(i, j), [i, j]);
-  let hucreler = g.hucreler.filter(([r, c]) => !kasaMi(t[r][c]) && !inenMi(t[r][c]) && t[r][c] !== BALON && t[r][c] !== KURBAGA && !(engel && engel[r][c] === 'kafes'));
+  let hucreler = g.hucreler.filter(([r, c]) => !kasaMi(t[r][c]) && !inenMi(t[r][c]) && t[r][c] !== BALON && t[r][c] !== KURBAGA && t[r][c] !== FENER && !(engel && engel[r][c] === 'kafes'));
   if (buzKomsuKirar && engel) {
     // Eşleşmeye komşu buzlar da kırılır (meyve yerinde kalır): buzlu hücre listeye eklenir
     const var_ = new Set(hucreler.map(([r, c]) => anahtar(r, c)));
@@ -517,7 +520,8 @@ export function cozumAdimi(t, oz, { hamle = null, ek = [], izinli = null, engel 
     const [r, c] = z[0];
     if (inenMi(t[r][c])) tohumlar.push([r, c]);
   }
-  return { gruplar, olusan, hucreler, tetiklenen: g.tetiklenen, kasaVurus: [...vur.values()], tohumlar, balonlar: [...balon.values()].sort((a, b) => a[0] - b[0]) };
+  const fenerler = g.hucreler.filter(([r, c]) => t[r][c] === FENER);
+  return { gruplar, olusan, hucreler, fenerler, tetiklenen: g.tetiklenen, kasaVurus: [...vur.values()], tohumlar, balonlar: [...balon.values()].sort((a, b) => a[0] - b[0]) };
 }
 
 // Çiçek (Arı Bahçesi): zemin değeri CICEK + meyve türü (10-15). Parçayla düşmez. Üstünde KENDİ RENGİNDEKİ meyve temizlenince
@@ -547,7 +551,7 @@ export function karEriyen(adim, engel, zemin, t = null) {
   return [...l.values()];
 }
 
-export const adimBos = (adim) => !adim.hucreler.length && !adim.olusan.length && !adim.kasaVurus.length && !(adim.tohumlar && adim.tohumlar.length) && !(adim.balonlar && adim.balonlar.length);
+export const adimBos = (adim) => !adim.hucreler.length && !adim.olusan.length && !adim.kasaVurus.length && !(adim.tohumlar && adim.tohumlar.length) && !(adim.balonlar && adim.balonlar.length) && !(adim.fenerler && adim.fenerler.length);
 
 // Bir çözüm adımını ızgaralara uygular (bot ve testler için; oyun ekranı aynı kuralları animasyonla uygular).
 // Dönüş: { t, oz, engel, sayac: { topla:{tur:n}, buz, kasa } } — yerçekimi ve yeni meyveler dahil.
@@ -650,6 +654,12 @@ export function adimUygula(t, oz, engel, adim, rnd = Math.random, zemin = null) 
     const k = 'ozel_' + ozelSiparisAdi(o.ozel);
     sayac[k] = (sayac[k] || 0) + 1;
   }
+  for (const [r, c] of adim.fenerler || []) {
+    t[r][c] = -1;
+    oz[r][c] = null;
+    engel[r][c] = null;
+    sayac.fener = (sayac.fener || 0) + 1;
+  }
   for (const [r, c] of adim.balonlar || []) {
     const h = balonYukselt(t, oz, engel, r, c);
     if (h === 'uctu') sayac.balon = (sayac.balon || 0) + 1;
@@ -662,7 +672,7 @@ export function adimUygula(t, oz, engel, adim, rnd = Math.random, zemin = null) 
 const ODUL_OZEL = ['satir', 'sutun', 'bomba'];
 
 // Seviye düzeninden (8 satırlık metin: '.' boş, 'b' buz, 'k' kasa, 'K' iki katlı kasa, 's' kar, 'S' iki katlı kar,
-// 't' tohum, 'v' sarmaşık, 'g' sis, 'x' delik, 'o' balon, 'h' bal, 'q' kurbağa, 'z' saatli meyve, 'm' mantar, 'y' yumurta (2 kat, içinden civciv), 'c' kafesli meyve, 'a' anahtar, 'u' bukalemun, '1'-'6' çiçek (çilek, limon, üzüm, portakal, elma, erik), 'f' fıçı, 'F' ödüllü fıçı) başlangıç tahtası kurar. Dönüş: { t, oz, engel, zemin } — eşleşmesiz ve en az bir hamlesi olan.
+// 't' tohum, 'v' sarmaşık, 'g' sis, 'x' delik, 'o' balon, 'h' bal, 'q' kurbağa, 'l' fener, 'z' saatli meyve, 'm' mantar, 'y' yumurta (2 kat, içinden civciv), 'c' kafesli meyve, 'a' anahtar, 'u' bukalemun, '1'-'6' çiçek (çilek, limon, üzüm, portakal, elma, erik), 'f' fıçı, 'F' ödüllü fıçı) başlangıç tahtası kurar. Dönüş: { t, oz, engel, zemin } — eşleşmesiz ve en az bir hamlesi olan.
 export function duzenliTahta(duzen, rnd = Math.random) {
   for (let d = 0; d < 300; d++) {
     const t = yeniTahta(rnd);
@@ -689,6 +699,7 @@ export function duzenliTahta(duzen, rnd = Math.random) {
           else if (h === 'u') engel[r][c] = 'buk';
           else if (h === 'x') t[r][c] = DELIK;
           else if (h === 'o') t[r][c] = BALON;
+          else if (h === 'l') t[r][c] = FENER;
           else if (h === 'q') {
             t[r][c] = KURBAGA;
             engel[r][c] = 'kurb0';
@@ -739,7 +750,7 @@ export function sarmasikYay(t, oz, engel, rnd = Math.random, tip = 'sarmasik') {
 // Bütün geçerli hamleler (kilitli hücreler ve kasalar hariç)
 export function tumHamleler(t, oz, engel) {
   const l = [];
-  const kilitli = (r, c) => kasaMi(t[r][c]) || gecilmez(t[r][c]) || (engel && !serbestMi(engel[r][c]));
+  const kilitli = (r, c) => kasaMi(t[r][c]) || gecilmez(t[r][c]) || t[r][c] === FENER || (engel && !serbestMi(engel[r][c]));
   for (let r = 0; r < SATIR; r++)
     for (let c = 0; c < SUTUN; c++)
       for (const b of [[r, c + 1], [r + 1, c]]) {
@@ -971,7 +982,7 @@ export function inenDerinligi(t) {
 export const inenDegeri = (s, d0) => INEN_SAYAC.reduce((a, k) => a + (s.sayac[k] || 0) * 400, 0) + (inenDerinligi(s.t) - d0) * 60;
 
 // Bot: hamle sonucunun hedefe katkısı
-export const HEDEF_AGIRLIK = { buz: 150, kasa: 150, kar: 150, sarmasik: 170, fici: 200, sis: 160, cicek: 180, saat: 220, mantar: 180, kafes: 300, bukalemun: 200, balon: 400, bal: 170 };
+export const HEDEF_AGIRLIK = { buz: 150, kasa: 150, kar: 150, sarmasik: 170, fici: 200, sis: 160, cicek: 180, saat: 220, mantar: 180, kafes: 300, bukalemun: 200, balon: 400, bal: 170, fener: 500 };
 export function hamleDegeri(s, hedef, derin0 = 0) {
   if (hedef.puan) return s.puan;
   let d = s.puan / 100;
@@ -982,6 +993,7 @@ export function hamleDegeri(s, hedef, derin0 = 0) {
     const s0 = aktifSiparis;
     d += (s0.ozel ? (s.sayac['ozel_' + s0.ozel] || 0) * 500 : ((s.sayac.topla && s.sayac.topla[s0.tur]) || 0) * 120);
   }
+  if (hedef.fener) d += (s.sayac.ozel_cizgili || 0) * 90 + (s.sayac.ozel_bomba || 0) * 110 + (s.sayac.ozel_gokkusagi || 0) * 140;
   if (hedef.balon) d += (s.sayac.balonKalk || 0) * 110;
   if (hedef.civciv) d += (s.sayac.vurus || 0) * 70 + (s.sayac.yumurta || 0) * 200;
   if (inenHedefMi(hedef)) d += inenDegeri(s, derin0);
@@ -1009,7 +1021,7 @@ export function sayacEkle(hedef, ek) {
 }
 
 // Düzen harfi -> hedef anahtarı ve sayısı (düzen ile hedef tutarlı mı denetimi için)
-const DUZEN_HEDEF = { b: ['buz', 1], k: ['kasa', 1], K: ['kasa', 1], s: ['kar', 1], S: ['kar', 2], t: ['tohum', 1], v: ['sarmasik', 1], f: ['fici', 1], F: ['fici', 1], g: ['sis', 1], 1: ['cicek', 1], 2: ['cicek', 1], 3: ['cicek', 1], 4: ['cicek', 1], 5: ['cicek', 1], 6: ['cicek', 1], z: ['saat', 1], m: ['mantar', 1], y: ['civciv', 1], c: ['kafes', 1], u: ['bukalemun', 1], o: ['balon', 1], h: ['bal', 1], q: ['kurbaga', 1] };
+const DUZEN_HEDEF = { b: ['buz', 1], k: ['kasa', 1], K: ['kasa', 1], s: ['kar', 1], S: ['kar', 2], t: ['tohum', 1], v: ['sarmasik', 1], f: ['fici', 1], F: ['fici', 1], g: ['sis', 1], 1: ['cicek', 1], 2: ['cicek', 1], 3: ['cicek', 1], 4: ['cicek', 1], 5: ['cicek', 1], 6: ['cicek', 1], z: ['saat', 1], m: ['mantar', 1], y: ['civciv', 1], c: ['kafes', 1], u: ['bukalemun', 1], o: ['balon', 1], h: ['bal', 1], q: ['kurbaga', 1], l: ['fener', 1] };
 export const DUZEN_HEDEF_ANAHTAR = [...new Set(Object.values(DUZEN_HEDEF).map((x) => x[0]))];
 export function duzenSayilari(duzen) {
   const say = {};

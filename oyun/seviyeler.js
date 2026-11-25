@@ -259,9 +259,21 @@ export const SEVIYELER = [
   { no: 228, hamle: 15, tur: 6, hedef: { kurbaga: 3, mantar: 8 }, yildiz: [4000, 4750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['mm....mm', 'm......m', '.q..q..q', '........', '........', 'm......m', '........', '........'] },
   { no: 229, hamle: 16, tur: 6, hedef: { topla: { 2: 22, 4: 22 } }, yildiz: [3750, 5000], ozel: { cizgili: true, bomba: true, gokkusagi: true } },
   { no: 230, hamle: 18, tur: 6, hedef: { kurbaga: 4, buz: 8, bal: 4 }, yildiz: [4750, 5500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '.q.bb.q.', '..bbbb..', '...bb...', '.q....q.', '........', '..hhhh..', '........'] },
+  // ---- 24. bölüm: Fener Bahçesi (fener: yalnız özel meyve alanına girince yanar) ----
+  { no: 231, hamle: 34, tur: 6, hedef: { fener: 2 }, yildiz: [7500, 9000], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '........', '........', '...l....', '....l...', '........', '........', '........'], yeni: 'fener' },
+  { no: 232, hamle: 38, tur: 6, hedef: { fener: 3 }, yildiz: [8000, 10000], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '..l..l..', '........', '........', '....l...', '........', '........', '........'] },
+  { no: 233, hamle: 42, tur: 6, hedef: { fener: 3, topla: { 3: 14 } }, yildiz: [9250, 11250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['l......l', '........', '........', '...l....', '........', '........', '........', '........'] },
+  { no: 234, hamle: 42, tur: 6, hedef: { fener: 3, buz: 8 }, yildiz: [8750, 10500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '.bbbbbb.', '.b.l..b.', '........', '..l..l..', '........', '........', '........'] },
+  { no: 235, hamle: 24, tur: 6, hedef: { puan: 6000 }, yildiz: [7500, 8750], ozel: { cizgili: true, bomba: true, gokkusagi: true } },
+  { no: 236, hamle: 40, tur: 6, hedef: { fener: 4 }, yildiz: [9000, 11250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['l......l', '........', '...ll...', '........', '........', '........', '........', '........'] },
+  { no: 237, hamle: 40, tur: 6, hedef: { fener: 3, kar: 8 }, yildiz: [8750, 10500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '.l....l.', '........', '....l...', '........', '........', 'ssssssss', '........'] },
+  { no: 238, hamle: 40, tur: 6, hedef: { fener: 4, kurbaga: 1 }, yildiz: [9500, 11500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '.l....l.', '........', '...q....', '........', '.l....l.', '........', '........'] },
+  { no: 239, hamle: 18, tur: 6, hedef: { topla: { 0: 22, 5: 22 } }, yildiz: [4500, 5500], ozel: { cizgili: true, bomba: true, gokkusagi: true } },
+  { no: 240, hamle: 46, tur: 6, hedef: { fener: 4, sis: 4, kasa: 4 }, yildiz: [9500, 11250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['l......l', '.gg..gg.', '........', '..l..l..', '........', '.kkkk...', '........', '........'] },
 ];
 
 export const TANITIM = {
+  fener: { baslik: 'Yeni: Fener', metin: 'Gece bahçesinde sönük fenerler var. Fener yanındaki eşleşmeyle yanmaz: çizgili, bomba ya da gökkuşağı meyvenin patlaması değmeli. Çekiç de yakar. Bütün fenerleri yak!' },
   kurbaga: { baslik: 'Yeni: Kurbağa', metin: 'Göldeki kurbağa senin dostun! Her hamleden sonra yanındaki bir meyveye zıplayıp onu yer. 5 meyve yiyince doyar ve çevresini patlatır. Kurbağayı da meyveler gibi kaydırabilirsin.' },
   bal: { baslik: 'Yeni: Bal', metin: 'Bazı karelere bal akmış. Ballı karenin üstündeki meyveyi patlat, bal temizlensin. Dikkat: bir hamlede hiç bal temizlemezsen yanındaki kareye yayılır!' },
   siparis: { baslik: 'Yeni: Pazar siparişleri', metin: 'Müşteriler sırayla sipariş veriyor! Hedef kutusunda açık siparişi görürsün: istenen meyveyi topla ya da istenen özel meyveyi yap. Biri bitince sıradaki gelir.' },

@@ -8,6 +8,7 @@ export const CIVCIV_TUR = 25; // mantik.js CIVCIV
 export const ANAHTAR_TUR = 26; // mantik.js ANAHTAR
 export const BALON_TUR = 27; // mantik.js BALON
 export const KURBAGA_TUR = 28; // mantik.js KURBAGA
+export const FENER_TUR = 29; // mantik.js FENER
 const KURBAGA_DOY = 5;
 export const FICI_TUR = 22; // mantik.js FICI
 export const FICI_ODUL_TUR = 23; // mantik.js FICI_ODUL
@@ -535,6 +536,46 @@ export function BukalemunIkon({ boy = 26 }) {
     <View style={{ width: boy, height: boy }}>
       <BukalemunHale H={boy / 0.94} />
     </View>
+  );
+}
+
+// ---------- Fener ----------
+export function Fener({ H, yanik = false }) {
+  const b = H * 0.8;
+  return (
+    <View style={{ width: H, height: H, alignItems: 'center', justifyContent: 'center' }}>
+      {yanik && <View style={{ position: 'absolute', width: H * 1.1, height: H * 1.1, borderRadius: H, backgroundColor: 'rgba(255,220,90,0.45)' }} />}
+      <View style={{ position: 'absolute', top: H * 0.06, width: b * 0.34, height: b * 0.14, borderTopLeftRadius: b, borderTopRightRadius: b, borderWidth: 2.5, borderBottomWidth: 0, borderColor: '#5b3a17' }} />
+      <View style={{ position: 'absolute', top: H * 0.16, width: b * 0.62, height: b * 0.1, borderRadius: 3, backgroundColor: '#7a4a1c' }} />
+      <View style={{ position: 'absolute', top: H * 0.24, width: b * 0.52, height: b * 0.6, borderRadius: b * 0.12, backgroundColor: yanik ? '#ffe66b' : '#5c6b8a', borderWidth: 2.5, borderColor: '#7a4a1c', alignItems: 'center', justifyContent: 'center' }}>
+        <View style={{ width: b * 0.16, height: b * 0.24, borderRadius: b, backgroundColor: yanik ? '#ff9a1f' : '#8a96b0' }} />
+        <View style={{ position: 'absolute', left: b * 0.24, top: 0, bottom: 0, width: 2, backgroundColor: '#7a4a1c' }} />
+      </View>
+      <View style={{ position: 'absolute', top: H * 0.82, width: b * 0.62, height: b * 0.1, borderRadius: 3, backgroundColor: '#7a4a1c' }} />
+    </View>
+  );
+}
+export function FenerIkon({ boy = 26 }) {
+  return <Fener H={boy * 1.15} yanik />;
+}
+export function FenerYanma({ e, H, bitti }) {
+  const t = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    Animated.timing(t, { toValue: 1, duration: 900, easing: Easing.out(Easing.quad), useNativeDriver: true }).start(() => bitti(e.id));
+  }, []);
+  return (
+    <Animated.View
+      pointerEvents="none"
+      style={{
+        position: 'absolute',
+        left: e.c * H,
+        top: e.r * H,
+        opacity: t.interpolate({ inputRange: [0, 0.6, 1], outputRange: [1, 1, 0] }),
+        transform: [{ translateY: t.interpolate({ inputRange: [0, 1], outputRange: [0, -H * 1.4] }) }, { scale: t.interpolate({ inputRange: [0, 0.3, 1], outputRange: [1, 1.25, 0.8] }) }],
+      }}
+    >
+      <Fener H={H} yanik />
+    </Animated.View>
   );
 }
 
@@ -1133,6 +1174,8 @@ export function Parca({ p, H }) {
         <Anahtar H={H} />
       ) : p.tur === BALON_TUR ? (
         <Balon H={H} />
+      ) : p.tur === FENER_TUR ? (
+        <Fener H={H} />
       ) : p.tur === KURBAGA_TUR ? (
         <Kurbaga H={H} n={p.kurb || 0} />
       ) : p.kat ? null : p.ozel === 'gokkusagi' || !MEYVELER[p.tur] ? (

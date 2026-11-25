@@ -310,5 +310,18 @@ for (let i = 0; i < 30; i++) {
   dogru(k2.t.flat().filter((v) => v === M.KURBAGA).length === 1 && k2.engel.flat().includes('kurb2'), 'kurbağa zıplayıp yemeli');
   dogru(M.serbestMi('kurb3'), 'kurbağa takas edilebilir');
 }
-console.log(hata ? `${hata} HATA` : 'ENGEL TESTLERİ GEÇTİ (kar, tohum sarmaşık, fıçı, sis, delik, çiçek, saat, bant, akıntı kapısı, kafes, bukalemun, balon, bal ve kurbağa dahil)');
+{
+  // Fener: komşu eşleşme yakmaz, özel parça alanı (ek) yakar
+  const t = [];
+  for (let r = 0; r < 8; r++) t.push(Array.from({ length: 8 }, (_, c) => (r * 3 + c * 2 + (r % 2)) % 6));
+  t[7][0] = 0; t[7][1] = 0; t[7][2] = 0;
+  t[6][1] = M.FENER;
+  const oz = t.map((s) => s.map(() => null));
+  const en = t.map((s) => s.map(() => null));
+  dogru(M.cozumAdimi(t, oz, { engel: en }).fenerler.length === 0, 'komşu eşleşme feneri yakmamalı');
+  const ad = M.cozumAdimi(t, oz, { engel: en, ek: [[6, 1]] });
+  const u = M.adimUygula(t, oz, en, ad, () => 0.3);
+  dogru(ad.fenerler.length === 1 && u.sayac.fener === 1, 'özel parça alanı feneri yakmalı');
+}
+console.log(hata ? `${hata} HATA` : 'ENGEL TESTLERİ GEÇTİ (kar, tohum sarmaşık, fıçı, sis, delik, çiçek, saat, bant, akıntı kapısı, kafes, bukalemun, balon, bal, kurbağa ve fener dahil)');
 process.exit(hata ? 1 : 0);

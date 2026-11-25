@@ -452,6 +452,26 @@ const RENKLER = [
       { tip: 'parilti', renk: '#ffffff' },
     ],
   },
+  // 23: Fener Bahçesi (gece: mor-lacivert gök, ay, ateş böcekleri)
+  {
+    gece: true,
+    gok: ['#23204f', '#7a5aa8'],
+    gunes: '#fff4c2',
+    gunesKenar: '#e8d98a',
+    tepeArka: ['#3a3f6b', '#32375f'],
+    tepeArka2: ['#454a78', '#3b406c'],
+    tepeOn: ['#4a5f5a', '#40544f'],
+    tac: ['#2e5a4c', '#244a3e', '#3c7060'],
+    nokta: ['#ffe66b', '#ff9a1f', '#ffffff'],
+    cicek: ['#ffe66b', '#c9b8ff', '#ffffff'],
+    parca: [
+      { tip: 'atesbocegi' },
+      { tip: 'atesbocegi' },
+      { tip: 'atesbocegi' },
+      { tip: 'atesbocegi' },
+      { tip: 'atesbocegi' },
+    ],
+  },
 ];
 export const geceMi = (bolum) => !!(RENKLER[bolum] && RENKLER[bolum].gece);
 

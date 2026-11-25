@@ -17,6 +17,8 @@ import {
   CicekUst,
   CicekIkon,
   AriEfekt,
+  FenerIkon,
+  FenerYanma,
   KurbagaIkon,
   BalZemin,
   BalUst,
@@ -76,6 +78,7 @@ export function parcaAdi(p) {
   if (p.tur === M.CIVCIV) return 'Civciv';
   if (p.tur === M.ANAHTAR) return 'Anahtar';
   if (p.tur === M.BALON) return 'Balon';
+  if (p.tur === M.FENER) return 'Sönük fener';
   if (p.tur === M.KURBAGA) return `Kurbağa, ${p.kurb || 0} meyve yedi, doymasına ${M.KURBAGA_DOY - (p.kurb || 0)} kaldı`;
   if (p.kafes) return 'Kafesli ' + MEYVELER[p.tur].isim.toLocaleLowerCase('tr');
   if (p.tur === M.YUMURTA) return p.kat >= 2 ? 'Yumurta, 2 kat' : 'Çatlak yumurta';
@@ -122,6 +125,7 @@ function SiparisSimge({ s, boy }) {
 // Yeni bölümlerin hedefleri tek tabloda: hedef anlatımı, kalan, olay duyurusu ve simge
 // kalanAnahtar: yayılabilen engeller için tahtada kalan sayısı (toplanan[k + 'Kalan'])
 const EK_HEDEF = [
+  { k: 'fener', hedef: (n) => `${n} feneri özel meyveyle yak`, ad: 'fener', olay: (n) => (n > 1 ? `${n} fener yandı` : 'Fener yandı'), Ikon: FenerIkon },
   { k: 'kurbaga', hedef: (n) => `${n} kurbağayı doyur (her biri ${M.KURBAGA_DOY} meyve yiyince doyar)`, ad: 'kurbağa', olay: (n) => (n > 1 ? `${n} kurbağa doydu` : 'Kurbağa doydu'), Ikon: KurbagaIkon },
   { k: 'bal', kalanAnahtar: true, hedef: () => 'bütün bal lekelerini temizle', ad: 'bal', olay: (n) => `${n} bal temizlendi`, Ikon: BalIkon },
   { k: 'balon', hedef: (n) => `${n} balonu en üste çıkarıp uçur`, ad: 'balon', olay: (n) => (n > 1 ? `${n} balon uçtu` : 'Balon uçtu'), Ikon: BalonIkon },
@@ -302,7 +306,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
       })
     );
   const kilitIzgarasi = () => engelIzgarasi().map((s) => s.map((e) => !M.serbestMi(e)));
-  const kilitli = (p) => !p || p.tur === M.BALON || p.buz || p.sarmasik || p.sis || p.mantar || p.kafes || M.kasaMi(p.tur) || p.tur === M.DELIK;
+  const kilitli = (p) => !p || p.tur === M.BALON || p.tur === M.FENER || p.buz || p.sarmasik || p.sis || p.mantar || p.kafes || M.kasaMi(p.tur) || p.tur === M.DELIK;
   // Karıştırmada ve şenlikte yerinde kalanlar (tohum takas edilebilir ama meyveye dönüşmez)
   const sabit = (p) => kilitli(p) || M.inenMi(p.tur) || p.tur === M.KURBAGA;
 
@@ -701,6 +705,19 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
           efektEkle({ tip: 'donusum', r, c });
         } else efektEkle({ tip: 'cicek', r, c });
       }
+      // Özel parçanın değdiği fenerler yanar ve gider
+      let fenerSay = 0;
+      for (const [r, c] of adim.fenerler || []) {
+        const p = parcaAt(r, c);
+        if (!p || p.tur !== M.FENER) continue;
+        silinen.push({ r, c, p, tohum: true });
+        fenerSay++;
+        efektEkle({ tip: 'fener', r, c });
+      }
+      if (fenerSay) {
+        cal('yildiz_3', 0.8);
+        titret('basari');
+      }
       // Anahtar en alta indi: bütün kafesler açılır
       let kafesAcilan = 0;
       if (anahtarSay)
@@ -857,7 +874,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
       const tohumSay = (adim.tohumlar || []).length - civcivSay - anahtarSay;
       const saatSay = silinen.filter((x) => x.p.saat).length;
       const bukSay = silinen.filter((x) => x.p.buk).length;
-      topla({ ...adimSayaci(silinen), buz: buzKirilan.length - sarmasikKesilen - sisDagilan - mantarKesilen, sis: sisDagilan, mantar: mantarKesilen, kasa: kasaKirilan, fici: ficiKirilan, kar: karSay, cicek: cicekSay, saat: saatSay, tohum: tohumSay, civciv: civcivSay, anahtar: anahtarSay, kafes: kafesAcilan, bukalemun: bukSay, balon: balonUcan, bal: balSay });
+      topla({ ...adimSayaci(silinen), buz: buzKirilan.length - sarmasikKesilen - sisDagilan - mantarKesilen, sis: sisDagilan, mantar: mantarKesilen, kasa: kasaKirilan, fici: ficiKirilan, kar: karSay, cicek: cicekSay, saat: saatSay, tohum: tohumSay, civciv: civcivSay, anahtar: anahtarSay, kafes: kafesAcilan, bukalemun: bukSay, balon: balonUcan, bal: balSay, fener: fenerSay });
       sarmasikGuncelle();
       sayacToplam.sarmasik += sarmasikKesilen;
       sayacToplam.buz += buzKirilan.length - sarmasikKesilen - sisDagilan - mantarKesilen;
@@ -873,6 +890,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
       sayacToplam.bukalemun = (sayacToplam.bukalemun || 0) + bukSay;
       sayacToplam.balon = (sayacToplam.balon || 0) + balonUcan;
       sayacToplam.bal = (sayacToplam.bal || 0) + balSay;
+      sayacToplam.fener = (sayacToplam.fener || 0) + fenerSay;
       sayacToplam.tohum += tohumSay;
       puanEkle(kazanc);
 
@@ -1377,7 +1395,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
       cal('gecersiz');
       titret('hata');
       const k = kilitli(pa) ? pa : pb;
-      duyur(k.tur === M.DELIK ? 'Orası boş, meyve gidemez' : k.tur === M.BALON ? 'Balon yer değiştiremez, yanında eşleşme yap' : k.tur === M.KASA ? 'Kasa yer değiştiremez' : M.ficiMi(k.tur) ? 'Fıçı yer değiştiremez' : k.sarmasik ? 'Sarmaşıklı meyve yer değiştiremez' : k.sis ? 'Sisli kare yer değiştiremez' : k.mantar ? 'Mantarlı meyve yer değiştiremez' : k.kafes ? 'Kafesli meyve yer değiştiremez, anahtarı en alta indir' : 'Buzlu meyve yer değiştiremez');
+      duyur(k.tur === M.DELIK ? 'Orası boş, meyve gidemez' : k.tur === M.BALON ? 'Balon yer değiştiremez, yanında eşleşme yap' : k.tur === M.FENER ? 'Fener yer değiştiremez, özel meyveyle yak' : k.tur === M.KASA ? 'Kasa yer değiştiremez' : M.ficiMi(k.tur) ? 'Fıçı yer değiştiremez' : k.sarmasik ? 'Sarmaşıklı meyve yer değiştiremez' : k.sis ? 'Sisli kare yer değiştiremez' : k.mantar ? 'Mantarlı meyve yer değiştiremez' : k.kafes ? 'Kafesli meyve yer değiştiremez, anahtarı en alta indir' : 'Buzlu meyve yer değiştiremez');
       await oynat(salla(k));
       mesgul.current = false;
       ipucuKur();
@@ -1605,6 +1623,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
               if (e.tip === 'gokkusagi') return <GokkusagiIsinlari key={e.id} e={e} H={H} bitti={efektKaldir} />;
               if (e.tip === 'donusum') return <Donusum key={e.id} e={e} H={H} bitti={efektKaldir} />;
               if (e.tip === 'kirilma') return <Kirilma key={e.id} e={e} H={H} bitti={efektKaldir} />;
+              if (e.tip === 'fener') return <FenerYanma key={e.id} e={e} H={H} bitti={efektKaldir} />;
               if (e.tip === 'balonUc') return <BalonUcus key={e.id} e={e} H={H} bitti={efektKaldir} />;
               if (e.tip === 'ari') return <AriEfekt key={e.id} e={e} H={H} bitti={efektKaldir} />;
               if (e.tip === 'cicek') return <CicekAcma key={e.id} e={e} H={H} bitti={efektKaldir} />;
