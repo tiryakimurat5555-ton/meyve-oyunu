@@ -150,5 +150,20 @@ for (let i = 0; i < 30; i++) {
   dogru(!!u.oz[7][1] && u.t[7][1] >= 0 && u.t[7][1] < 6, 'ödüllü fıçıdan özel meyve çıkmalı: ' + u.oz[7][1]);
   dogru(M.duzenliTahta(['........', '........', '........', '........', '........', '........', '..fF....', '........']).engel[6][2] === 3, 'düzen f/F');
 }
-console.log(hata ? `${hata} HATA` : 'ENGEL TESTLERİ GEÇTİ (kar, tohum sarmaşık ve fıçı dahil)');
+{
+  // Sis: komşu eşleşmeyle dağılır, meyve kalır; görünür tahtada sisli hücre bilinmez
+  const t = [];
+  for (let r = 0; r < 8; r++) t.push(Array.from({ length: 8 }, (_, c) => (r * 3 + c * 2 + (r % 2)) % 6));
+  t[7][0] = 0; t[7][1] = 0; t[7][2] = 0; t[6][0] = 4;
+  const oz = t.map((s) => s.map(() => null));
+  const en = t.map((s) => s.map(() => null));
+  en[6][0] = 'sis';
+  const ad = M.cozumAdimi(t, oz, { engel: en });
+  const u = M.adimUygula(t, oz, en, ad, () => 0.4);
+  dogru(u.sayac.sis === 1 && u.engel[7][0] === null, 'sis dağılmalı: ' + JSON.stringify(u.sayac));
+  const g = M.gorunurTahta(t, en);
+  dogru(g[6][0] >= 100 && g[5][0] === t[5][0], 'görünür tahtada sis gizli');
+  dogru(M.duzenliTahta(['........', '........', '..g.....', '........', '........', '........', '........', '........']).engel[2][2] === 'sis', 'düzen g');
+}
+console.log(hata ? `${hata} HATA` : 'ENGEL TESTLERİ GEÇTİ (kar, tohum sarmaşık, fıçı ve sis dahil)');
 process.exit(hata ? 1 : 0);

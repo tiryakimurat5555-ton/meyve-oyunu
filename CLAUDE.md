@@ -26,8 +26,8 @@ Murat'ın meyve temalı 3'lü eşleştirme oyunu (Kasım 2026). Geçici ad "Meyv
 - HEDEF: 10 bölüm × 10 = 100 seviye (Murat 25 Kasım onayladı). Plan: 4 Kış (kar), 5 Çiçek (tohum), 6 Tropik (sarmaşık: kesilmezse
   yayılır), 7 Kiraz Çiçeği (dinlenme, iki katlı kar), 8 Bağ Bozumu (fıçı: 3 vuruş, bazısından özel meyve), 9 Gece (sis: gizler,
   VoiceOver "sisli" der), 10 Kristal Bahçe (final, hepsi). Bot geçme: 31-50 ≥%75, 51-80 ≥%70, 81-100 ≥%65; bölüm başı tanıtım,
-  4-5 seviyede bir dinlenme. Parça parça: 4-5 (31-50), 6 (51-60), 7 Kiraz Çiçeği (61-70, dinlenme: karışık engeller, bot %74-100), 8 Bağ Bozumu (71-80, bot %73-95) YAPILDI (25 Kasım);
-  sırada 9 Gece (sis, 81-90).
+  4-5 seviyede bir dinlenme. Parça parça: 4-5 (31-50), 6 (51-60), 7 Kiraz Çiçeği (61-70, dinlenme: karışık engeller, bot %74-100), 8 Bağ Bozumu (71-80, bot %73-95), 9 Gece Bahçesi (81-90, bot %72-100) YAPILDI (25 Kasım);
+  sırada 10 Kristal Bahçe (91-100, final: bütün engeller).
 - KAR (31-40): zemin katmanı (Oyun.js zemin ref, mantik zemin[r][c]=kat), parçayla düşmez. Üstündeki parça temizlenince / orada özel
   parça oluşunca / üstündeki kasa kırılınca bir kat erir (karEriyen); buz kırılması eritmez; komşu eşleşme eritmez. Düzen 's'/'S'.
   Çizim: KarZemin (altta) + KarUst (meyvenin üstünde alt kenar kar yığını + mavi kenar). VO: "Karlı çilek", "İki kat karlı ...".
@@ -44,6 +44,11 @@ Murat'ın meyve temalı 3'lü eşleştirme oyunu (Kasım 2026). Geçici ad "Meyv
   eşleşme / özel parça / çekiç bir kat azaltır) ama 3 kat; ödüllü fıçı (altın yıldızlı) kırılınca yerinde rastgele satir/sutun/bomba meyve
   çıkar. Hedef hedef.fici, sayaç toplanan.fici. Düzen 'f'/'F'. Çizim gorsel.js Fici (çatlaklar kat azaldıkça), FiciIkon. Sesler kasa_vur/kasa_kir.
   VO: "Fıçı, 3 kat", "Ödüllü fıçı, 2 kat". Tanıtım 'fici' (71), 'fici_odul' (73). Sahne 7: akşamüstü bağ.
+- SİS (81-90, Gece Bahçesi; 25 Kasım): engel 'sis' (Oyun.js p.sis), buz gibi (M.ortuMu: buz/sarmasik/sis) ama meyveyi GİZLER (SisKatman opak).
+  Eşleşme / komşu eşleşme / özel parça / çekiç dağıtır. Hedef hedef.sis, toplanan.sis. Düzen 'g'. VO yalnız "Sisli" (meyve adı söylenmez).
+  Bot ve ipucu sisin altını görmez: M.gorunurTahta (sisli hücre = benzersiz 100+ değer) ile karar verir (enIyiHamle ve seviye-testi).
+  Ses 'sis' (ElevenLabs, ham sis_2). Sahne 8 gece: RENKLER.gece, Ay (uykulu yüz), Yildizlar, AtesBocegi; geceMi(bolum) ile başlık ve
+  güçlendirici yazıları beyaz (koyu gökte okunsun).
 - Zincir övgü yazıları İngilizce (Nice!, Great!, Amazing!, Fantastic!), şenlik yazısı 'Garden Party!' — Murat: global oyun. Ödüllü reklam sonraki aşama.
 - Ekranda VoiceOver'a özel uyarı yazıları olmasın.
 - 25 Kasım ONAYLANDI (güçlendiriciler/günlük ödül): Çekiç (tek parça/buz/kasa kırar), Karıştır, +3 Hamle; hamle harcamazlar;

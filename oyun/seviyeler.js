@@ -2,7 +2,7 @@
 // (ilke: uzun soluklu oyun, ilk seviyelerde oyuncu zorlanmaz; bot ilk 10 seviyeyi en az ~%88 geçmeli).
 // meyve numaraları: 0 çilek, 1 limon, 2 üzüm, 3 portakal, 4 elma, 5 erik
 // hedef: { topla: { tur: adet }, buz: n, kasa: n } ya da { puan: n }; yildiz: [2 yıldız, 3 yıldız] puan eşikleri
-// duzen: 8 satır; '.' boş, 'b' buzlu meyve, 'k' kasa, 'K' iki katlı kasa, 's' kar, 'S' iki katlı kar, 't' tohum, 'v' sarmaşık, 'f' fıçı (3 kat), 'F' ödüllü fıçı
+// duzen: 8 satır; '.' boş, 'b' buzlu meyve, 'k' kasa, 'K' iki katlı kasa, 's' kar, 'S' iki katlı kar, 't' tohum, 'v' sarmaşık, 'g' sis, 'f' fıçı (3 kat), 'F' ödüllü fıçı
 // (hedefteki buz/kasa/kar katı/tohum sayısı düzendekiyle aynı olmalı)
 // ozel: hangi özel parçalar oluşabilir; yeni: bu seviyede tanıtılan özel parça
 export const SEVIYELER = [
@@ -94,9 +94,21 @@ export const SEVIYELER = [
   { no: 78, hamle: 30, tur: 6, hedef: { fici: 4, sarmasik: 6 }, yildiz: [6000, 7250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', 'vvv..vvv', '........', '........', '........', '........', '..fFFf..', '........'] },
   { no: 79, hamle: 36, tur: 6, hedef: { fici: 2, tohum: 2 }, yildiz: [6750, 8000], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '..t..t..', '........', '........', '........', '........', '...FF...', '........'] },
   { no: 80, hamle: 43, tur: 6, hedef: { fici: 8, kar: 8, buz: 6 }, yildiz: [8250, 9750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '.bbbbbb.', '........', '........', 'ssssssss', '........', '.ffFFff.', '..f..f..'] },
+  // ---- 9. bölüm: Gece Bahçesi (sis: altındaki meyveyi gizler; yanında eşleşme dağıtır) ----
+  { no: 81, hamle: 20, tur: 6, hedef: { sis: 6 }, yildiz: [4000, 4250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '........', '........', '..ggg...', '..ggg...', '........', '........', '........'], yeni: 'sis' },
+  { no: 82, hamle: 18, tur: 6, hedef: { sis: 10 }, yildiz: [3500, 4000], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '........', '.gg..gg.', '.gg..gg.', '........', '..g..g..', '........', '........'] },
+  { no: 83, hamle: 19, tur: 6, hedef: { sis: 8, topla: { 4: 24 } }, yildiz: [4000, 5000], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', 'gg....gg', 'gg....gg', '........', '........', '........', '........', '........'] },
+  { no: 84, hamle: 22, tur: 6, hedef: { sis: 8, buz: 14 }, yildiz: [4500, 5750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '..gggg..', '..gggg..', '........', '........', '.bbbbbb.', '.b....b.', 'bbb..bbb'] },
+  { no: 85, hamle: 28, tur: 6, hedef: { puan: 6500 }, yildiz: [8500, 9500], ozel: { cizgili: true, bomba: true, gokkusagi: true } },
+  { no: 86, hamle: 34, tur: 6, hedef: { sis: 10, kar: 10 }, yildiz: [7000, 8500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '........', '.ggggg..', '..ggggg.', '........', '........', 'sssss...', '...sssss'] },
+  { no: 87, hamle: 26, tur: 6, hedef: { sis: 8, fici: 4 }, yildiz: [5000, 6250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', 'gggggggg', '........', '........', '........', '........', '..fFFf..', '........'] },
+  { no: 88, hamle: 20, tur: 6, hedef: { sis: 6, sarmasik: 6 }, yildiz: [4000, 4750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', 'vv....vv', 'v......v', '..gggg..', '..g..g..', '........', '........', '........'] },
+  { no: 89, hamle: 18, tur: 6, hedef: { topla: { 1: 26, 3: 26 } }, yildiz: [4750, 6000], ozel: { cizgili: true, bomba: true, gokkusagi: true } },
+  { no: 90, hamle: 40, tur: 6, hedef: { sis: 12, fici: 4, kar: 8 }, yildiz: [7750, 9250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['gg....gg', 'gg....gg', '........', '..gggg..', '........', '........', '.fFFf...', 'ssssssss'] },
 ];
 
 export const TANITIM = {
+  sis: { baslik: 'Yeni: Sis', metin: 'Gece bahçeyi sis kapladı! Sisli karenin altında hangi meyve olduğu görünmez ve yer değiştiremez. Hemen yanında meyve eşleştir ya da özel parçayla vur, sis dağılsın.' },
   fici: { baslik: 'Yeni: Fıçı', metin: 'Fıçılar çok sağlam: kırmak için hemen yanında üç kez meyve eşleştir ya da özel parçayla vur. Her vuruşta biraz daha çatlar.' },
   fici_odul: { baslik: 'Yeni: Ödüllü fıçı', metin: 'Önünde altın yıldız olan fıçı kırılınca yerinde çizgili ya da bomba bir meyve çıkar!' },
   sarmasik: { baslik: 'Yeni: Sarmaşık', metin: 'Sarmaşıklı meyve yer değiştiremez. Yanında ya da üstünde eşleşme yap, sarmaşık kesilsin. Dikkat: bir hamlede hiç sarmaşık kesmezsen yanındaki bir meyveye yayılır!' },
@@ -130,6 +142,7 @@ export function hedefTamam(seviye, toplanan, puan) {
   if (h.kar && (toplanan.kar || 0) < h.kar) return false;
   if (h.tohum && (toplanan.tohum || 0) < h.tohum) return false;
   if (h.fici && (toplanan.fici || 0) < h.fici) return false;
+  if (h.sis && (toplanan.sis || 0) < h.sis) return false;
   // Sarmaşık yayılabildiği için tahtada kalan sayısına bakılır (oyun her hamleden sonra toplanan.sarmasikKalan'ı yazar)
   if (h.sarmasik && (toplanan.sarmasikKalan == null ? h.sarmasik : toplanan.sarmasikKalan) > 0) return false;
   return Object.entries(h.topla || {}).every(([tur, n]) => (toplanan[tur] || 0) >= n);

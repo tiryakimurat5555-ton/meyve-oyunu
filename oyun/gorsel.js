@@ -366,6 +366,31 @@ function Yaprakci({ x, y, boy, aci, renk }) {
     />
   );
 }
+// Sis (Gece Bahçesi): altındaki meyveyi tamamen örten yumuşak, mor-gri bulut; ortada hafif sarmal ve iki küçük yıldız parıltısı
+export function SisKatman({ H }) {
+  const b = H * 0.96;
+  const puf = (x, y, r, renk) => <View style={{ position: 'absolute', left: b * x - r, top: b * y - r, width: r * 2, height: r * 2, borderRadius: r, backgroundColor: renk }} />;
+  return (
+    <View pointerEvents="none" style={{ position: 'absolute', left: (H - b) / 2, top: (H - b) / 2, width: b, height: b, borderRadius: H * 0.22, overflow: 'hidden', backgroundColor: '#b9bfdc', borderWidth: 2, borderColor: '#e6e9f8' }}>
+      {puf(0.2, 0.3, b * 0.28, '#c9cee7')}
+      {puf(0.75, 0.25, b * 0.3, '#d3d7ee')}
+      {puf(0.3, 0.8, b * 0.32, '#d0d4ec')}
+      {puf(0.82, 0.78, b * 0.26, '#c5cae5')}
+      {puf(0.52, 0.52, b * 0.3, '#dde0f3')}
+      <View style={{ position: 'absolute', left: b * 0.3, top: b * 0.36, width: b * 0.4, height: b * 0.28, borderRadius: b, borderWidth: 2.5, borderColor: 'rgba(150,158,200,0.7)', borderBottomColor: 'transparent' }} />
+      <Text style={{ position: 'absolute', left: b * 0.12, top: b * 0.06, fontSize: b * 0.2, lineHeight: b * 0.26, color: '#ffffff' }}>✦</Text>
+      <Text style={{ position: 'absolute', left: b * 0.7, top: b * 0.62, fontSize: b * 0.15, lineHeight: b * 0.2, color: '#ffffff' }}>✦</Text>
+    </View>
+  );
+}
+export function SisIkon({ boy = 26 }) {
+  return (
+    <View style={{ width: boy, height: boy }}>
+      <SisKatman H={boy / 0.96} />
+    </View>
+  );
+}
+
 export function SarmasikKatman({ H }) {
   const b = H * 0.96;
   const dal = (aci, ust) => (
@@ -448,11 +473,12 @@ export function Kirilma({ e, H, bitti }) {
   }, []);
   const cx = e.c * H + H / 2;
   const cy = e.r * H + H / 2;
-  const kar = e.tur === 'kar';
+  const sis = e.tur === 'sis';
+  const kar = e.tur === 'kar' || sis;
   const yaprak = e.tur === 'yaprak';
   const buz = e.tur === 'buz' || kar;
   const adet = e.az ? 3 : 7;
-  const renkler = yaprak ? ['#4fbf3a', '#2f8a28', '#6ad957'] : kar ? ['#ffffff', '#e4f3ff', '#ffffff'] : buz ? ['#e9f7ff', '#a7dcff', '#ffffff'] : ['#cf8f48', '#8f5a24', '#e0aa66'];
+  const renkler = yaprak ? ['#4fbf3a', '#2f8a28', '#6ad957'] : sis ? ['#d3d7ee', '#ffffff', '#b9bfdc'] : kar ? ['#ffffff', '#e4f3ff', '#ffffff'] : buz ? ['#e9f7ff', '#a7dcff', '#ffffff'] : ['#cf8f48', '#8f5a24', '#e0aa66'];
   return (
     <>
       {!e.az && (
@@ -491,7 +517,7 @@ export function Kirilma({ e, H, bitti }) {
               opacity: t.interpolate({ inputRange: [0, 0.7, 1], outputRange: [1, 1, 0] }),
               transform: [
                 { translateX: t.interpolate({ inputRange: [0, 1], outputRange: [0, Math.cos(aci) * uz] }) },
-                { translateY: t.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, Math.sin(aci) * uz * 0.8, Math.sin(aci) * uz * 0.8 + H * 0.7] }) },
+                { translateY: t.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, Math.sin(aci) * uz * 0.8, Math.sin(aci) * uz * 0.8 + (sis ? -H * 0.5 : H * 0.7)] }) },
                 { rotate: t.interpolate({ inputRange: [0, 1], outputRange: ['0deg', `${(i % 2 ? 1 : -1) * (200 + i * 40)}deg`] }) },
                 ...(buz ? [{ rotate: '45deg' }] : []),
               ],
@@ -705,6 +731,7 @@ export function Parca({ p, H }) {
       {(p.ozel === 'satir' || p.ozel === 'sutun') && <Cizgiler key={p.ozel} H={H} yon={p.ozel} renk={MEYVELER[p.tur].koyu} />}
       {p.buz && <BuzKatman H={H} />}
       {p.sarmasik && <SarmasikKatman H={H} />}
+      {p.sis && <SisKatman H={H} />}
     </Animated.View>
   );
 }

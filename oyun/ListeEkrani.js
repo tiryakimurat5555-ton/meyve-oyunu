@@ -4,7 +4,7 @@ import { Animated, Image, Pressable, ScrollView, Text, View, useWindowDimensions
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SEVIYELER } from './seviyeler';
 import { MEYVELER, Yildiz, st } from './gorsel';
-import Sahne, { bolumNo } from './sahne';
+import Sahne, { bolumNo, geceMi } from './sahne';
 
 // Bölümler (ileride resimli haritada her biri ayrı bir bahçe olacak)
 const BOLUMLER = [
@@ -16,6 +16,7 @@ const BOLUMLER = [
   { ad: 'Tropik Bahçe', ilk: 51, son: 60, renk: '#22b07a' },
   { ad: 'Kiraz Çiçeği Bahçesi', ilk: 61, son: 70, renk: '#f07aab' },
   { ad: 'Bağ Bozumu', ilk: 71, son: 80, renk: '#8e4bb8' },
+  { ad: 'Gece Bahçesi', ilk: 81, son: 90, renk: '#3b4a9a' },
 ];
 
 export default function ListeEkrani({ ilerleme, sec, ayarlarAc }) {
@@ -45,7 +46,7 @@ export default function ListeEkrani({ ilerleme, sec, ayarlarAc }) {
             <Image key={m.ad} source={m.resim} style={{ width: 40, height: 40, marginHorizontal: 1 }} resizeMode="contain" />
           ))}
         </View>
-        <Text style={lst.baslik} accessibilityRole="header">
+        <Text style={[lst.baslik, geceMi(bolumNo(siradaki)) && { color: '#ffffff', textShadowColor: '#1c2559' }]} accessibilityRole="header">
           Meyve Bahçesi
         </Text>
         <View style={lst.yildizSatir} accessible accessibilityLabel={`Toplam ${toplamYildiz} yıldız`}>

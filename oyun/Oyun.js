@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { AccessibilityInfo, Animated, Easing, Image, PanResponder, Pressable, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as M from './mantik';
-import Sahne, { bolumNo } from './sahne';
+import Sahne, { bolumNo, geceMi } from './sahne';
 import { TANITIM, hedefTamam, yildizHesapla } from './seviyeler';
 import { cal, meyveSesi, titret } from './ses';
 import {
@@ -11,6 +11,7 @@ import {
   CicekAcma,
   KarIkon,
   SarmasikIkon,
+  SisIkon,
   KarUst,
   KarZemin,
   TohumIkon,
@@ -55,6 +56,7 @@ export function parcaAdi(p) {
   if (p.tur === M.KASA) return p.kat >= 2 ? 'İki katlı kasa' : 'Kasa';
   if (M.ficiMi(p.tur)) return (p.tur === M.FICI_ODUL ? 'Ödüllü fıçı' : 'Fıçı') + ', ' + p.kat + ' kat';
   if (p.tur === M.TOHUM) return 'Tohum';
+  if (p.sis) return 'Sisli';
   if (p.buz) return 'Buzlu ' + MEYVELER[p.tur].isim.toLocaleLowerCase('tr');
   if (p.sarmasik) return 'Sarmaşıklı ' + MEYVELER[p.tur].isim.toLocaleLowerCase('tr');
   if (p.ozel === 'gokkusagi' || !MEYVELER[p.tur]) return 'Gökkuşağı';
@@ -78,6 +80,7 @@ export function hedefMetni(seviye) {
   if (h.kar) parca.push(`${h.kar} kat karı erit`);
   if (h.tohum) parca.push(`${h.tohum} tohumu en alta indir`);
   if (h.sarmasik) parca.push('bütün sarmaşıkları kes');
+  if (h.sis) parca.push(`${h.sis} sisi dağıt`);
   const p = Object.entries(h.topla || {}).map(([tur, n]) => `${n} ${MEYVELER[tur].isim.toLocaleLowerCase('tr')}`);
   if (p.length) parca.push((p.length > 1 ? p.slice(0, -1).join(', ') + ' ve ' + p[p.length - 1] : p[0]) + ' topla');
   const m = parca.length > 1 ? parca.slice(0, -1).join(', ') + ' ve ' + parca[parca.length - 1] : parca[0];
@@ -108,6 +111,10 @@ function kalanMetni(seviye, toplanan, puan) {
   if (h.sarmasik) {
     const k = toplanan.sarmasikKalan == null ? h.sarmasik : toplanan.sarmasikKalan;
     l.push(k ? `${k} sarmaşık kaldı` : 'sarmaşık tamam');
+  }
+  if (h.sis) {
+    const k = Math.max(0, h.sis - (toplanan.sis || 0));
+    l.push(k ? `${k} sis kaldı` : 'sis tamam');
   }
   if (h.tohum) {
     const k = Math.max(0, h.tohum - (toplanan.tohum || 0));
@@ -175,6 +182,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
       ozel,
       buz: engel === 'buz',
       sarmasik: engel === 'sarmasik',
+      sis: engel === 'sis',
       kat: M.kasaMi(tur) ? engel || (M.ficiMi(tur) ? 3 : 1) : 0,
       poz: new Animated.ValueXY({ x: c, y: baslangicSatir }),
       olcek: new Animated.Value(1),
@@ -195,12 +203,13 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
         if (!p) return null;
         if (p.buz) return 'buz';
         if (p.sarmasik) return 'sarmasik';
+        if (p.sis) return 'sis';
         if (M.kasaMi(p.tur)) return p.kat;
         return null;
       })
     );
   const kilitIzgarasi = () => engelIzgarasi().map((s) => s.map((e) => e != null));
-  const kilitli = (p) => !p || p.buz || p.sarmasik || M.kasaMi(p.tur);
+  const kilitli = (p) => !p || p.buz || p.sarmasik || p.sis || M.kasaMi(p.tur);
   // Karıştırmada ve şenlikte yerinde kalanlar (tohum takas edilebilir ama meyveye dönüşmez)
   const sabit = (p) => kilitli(p) || p.tur === M.TOHUM;
 
@@ -427,7 +436,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
     let toplam = 0;
     const patlayan = {};
     const olusanlar = [];
-    const sayacToplam = { buz: 0, kasa: 0, kar: 0, tohum: 0, sarmasik: 0, fici: 0 };
+    const sayacToplam = { buz: 0, kasa: 0, kar: 0, tohum: 0, sarmasik: 0, fici: 0, sis: 0 };
     let ekler = ekHucre;
     for (;;) {
       const t = turIzgarasi();
@@ -478,7 +487,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
       for (const [r, c] of adim.hucreler) {
         const p = parcaAt(r, c);
         if (!p) continue;
-        if (p.buz || p.sarmasik) buzKirilan.push({ r, c, p });
+        if (p.buz || p.sarmasik || p.sis) buzKirilan.push({ r, c, p });
         else silinen.push({ r, c, p });
       }
       // Kasalar: vurulan kasanın katı azalır, sıfırlanınca kırılıp silinir
@@ -537,8 +546,13 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
         yenile();
       } else if (ficiVurulan) yenile();
       let sarmasikKesilen = 0;
+      let sisDagilan = 0;
       for (const { r, c, p } of buzKirilan) {
-        if (p.sarmasik) {
+        if (p.sis) {
+          p.sis = false;
+          sisDagilan++;
+          efektEkle({ tip: 'kirilma', tur: 'sis', r, c });
+        } else if (p.sarmasik) {
           p.sarmasik = false;
           sarmasikKesilen++;
           efektEkle({ tip: 'kirilma', tur: 'yaprak', r, c });
@@ -553,14 +567,15 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
       }
       if (buzKirilan.length) {
         if (sarmasikKesilen) cal('sarmasik_kes');
-        if (buzKirilan.length > sarmasikKesilen) cal('buz');
+        if (sisDagilan) cal('sis');
+        if (buzKirilan.length > sarmasikKesilen + sisDagilan) cal('buz');
         yenile();
       }
       const akan = new Map(); // hücre -> hedef hücre
       for (const o of adim.olusan)
         for (const [r, c] of o.hucreler) {
           const p = parcaAt(r, c);
-          if ((r !== o.hucre[0] || c !== o.hucre[1]) && p && !p.buz && !p.sarmasik && !buzKirilan.some((b) => b.p === p)) akan.set(anahtar(r, c), o.hucre);
+          if ((r !== o.hucre[0] || c !== o.hucre[1]) && p && !p.buz && !p.sarmasik && !p.sis && !buzKirilan.some((b) => b.p === p)) akan.set(anahtar(r, c), o.hucre);
         }
       const animler = [];
       for (const { r, c, p, kasa, tohum } of silinen) {
@@ -618,10 +633,11 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
         yenile();
       }
       const tohumSay = (adim.tohumlar || []).length;
-      topla({ ...adimSayaci(silinen), buz: buzKirilan.length - sarmasikKesilen, kasa: kasaKirilan, fici: ficiKirilan, kar: eriyen.length, tohum: tohumSay });
+      topla({ ...adimSayaci(silinen), buz: buzKirilan.length - sarmasikKesilen - sisDagilan, sis: sisDagilan, kasa: kasaKirilan, fici: ficiKirilan, kar: eriyen.length, tohum: tohumSay });
       sarmasikGuncelle();
       sayacToplam.sarmasik += sarmasikKesilen;
-      sayacToplam.buz += buzKirilan.length - sarmasikKesilen;
+      sayacToplam.buz += buzKirilan.length - sarmasikKesilen - sisDagilan;
+      sayacToplam.sis += sisDagilan;
       sayacToplam.kasa += kasaKirilan;
       sayacToplam.fici += ficiKirilan;
       sayacToplam.kar += eriyen.length;
@@ -885,7 +901,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
     const p = Object.entries(sonuc.patlayan).map(([tur, n]) => `${n} ${MEYVELER[tur].isim}`);
     const o = sonuc.olusanlar.map((x) => (x.ozel === 'gokkusagi' ? 'Gökkuşağı oluştu' : `${MEYVELER[x.tur].isim} ${OZEL_AD[x.ozel]} oluştu`));
     duyur(
-      [p.length ? p.join(', ') + ' patladı' : '', sonuc.buz ? `${sonuc.buz} buz kırıldı` : '', sonuc.kasa ? `${sonuc.kasa} kasa kırıldı` : '', sonuc.fici ? `${sonuc.fici} fıçı kırıldı` : '', sonuc.sarmasik ? `${sonuc.sarmasik} sarmaşık kesildi` : '', sonuc.kar ? `${sonuc.kar} kat kar eridi` : '', sonuc.tohum ? (sonuc.tohum > 1 ? `${sonuc.tohum} tohum çiçek açtı` : 'Tohum çiçek açtı') : '', ...o, sonuc.zincir >= 2 ? `${sonuc.zincir} zincir` : '', kalanMetni(seviye, toplananRef.current, puanRef.current), `${hamleRef.current} hamle`]
+      [p.length ? p.join(', ') + ' patladı' : '', sonuc.buz ? `${sonuc.buz} buz kırıldı` : '', sonuc.kasa ? `${sonuc.kasa} kasa kırıldı` : '', sonuc.fici ? `${sonuc.fici} fıçı kırıldı` : '', sonuc.sarmasik ? `${sonuc.sarmasik} sarmaşık kesildi` : '', sonuc.sis ? `${sonuc.sis} sis dağıldı` : '', sonuc.kar ? `${sonuc.kar} kat kar eridi` : '', sonuc.tohum ? (sonuc.tohum > 1 ? `${sonuc.tohum} tohum çiçek açtı` : 'Tohum çiçek açtı') : '', ...o, sonuc.zincir >= 2 ? `${sonuc.zincir} zincir` : '', kalanMetni(seviye, toplananRef.current, puanRef.current), `${hamleRef.current} hamle`]
         .filter(Boolean)
         .join('. ')
     );
@@ -939,7 +955,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
       cal('gecersiz');
       titret('hata');
       const k = kilitli(pa) ? pa : pb;
-      duyur(k.tur === M.KASA ? 'Kasa yer değiştiremez' : M.ficiMi(k.tur) ? 'Fıçı yer değiştiremez' : k.sarmasik ? 'Sarmaşıklı meyve yer değiştiremez' : 'Buzlu meyve yer değiştiremez');
+      duyur(k.tur === M.KASA ? 'Kasa yer değiştiremez' : M.ficiMi(k.tur) ? 'Fıçı yer değiştiremez' : k.sarmasik ? 'Sarmaşıklı meyve yer değiştiremez' : k.sis ? 'Sisli kare yer değiştiremez' : 'Buzlu meyve yer değiştiremez');
       await oynat(salla(k));
       mesgul.current = false;
       ipucuKur();
@@ -1105,7 +1121,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
         <Pressable accessibilityRole="button" accessibilityLabel="Seviyelere dön" onPress={geri} hitSlop={10} style={({ pressed }) => [yst.geri, pressed && { opacity: 0.6 }]}>
           <Text style={yst.geriYazi}>‹ Seviyeler</Text>
         </Pressable>
-        <Text style={yst.seviyeBaslik} accessibilityRole="header">
+        <Text style={[yst.seviyeBaslik, geceMi(bolumNo(seviye.no)) && yst.geceYazi]} accessibilityRole="header">
           Seviye {seviye.no}
         </Text>
         <View style={{ width: 96 }} />
@@ -1187,12 +1203,12 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
 
       {/* Güçlendiriciler ve ipucu */}
       <View style={yst.gucSatir}>
-        <GucDugmesi ad="ipucu" simge="💡" yazi="İpucu" etiket="İpucu, uygun bir hamle gösterir" onPress={() => gucBas('ipucu')} />
+        <GucDugmesi gece={geceMi(bolumNo(seviye.no))} ad="ipucu" simge="💡" yazi="İpucu" etiket="İpucu, uygun bir hamle gösterir" onPress={() => gucBas('ipucu')} />
         {seviye.no >= GUC_SEVIYE && (
           <>
-            <GucDugmesi ad="cekic" simge="🔨" yazi="Çekiç" sayi={guc.cekic || 0} secili={gucModu === 'cekic'} etiket={`Çekiç, ${guc.cekic || 0} tane. Tek bir meyveyi, buzu ya da kasayı kırar`} onPress={() => gucBas('cekic')} />
-            <GucDugmesi ad="karistir" simge="🔄" yazi="Karıştır" sayi={guc.karistir || 0} etiket={`Karıştır, ${guc.karistir || 0} tane. Meyveleri karıştırır`} onPress={() => gucBas('karistir')} />
-            <GucDugmesi ad="hamle3" simgeYazi="+3" yazi="Hamle" sayi={guc.hamle3 || 0} etiket={`Artı 3 hamle, ${guc.hamle3 || 0} tane`} onPress={() => gucBas('hamle3')} />
+            <GucDugmesi gece={geceMi(bolumNo(seviye.no))} ad="cekic" simge="🔨" yazi="Çekiç" sayi={guc.cekic || 0} secili={gucModu === 'cekic'} etiket={`Çekiç, ${guc.cekic || 0} tane. Tek bir meyveyi, buzu ya da kasayı kırar`} onPress={() => gucBas('cekic')} />
+            <GucDugmesi gece={geceMi(bolumNo(seviye.no))} ad="karistir" simge="🔄" yazi="Karıştır" sayi={guc.karistir || 0} etiket={`Karıştır, ${guc.karistir || 0} tane. Meyveleri karıştırır`} onPress={() => gucBas('karistir')} />
+            <GucDugmesi gece={geceMi(bolumNo(seviye.no))} ad="hamle3" simgeYazi="+3" yazi="Hamle" sayi={guc.hamle3 || 0} etiket={`Artı 3 hamle, ${guc.hamle3 || 0} tane`} onPress={() => gucBas('hamle3')} />
           </>
         )}
       </View>
@@ -1351,7 +1367,7 @@ function CerceveSusu() {
 }
 
 // Güçlendirici / ipucu düğmesi: yuvarlak, altında adı, köşesinde kaç tane kaldığı
-function GucDugmesi({ simge, simgeYazi, yazi, sayi, secili, etiket, onPress }) {
+function GucDugmesi({ simge, simgeYazi, yazi, sayi, secili, etiket, onPress, gece }) {
   const bos = sayi === 0;
   return (
     <Pressable
@@ -1370,7 +1386,7 @@ function GucDugmesi({ simge, simgeYazi, yazi, sayi, secili, etiket, onPress }) {
           </View>
         )}
       </View>
-      <Text style={yst.gucAd}>{yazi}</Text>
+      <Text style={[yst.gucAd, gece && yst.geceYazi]}>{yazi}</Text>
     </Pressable>
   );
 }
@@ -1429,6 +1445,12 @@ function HedefKutusu({ seviye, toplanan, puan }) {
             })()}
           </View>
         ) : null}
+        {h.sis ? (
+          <View style={{ alignItems: 'center', marginHorizontal: 3 }}>
+            <SisIkon boy={24} />
+            <Text style={[yst.hedefSayi, !kalan(h.sis, 'sis') && { color: '#2f9e2a' }]}>{kalan(h.sis, 'sis') || '✓'}</Text>
+          </View>
+        ) : null}
         {h.tohum ? (
           <View style={{ alignItems: 'center', marginHorizontal: 3 }}>
             <TohumIkon boy={24} />
@@ -1477,6 +1499,12 @@ function HedefGorseli({ seviye }) {
         <View style={{ alignItems: 'center', marginHorizontal: 8 }}>
           <KarIkon boy={52} />
           <Text style={[yst.hedefSayi, { fontSize: 20 }]}>{h.kar}</Text>
+        </View>
+      ) : null}
+      {h.sis ? (
+        <View style={{ alignItems: 'center', marginHorizontal: 8 }}>
+          <SisIkon boy={52} />
+          <Text style={[yst.hedefSayi, { fontSize: 20 }]}>{h.sis}</Text>
         </View>
       ) : null}
       {h.sarmasik ? (
@@ -1583,6 +1611,7 @@ const yst = {
   bot: { alignItems: 'center' },
   botAcik: { backgroundColor: '#2fae4f' },
   seviyeBaslik: { fontSize: 20, fontWeight: '900', color: '#24384a' },
+  geceYazi: { color: '#ffffff', textShadowColor: '#1c2559', textShadowRadius: 4, textShadowOffset: { width: 0, height: 1 } },
   hedefKutu: { minWidth: 110, paddingHorizontal: 10 },
   hedefSayi: { fontSize: 15, fontWeight: '900', color: '#24384a' },
   cubuk: { width: 86, height: 8, borderRadius: 4, backgroundColor: '#e6edf3', marginTop: 4, overflow: 'hidden' },

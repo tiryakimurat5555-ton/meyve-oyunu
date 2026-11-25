@@ -43,6 +43,7 @@ export const SES_DOSYALARI = {
   sarmasik_yay: require('../assets/ses/sarmasik_yay.wav'),
   secim: require('../assets/ses/secim.wav'),
   sessiz: require('../assets/ses/sessiz.wav'),
+  sis: require('../assets/ses/sis.wav'),
   takas: require('../assets/ses/takas.wav'),
   yildiz_1: require('../assets/ses/yildiz_1.wav'),
   yildiz_2: require('../assets/ses/yildiz_2.wav'),

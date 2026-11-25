@@ -5,7 +5,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { AccessibilityInfo, Animated, Easing, View } from 'react-native';
 
-export const bolumNo = (seviyeNo) => Math.min(7, Math.floor((seviyeNo - 1) / 10));
+export const bolumNo = (seviyeNo) => Math.min(8, Math.floor((seviyeNo - 1) / 10));
 
 const RENKLER = [
   // 0: İlkbahar
@@ -168,7 +168,29 @@ const RENKLER = [
       { tip: 'kelebek', renk: '#9c5cc4' },
     ],
   },
+  // 8: Gece (ay, yıldızlar, ateş böcekleri; tahta açık renk kalır)
+  {
+    gece: true,
+    gok: ['#1c2559', '#6a5fa8'],
+    gunes: '#fff4c2',
+    gunesKenar: '#e8d98a',
+    tepeArka: ['#2f4d6b', '#29445f'],
+    tepeArka2: ['#36577a', '#2e4b69'],
+    tepeOn: ['#3d5f55', '#34544b'],
+    tac: ['#2e5a4c', '#244a3e', '#3c7060'],
+    nokta: ['#fff4a8', '#c9b8ff', '#ffffff'],
+    cicek: ['#c9b8ff', '#ffffff', '#8fd3ff'],
+    parca: [
+      { tip: 'atesbocegi' },
+      { tip: 'atesbocegi' },
+      { tip: 'atesbocegi' },
+      { tip: 'atesbocegi' },
+      { tip: 'atesbocegi' },
+      { tip: 'atesbocegi' },
+    ],
+  },
 ];
+export const geceMi = (bolum) => !!(RENKLER[bolum] && RENKLER[bolum].gece);
 
 const GIZLI = { pointerEvents: 'none', importantForAccessibility: 'no-hide-descendants', accessibilityElementsHidden: true };
 
@@ -237,6 +259,68 @@ function Gunes({ x, y, boy, renk, kenar, hareket }) {
         <View style={{ position: 'absolute', right: boy * 0.14, top: boy * 0.56, width: boy * 0.14, height: boy * 0.08, borderRadius: boy * 0.05, backgroundColor: 'rgba(255,120,120,0.45)' }} />
       </View>
     </View>
+  );
+}
+
+// ---------- ay (gece): uykulu yüzlü hilal-dolunay, hafif ışıltılı hale ----------
+function Ay({ x, y, boy, hareket }) {
+  const nefes = useDongu(5200, hareket);
+  const olcek = nefes.interpolate({ inputRange: [0, 0.5, 1], outputRange: [1, 1.1, 1] });
+  return (
+    <View style={{ position: 'absolute', left: x - boy, top: y - boy, width: boy * 2, height: boy * 2, alignItems: 'center', justifyContent: 'center' }}>
+      <Animated.View style={{ position: 'absolute', width: boy * 1.8, height: boy * 1.8, borderRadius: boy, backgroundColor: 'rgba(255,248,200,0.18)', transform: [{ scale: olcek }] }} />
+      <View style={{ position: 'absolute', width: boy * 1.35, height: boy * 1.35, borderRadius: boy, backgroundColor: 'rgba(255,248,200,0.25)' }} />
+      <View style={{ width: boy, height: boy, borderRadius: boy / 2, backgroundColor: '#fff4c2', borderWidth: boy * 0.04, borderColor: '#e8d98a', alignItems: 'center', overflow: 'hidden' }}>
+        <View style={{ position: 'absolute', left: boy * 0.58, top: boy * 0.18, width: boy * 0.16, height: boy * 0.16, borderRadius: boy, backgroundColor: 'rgba(214,196,120,0.45)' }} />
+        <View style={{ position: 'absolute', left: boy * 0.2, top: boy * 0.66, width: boy * 0.12, height: boy * 0.12, borderRadius: boy, backgroundColor: 'rgba(214,196,120,0.45)' }} />
+        {/* kapalı, uykulu gözler */}
+        <View style={{ flexDirection: 'row', marginTop: boy * 0.4 }}>
+          {[0, 1].map((i) => (
+            <View key={i} style={{ width: boy * 0.16, height: boy * 0.08, borderBottomLeftRadius: boy * 0.1, borderBottomRightRadius: boy * 0.1, borderWidth: boy * 0.03, borderTopWidth: 0, borderColor: '#8a7330', marginHorizontal: boy * 0.08 }} />
+          ))}
+        </View>
+        <View style={{ width: boy * 0.16, height: boy * 0.07, borderBottomLeftRadius: boy * 0.1, borderBottomRightRadius: boy * 0.1, borderWidth: boy * 0.03, borderTopWidth: 0, borderColor: '#8a7330', marginTop: boy * 0.06 }} />
+        <View style={{ position: 'absolute', left: boy * 0.12, top: boy * 0.55, width: boy * 0.14, height: boy * 0.07, borderRadius: boy, backgroundColor: 'rgba(255,150,150,0.4)' }} />
+        <View style={{ position: 'absolute', right: boy * 0.12, top: boy * 0.55, width: boy * 0.14, height: boy * 0.07, borderRadius: boy, backgroundColor: 'rgba(255,150,150,0.4)' }} />
+      </View>
+    </View>
+  );
+}
+
+// ---------- yıldızlar (gece): göğün üst yarısında göz kırpan noktalar ----------
+function Yildizlar({ EG, EY, hareket }) {
+  const v = useDongu(3600, hareket);
+  const noktalar = useMemo(() => Array.from({ length: 34 }, (_, i) => ({ x: ((i * 0.381 + 0.07) % 1) * EG, y: ((i * 0.613 + 0.03) % 1) * EY * 0.62, r: 1 + (i % 3) * 0.7, faz: (i % 5) / 5 })), [EG, EY]);
+  return noktalar.map((n, i) => (
+    <Animated.View
+      key={i}
+      style={{
+        position: 'absolute',
+        left: n.x,
+        top: n.y,
+        width: n.r * 2,
+        height: n.r * 2,
+        borderRadius: n.r,
+        backgroundColor: '#ffffff',
+        opacity: i % 3 === 0 ? Animated.modulo(Animated.add(v, n.faz), 1).interpolate({ inputRange: [0, 0.5, 1], outputRange: [0.3, 1, 0.3] }) : 0.8,
+      }}
+    />
+  ));
+}
+
+// ---------- ateş böceği (gece): sarı ışık, yavaşça süzülür ve yanıp söner ----------
+function AtesBocegi({ x, y, sure, bas, EG, hareket }) {
+  const v = useDongu(sure, hareket);
+  const yan = useDongu(1800 + (bas * 1000), hareket);
+  const t = Animated.modulo(Animated.add(v, bas), 1);
+  const tx = t.interpolate({ inputRange: [0, 0.25, 0.5, 0.75, 1], outputRange: [0, EG * 0.12, EG * 0.04, -EG * 0.1, 0] });
+  const ty = t.interpolate({ inputRange: [0, 0.25, 0.5, 0.75, 1], outputRange: [0, -30, -8, -36, 0] });
+  const op = yan.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0.25, 1, 0.25] });
+  return (
+    <Animated.View style={{ position: 'absolute', left: x, top: y, width: 18, height: 18, alignItems: 'center', justifyContent: 'center', opacity: op, transform: [{ translateX: tx }, { translateY: ty }] }}>
+      <View style={{ position: 'absolute', width: 18, height: 18, borderRadius: 9, backgroundColor: 'rgba(255,236,80,0.5)' }} />
+      <View style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: '#fff59a' }} />
+    </Animated.View>
   );
 }
 
@@ -435,14 +519,21 @@ function Sahne({ bolum = 0, EG, EY, gunesX, gunesY, gunesBoy = 58 }) {
   return (
     <View style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, overflow: 'hidden' }} {...GIZLI}>
       <Gok renk={renk.gok} EY={EY} />
-      <Gunes x={gunesX ?? EG - 62} y={gunesY ?? EY * 0.085} boy={gunesBoy} renk={renk.gunes} kenar={renk.gunesKenar} hareket={hareket} />
-      <Bulut y={EY * 0.035} olcek={0.8} sure={70000} bas={0.15} EG={EG} saydam={0.95} hareket={hareket} />
-      <Bulut y={EY * 0.2} olcek={1.1} sure={95000} bas={0.6} EG={EG} saydam={0.9} hareket={hareket} />
-      <Bulut y={EY * 0.42} olcek={0.9} sure={82000} bas={0.35} EG={EG} saydam={0.85} hareket={hareket} />
-      <Bulut y={EY * 0.6} olcek={0.7} sure={60000} bas={0.85} EG={EG} saydam={0.8} hareket={hareket} />
+      {renk.gece && <Yildizlar EG={EG} EY={EY} hareket={hareket} />}
+      {renk.gece ? (
+        <Ay x={gunesX ?? EG - 62} y={gunesY ?? EY * 0.085} boy={gunesBoy} hareket={hareket} />
+      ) : (
+        <Gunes x={gunesX ?? EG - 62} y={gunesY ?? EY * 0.085} boy={gunesBoy} renk={renk.gunes} kenar={renk.gunesKenar} hareket={hareket} />
+      )}
+      <Bulut y={EY * 0.035} olcek={0.8} sure={70000} bas={0.15} EG={EG} saydam={renk.gece ? 0.22 : 0.95} hareket={hareket} />
+      <Bulut y={EY * 0.2} olcek={1.1} sure={95000} bas={0.6} EG={EG} saydam={renk.gece ? 0.2 : 0.9} hareket={hareket} />
+      <Bulut y={EY * 0.42} olcek={0.9} sure={82000} bas={0.35} EG={EG} saydam={renk.gece ? 0.18 : 0.85} hareket={hareket} />
+      <Bulut y={EY * 0.6} olcek={0.7} sure={60000} bas={0.85} EG={EG} saydam={renk.gece ? 0.16 : 0.8} hareket={hareket} />
       {durgun}
       {renk.parca.map((p, i) =>
-        p.tip === 'kar' ? (
+        p.tip === 'atesbocegi' ? (
+          <AtesBocegi key={i} x={EG * ((i * 0.29 + 0.1) % 1)} y={EY * (0.7 + (i % 3) * 0.08)} sure={9000 + i * 1300} bas={(i * 0.23) % 1} EG={EG} hareket={hareket} />
+        ) : p.tip === 'kar' ? (
           <KarTanesi key={i} x={EG * ((i * 0.17 + 0.05) % 1)} sure={14000 + i * 1900} bas={(i * 0.31) % 1} buyuk={p.buyuk} EY={EY} hareket={hareket} />
         ) : p.tip === 'kelebek' ? (
           <Kelebek key={i} y={EY * (0.66 + (i % 3) * 0.07)} sure={16000 + i * 3500} bas={(i * 0.37) % 1} renk={p.renk} EG={EG} yon={i % 2 ? -1 : 1} hareket={hareket} />

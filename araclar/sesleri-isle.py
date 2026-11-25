@@ -141,6 +141,7 @@ DIGER = {
     'kaybettin': ('kaybettin_2', 1.3, -17),
     'sarmasik_kes': ('sarmasik_kes_3', 0.45, -16),
     'sarmasik_yay': ('sarmasik_yay_2', 0.55, -18),
+    'sis': ('sis_2', 0.6, -17),
 }
 for ad, (dosya, uzun, db) in DIGER.items():
     kaydet(ad, esitle(kirp(oku(dosya), uzun, 0.08), db))
