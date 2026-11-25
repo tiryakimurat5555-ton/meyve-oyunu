@@ -72,6 +72,17 @@ export const SEVIYELER = [
   { no: 58, hamle: 26, tur: 6, hedef: { topla: { 3: 30, 4: 30 } }, yildiz: [6250, 7250], ozel: { cizgili: true, bomba: true, gokkusagi: true } },
   { no: 59, hamle: 30, tur: 6, hedef: { sarmasik: 8, kasa: 8 }, yildiz: [6000, 7000], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '..vvvv..', '..vvvv..', '........', '........', '........', '.kkkkkk.', '.k....k.'] },
   { no: 60, hamle: 34, tur: 6, hedef: { sarmasik: 16, buz: 8 }, yildiz: [6750, 8000], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['vvv..vvv', 'v......v', '........', '..bbbb..', '..bbbb..', '........', 'v......v', 'vvv..vvv'] },
+  // ---- 7. bölüm: Kiraz Çiçeği Bahçesi (dinlenme: yeni engel yok, karışık) ----
+  { no: 61, hamle: 26, tur: 6, hedef: { kar: 8, topla: { 0: 15 } }, yildiz: [5500, 6250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '........', '........', '..ssss..', '..ssss..', '........', '........', '........'] },
+  { no: 62, hamle: 32, tur: 6, hedef: { buz: 10, kar: 8 }, yildiz: [7250, 8750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '.bbbbb..', '..bbbbb.', '........', '........', '........', 'ssss....', '....ssss'] },
+  { no: 63, hamle: 39, tur: 6, hedef: { tohum: 2, sarmasik: 4 }, yildiz: [7750, 9500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '..t..t..', '........', '........', 'vv....vv', '........', '........', '........'] },
+  { no: 64, hamle: 28, tur: 6, hedef: { puan: 7000 }, yildiz: [8750, 9750], ozel: { cizgili: true, bomba: true, gokkusagi: true } },
+  { no: 65, hamle: 26, tur: 6, hedef: { kasa: 8, kar: 16 }, yildiz: [5500, 6500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '........', '........', '..SSSS..', '..SSSS..', '........', '.kkkkkk.', '.k....k.'] },
+  { no: 66, hamle: 43, tur: 6, hedef: { tohum: 3, kar: 10 }, yildiz: [8750, 10750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '.t..t..t', '........', '........', '........', '........', 'sssss...', '...sssss'] },
+  { no: 67, hamle: 24, tur: 6, hedef: { sarmasik: 8, buz: 8 }, yildiz: [4750, 5750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', 'vv....vv', 'vv....vv', '........', '..bbbb..', '..bbbb..', '........', '........'] },
+  { no: 68, hamle: 23, tur: 6, hedef: { topla: { 2: 25, 3: 25, 5: 25 } }, yildiz: [6000, 7250], ozel: { cizgili: true, bomba: true, gokkusagi: true } },
+  { no: 69, hamle: 30, tur: 6, hedef: { kar: 20, kasa: 6 }, yildiz: [6250, 7250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '........', 'ssSSSSss', 'ssssssss', '........', '........', '..kkkk..', '...kk...'] },
+  { no: 70, hamle: 51, tur: 6, hedef: { tohum: 2, sarmasik: 6, kar: 12 }, yildiz: [10250, 12500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '...tt...', '........', 'vvv..vvv', '........', '........', 'ssssss..', '..ssssss'] },
 ];
 
 export const TANITIM = {

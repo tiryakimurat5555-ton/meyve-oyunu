@@ -5,7 +5,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { AccessibilityInfo, Animated, Easing, View } from 'react-native';
 
-export const bolumNo = (seviyeNo) => Math.min(5, Math.floor((seviyeNo - 1) / 10));
+export const bolumNo = (seviyeNo) => Math.min(6, Math.floor((seviyeNo - 1) / 10));
 
 const RENKLER = [
   // 0: İlkbahar
@@ -126,6 +126,27 @@ const RENKLER = [
       { tip: 'kelebek', renk: '#a3e635' },
       { tip: 'yaprak', renk: '#ff6fb5' },
       { tip: 'yaprak', renk: '#ff8a1f' },
+    ],
+  },
+  // 6: Kiraz Çiçeği
+  {
+    gok: ['#9fd8ff', '#ffe9f3'],
+    gunes: '#ffe680',
+    gunesKenar: '#ffcf5a',
+    tepeArka: ['#a8dc8f', '#8ccb73'],
+    tepeArka2: ['#b6e39d', '#97d17e'],
+    tepeOn: ['#cdeeb2', '#b2e095'],
+    tac: ['#ffb7d5', '#f79cc2', '#ffd3e6'],
+    nokta: ['#ffffff', '#ff8cbc', '#ffe3ef'],
+    cicek: ['#ffb7d5', '#ffffff', '#ff8cbc'],
+    parca: [
+      { tip: 'yaprak', renk: '#ffb7d5' },
+      { tip: 'yaprak', renk: '#ffd3e6' },
+      { tip: 'yaprak', renk: '#ff9cc6' },
+      { tip: 'yaprak', renk: '#ffffff' },
+      { tip: 'yaprak', renk: '#ffb7d5' },
+      { tip: 'yaprak', renk: '#ffc4dd' },
+      { tip: 'kelebek', renk: '#ffffff' },
     ],
   },
 ];

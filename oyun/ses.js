@@ -10,6 +10,10 @@ import { SES_DOSYALARI } from './sesListesi';
 
 const IOS = Platform.OS === 'ios';
 const HAVUZ = IOS ? 3 : 2;
+// Hızlı art arda çalabilen sesler tam havuz alır; nadir çalanlara (menü, kazanma, seslendirme...) tek çalar yeter.
+// Böylece açılışta hazırlanan çalar sayısı yarıya iner (iPhone'da 160 çalar açılışı ağırlaştırıyordu).
+const SIK = /^(meyve_|zincir_|takas|secim|gecersiz|cizgi|bomba|buz|kasa_vur|kasa_kir|sarmasik_kes|pling)/;
+const havuzBoyu = (ad) => (SIK.test(ad) ? HAVUZ : 1);
 const havuzlar = {};
 const sira = {};
 let hazir = false;
@@ -33,7 +37,7 @@ export async function sesleriHazirla() {
     if (ad === 'sessiz') continue;
     havuzlar[ad] = [];
     sira[ad] = 0;
-    for (let i = 0; i < HAVUZ; i++) {
+    for (let i = 0; i < havuzBoyu(ad); i++) {
       try {
         havuzlar[ad].push(ayar ? createAudioPlayer(SES_DOSYALARI[ad], ayar) : createAudioPlayer(SES_DOSYALARI[ad]));
       } catch (e) {}
