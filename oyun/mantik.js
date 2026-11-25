@@ -13,7 +13,10 @@ export const KASA = 20;
 // Ödüllü fıçı kırılınca yerinde özel meyve (çizgili ya da bomba) çıkar.
 export const FICI = 22;
 export const FICI_ODUL = 23;
-export const kasaMi = (v) => v === KASA || v === FICI || v === FICI_ODUL;
+// Yumurta (Kuş Yuvası): kasa gibi (2 kat), kırılınca yerinde civciv çıkar. Civciv tohum gibi iner, en alta inince yuvaya uçar.
+export const YUMURTA = 24;
+export const CIVCIV = 25;
+export const kasaMi = (v) => v === KASA || v === FICI || v === FICI_ODUL || v === YUMURTA;
 export const ficiMi = (v) => v === FICI || v === FICI_ODUL;
 // Tohum (4. bölüm sonrası, Çiçek Bahçesi): meyve değil; eşleşmez, patlamaz, takas edilebilir, yerçekimiyle düşer.
 // En alt sıraya inince toplanır (çiçek açar). Özel parçalar ona işlemez.
@@ -439,7 +442,7 @@ export function cozumAdimi(t, oz, { hamle = null, ek = [], izinli = null, engel 
   for (const [r, c] of silinecekler(gruplar))
     for (const [i, j] of [[r - 1, c], [r + 1, c], [r, c - 1], [r, c + 1]])
       if (i >= 0 && j >= 0 && i < SATIR && j < SUTUN && kasaMi(t[i][j])) vur.set(anahtar(i, j), [i, j]);
-  let hucreler = g.hucreler.filter(([r, c]) => !kasaMi(t[r][c]) && t[r][c] !== TOHUM);
+  let hucreler = g.hucreler.filter(([r, c]) => !kasaMi(t[r][c]) && !inenMi(t[r][c]));
   if (buzKomsuKirar && engel) {
     // Eşleşmeye komşu buzlar da kırılır (meyve yerinde kalır): buzlu hücre listeye eklenir
     const var_ = new Set(hucreler.map(([r, c]) => anahtar(r, c)));
@@ -454,7 +457,7 @@ export function cozumAdimi(t, oz, { hamle = null, ek = [], izinli = null, engel 
   const tohumlar = [];
   for (let c = 0; c < SUTUN; c++) {
     const a = enAltSatir(t, c);
-    if (a >= 0 && t[a][c] === TOHUM) tohumlar.push([a, c]);
+    if (a >= 0 && inenMi(t[a][c])) tohumlar.push([a, c]);
   }
   return { gruplar, olusan, hucreler, tetiklenen: g.tetiklenen, kasaVurus: [...vur.values()], tohumlar };
 }
@@ -505,9 +508,10 @@ export function adimUygula(t, oz, engel, adim, rnd = Math.random, zemin = null) 
     }
   }
   for (const [r, c] of adim.tohumlar || []) {
+    if (t[r][c] === CIVCIV) sayac.civciv = (sayac.civciv || 0) + 1;
+    else sayac.tohum++;
     t[r][c] = -1;
     oz[r][c] = null;
-    sayac.tohum++;
   }
   for (const [r, c] of adim.hucreler) {
     if (engel[r][c] === 'buz') {
@@ -550,6 +554,12 @@ export function adimUygula(t, oz, engel, adim, rnd = Math.random, zemin = null) 
         sayac.fici++;
         continue;
       }
+      if (t[r][c] === YUMURTA) {
+        // Yumurtadan civciv çıkar (yerinde kalır, sonra aşağı iner)
+        t[r][c] = CIVCIV;
+        sayac.yumurta = (sayac.yumurta || 0) + 1;
+        continue;
+      }
       if (t[r][c] === FICI) sayac.fici++;
       else sayac.kasa++;
       t[r][c] = -1;
@@ -580,7 +590,7 @@ export function adimUygula(t, oz, engel, adim, rnd = Math.random, zemin = null) 
 const ODUL_OZEL = ['satir', 'sutun', 'bomba'];
 
 // Seviye düzeninden (8 satırlık metin: '.' boş, 'b' buz, 'k' kasa, 'K' iki katlı kasa, 's' kar, 'S' iki katlı kar,
-// 't' tohum, 'v' sarmaşık, 'g' sis, 'x' delik, 'z' saatli meyve, 'm' mantar, '1'-'6' çiçek (çilek, limon, üzüm, portakal, elma, erik), 'f' fıçı, 'F' ödüllü fıçı) başlangıç tahtası kurar. Dönüş: { t, oz, engel, zemin } — eşleşmesiz ve en az bir hamlesi olan.
+// 't' tohum, 'v' sarmaşık, 'g' sis, 'x' delik, 'z' saatli meyve, 'm' mantar, 'y' yumurta (2 kat, içinden civciv), '1'-'6' çiçek (çilek, limon, üzüm, portakal, elma, erik), 'f' fıçı, 'F' ödüllü fıçı) başlangıç tahtası kurar. Dönüş: { t, oz, engel, zemin } — eşleşmesiz ve en az bir hamlesi olan.
 export function duzenliTahta(duzen, rnd = Math.random) {
   for (let d = 0; d < 300; d++) {
     const t = yeniTahta(rnd);
@@ -603,7 +613,10 @@ export function duzenliTahta(duzen, rnd = Math.random) {
           else if (h === 'm') engel[r][c] = 'mantar';
           else if (h === 'x') t[r][c] = DELIK;
           else if (h === 'z') engel[r][c] = 'saat' + ((etkinSeviye && etkinSeviye.saat) || 10);
-          else if (h === 'f' || h === 'F') {
+          else if (h === 'y') {
+            t[r][c] = YUMURTA;
+            engel[r][c] = 2;
+          } else if (h === 'f' || h === 'F') {
             t[r][c] = h === 'F' ? FICI_ODUL : FICI;
             engel[r][c] = 3;
           }
@@ -736,10 +749,10 @@ export function bantKaydir(t, oz, engel, bantlar) {
 // Tohumların toplam derinliği (bot için: tohumu aşağı indiren hamle iyidir)
 // ---------------- Ortak kurallar (oyun, bot ve simülasyon aynı fonksiyonları kullanır) ----------------
 // İnen parçalar: en alta inince toplanır (tohum; ileride civciv ve anahtar)
-export const INEN = [TOHUM];
+export const INEN = [TOHUM, CIVCIV];
 export const INEN_DUZEN = 't';
 export const inenMi = (v) => INEN.includes(v);
-const INEN_SAYAC = ['tohum'];
+const INEN_SAYAC = ['tohum', 'civciv'];
 export const inenHedefMi = (hedef) => INEN_SAYAC.some((k) => hedef[k]);
 export const inenToplandi = (sayac) => INEN_SAYAC.some((k) => sayac[k]);
 export function inenDerinligi(t) {
@@ -757,6 +770,7 @@ export function hamleDegeri(s, hedef, derin0 = 0) {
   if (hedef.topla) d += Object.keys(hedef.topla).reduce((a, k) => a + (s.sayac.topla[k] || 0), 0) * 100;
   for (const k in HEDEF_AGIRLIK) if (hedef[k]) d += (s.sayac[k] || 0) * HEDEF_AGIRLIK[k];
   if (hedef.fici) d += (s.sayac.vurus || 0) * 60;
+  if (hedef.civciv) d += (s.sayac.vurus || 0) * 70 + (s.sayac.yumurta || 0) * 200;
   if (inenHedefMi(hedef)) d += inenDegeri(s, derin0);
   if (hedef.saat && s.enAzSaat != null) d -= Math.max(0, 6 - s.enAzSaat) * 120;
   return d;
@@ -782,7 +796,7 @@ export function sayacEkle(hedef, ek) {
 }
 
 // Düzen harfi -> hedef anahtarı ve sayısı (düzen ile hedef tutarlı mı denetimi için)
-const DUZEN_HEDEF = { b: ['buz', 1], k: ['kasa', 1], K: ['kasa', 1], s: ['kar', 1], S: ['kar', 2], t: ['tohum', 1], v: ['sarmasik', 1], f: ['fici', 1], F: ['fici', 1], g: ['sis', 1], 1: ['cicek', 1], 2: ['cicek', 1], 3: ['cicek', 1], 4: ['cicek', 1], 5: ['cicek', 1], 6: ['cicek', 1], z: ['saat', 1], m: ['mantar', 1] };
+const DUZEN_HEDEF = { b: ['buz', 1], k: ['kasa', 1], K: ['kasa', 1], s: ['kar', 1], S: ['kar', 2], t: ['tohum', 1], v: ['sarmasik', 1], f: ['fici', 1], F: ['fici', 1], g: ['sis', 1], 1: ['cicek', 1], 2: ['cicek', 1], 3: ['cicek', 1], 4: ['cicek', 1], 5: ['cicek', 1], 6: ['cicek', 1], z: ['saat', 1], m: ['mantar', 1], y: ['civciv', 1] };
 export const DUZEN_HEDEF_ANAHTAR = [...new Set(Object.values(DUZEN_HEDEF).map((x) => x[0]))];
 export function duzenSayilari(duzen) {
   const say = {};

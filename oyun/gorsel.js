@@ -3,6 +3,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Image, StyleSheet, Text, View } from 'react-native';
 
 export const TOHUM_TUR = 21; // mantik.js TOHUM ile aynı
+export const YUMURTA_TUR = 24; // mantik.js YUMURTA
+export const CIVCIV_TUR = 25; // mantik.js CIVCIV
 export const FICI_TUR = 22; // mantik.js FICI
 export const FICI_ODUL_TUR = 23; // mantik.js FICI_ODUL
 
@@ -420,6 +422,56 @@ export function MantarIkon({ boy = 26 }) {
   );
 }
 
+// ---------- Kuş Yuvası ----------
+// Yumurta: saman yuvada benekli krem yumurta; çatlayınca zikzak çatlak
+export function Yumurta({ H, kat }) {
+  const b = H * 0.9;
+  return (
+    <View style={{ width: b, height: b, alignItems: 'center', justifyContent: 'flex-end' }}>
+      <View style={{ position: 'absolute', bottom: b * 0.02, width: b * 0.96, height: b * 0.34, borderRadius: b, backgroundColor: '#c9984f', borderWidth: 2, borderColor: '#8a5f25' }}>
+        {[0.15, 0.4, 0.65].map((x) => (
+          <View key={x} style={{ position: 'absolute', left: b * x, top: b * 0.08, width: b * 0.2, height: 2, backgroundColor: '#8a5f25', transform: [{ rotate: '-20deg' }] }} />
+        ))}
+      </View>
+      <View style={{ position: 'absolute', bottom: b * 0.16, width: b * 0.6, height: b * 0.76, borderRadius: b * 0.32, backgroundColor: '#fff7e6', borderWidth: 2, borderColor: '#d9c39a', overflow: 'hidden' }}>
+        <View style={{ position: 'absolute', left: b * 0.1, top: b * 0.12, width: b * 0.1, height: b * 0.18, borderRadius: b, backgroundColor: 'rgba(255,255,255,0.9)' }} />
+        {[[0.32, 0.3], [0.18, 0.5], [0.4, 0.58]].map(([x, y], i) => (
+          <View key={i} style={{ position: 'absolute', left: b * x, top: b * y, width: b * 0.07, height: b * 0.07, borderRadius: b, backgroundColor: '#e3b6d8' }} />
+        ))}
+        {kat <= 1 &&
+          [[0.02, 0.36, 30], [0.14, 0.36, -30], [0.26, 0.36, 30], [0.38, 0.36, -30], [0.5, 0.36, 30]].map(([x, y, a], i) => (
+            <View key={'c' + i} style={{ position: 'absolute', left: b * x, top: b * y, width: b * 0.14, height: 2.5, backgroundColor: '#6b4a1a', transform: [{ rotate: a + 'deg' }] }} />
+          ))}
+      </View>
+    </View>
+  );
+}
+// Civciv: tombul sarı civciv, gözler, turuncu gaga, küçük kanat
+export function Civciv({ H }) {
+  const b = H * 0.78;
+  return (
+    <View style={{ width: H, height: H, alignItems: 'center', justifyContent: 'center' }}>
+      <View style={{ width: b, height: b * 0.92, borderRadius: b * 0.46, backgroundColor: '#ffd93a', borderWidth: 2, borderColor: '#d9a400' }}>
+        <View style={{ position: 'absolute', left: b * 0.12, top: b * 0.08, width: b * 0.22, height: b * 0.14, borderRadius: b, backgroundColor: 'rgba(255,255,255,0.7)' }} />
+        <View style={{ position: 'absolute', left: b * 0.28, top: b * 0.34, width: b * 0.1, height: b * 0.13, borderRadius: b, backgroundColor: '#2a1a08' }} />
+        <View style={{ position: 'absolute', left: b * 0.6, top: b * 0.34, width: b * 0.1, height: b * 0.13, borderRadius: b, backgroundColor: '#2a1a08' }} />
+        <View style={{ position: 'absolute', left: b * 0.4, top: b * 0.5, width: 0, height: 0, borderLeftWidth: b * 0.1, borderRightWidth: b * 0.1, borderTopWidth: b * 0.14, borderLeftColor: 'transparent', borderRightColor: 'transparent', borderTopColor: '#ff8a1f' }} />
+        <View style={{ position: 'absolute', left: b * 0.14, top: b * 0.52, width: b * 0.12, height: b * 0.07, borderRadius: b, backgroundColor: 'rgba(255,130,130,0.55)' }} />
+        <View style={{ position: 'absolute', left: b * 0.74, top: b * 0.52, width: b * 0.12, height: b * 0.07, borderRadius: b, backgroundColor: 'rgba(255,130,130,0.55)' }} />
+        <View style={{ position: 'absolute', left: -b * 0.04, top: b * 0.56, width: b * 0.24, height: b * 0.18, borderRadius: b, backgroundColor: '#ffc61a', borderWidth: 1.5, borderColor: '#d9a400', transform: [{ rotate: '-25deg' }] }} />
+      </View>
+      <View style={{ position: 'absolute', top: H * 0.04, left: H * 0.46, width: H * 0.08, height: H * 0.12, borderRadius: H, backgroundColor: '#ffd93a', borderWidth: 1, borderColor: '#d9a400', transform: [{ rotate: '15deg' }] }} />
+    </View>
+  );
+}
+export function CivcivIkon({ boy = 26 }) {
+  return (
+    <View style={{ width: boy, height: boy, alignItems: 'center', justifyContent: 'center' }}>
+      <Civciv H={boy * 1.15} />
+    </View>
+  );
+}
+
 export function SarmasikKatman({ H }) {
   const b = H * 0.96;
   const dal = (aci, ust) => (
@@ -505,10 +557,11 @@ export function Kirilma({ e, H, bitti }) {
   const sis = e.tur === 'sis';
   const kar = e.tur === 'kar' || sis;
   const mantar = e.tur === 'mantar';
+  const civciv = e.tur === 'civciv' || e.tur === 'yumurta';
   const yaprak = e.tur === 'yaprak' || mantar;
   const buz = e.tur === 'buz' || kar;
   const adet = e.az ? 3 : 7;
-  const renkler = mantar ? ['#e8402e', '#ffffff', '#c9a77a'] : yaprak ? ['#4fbf3a', '#2f8a28', '#6ad957'] : sis ? ['#d3d7ee', '#ffffff', '#b9bfdc'] : kar ? ['#ffffff', '#e4f3ff', '#ffffff'] : buz ? ['#e9f7ff', '#a7dcff', '#ffffff'] : ['#cf8f48', '#8f5a24', '#e0aa66'];
+  const renkler = civciv ? (e.tur === 'yumurta' ? ['#fff7e6', '#e3d2a8', '#ffffff'] : ['#ffd93a', '#ffe680', '#ffc61a']) : mantar ? ['#e8402e', '#ffffff', '#c9a77a'] : yaprak ? ['#4fbf3a', '#2f8a28', '#6ad957'] : sis ? ['#d3d7ee', '#ffffff', '#b9bfdc'] : kar ? ['#ffffff', '#e4f3ff', '#ffffff'] : buz ? ['#e9f7ff', '#a7dcff', '#ffffff'] : ['#cf8f48', '#8f5a24', '#e0aa66'];
   return (
     <>
       {!e.az && (
@@ -869,7 +922,9 @@ export function Parca({ p, H }) {
       }}
     >
       {p.kat ? (
-        p.tur === FICI_TUR || p.tur === FICI_ODUL_TUR ? (
+        p.tur === YUMURTA_TUR ? (
+          <Yumurta H={H} kat={p.kat} />
+        ) : p.tur === FICI_TUR || p.tur === FICI_ODUL_TUR ? (
           <Fici H={H} kat={p.kat} odul={p.tur === FICI_ODUL_TUR} />
         ) : (
           <Kasa H={H} kat={p.kat} />
@@ -878,6 +933,8 @@ export function Parca({ p, H }) {
       {p.ozel === 'bomba' && <BombaHale key="b" H={H} renk={MEYVELER[p.tur].renk} />}
       {p.tur === TOHUM_TUR ? (
         <Tohum H={H} />
+      ) : p.tur === CIVCIV_TUR ? (
+        <Civciv H={H} />
       ) : p.kat ? null : p.ozel === 'gokkusagi' || !MEYVELER[p.tur] ? (
         <GokkusagiKure H={H} />
       ) : (

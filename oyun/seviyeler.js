@@ -160,9 +160,21 @@ export const SEVIYELER = [
   { no: 138, hamle: 25, tur: 6, hedef: { mantar: 4, cicek: 6 }, yildiz: [6250, 7500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['m......m', '........', '..1..2..', '..3..4..', '..5..6..', '........', 'm......m', '........'] },
   { no: 139, hamle: 16, tur: 6, hedef: { topla: { 0: 20, 1: 20 } }, yildiz: [4000, 5000], ozel: { cizgili: true, bomba: true, gokkusagi: true } },
   { no: 140, hamle: 20, tur: 6, hedef: { mantar: 10, sis: 4, kasa: 4 }, yildiz: [4000, 4750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['mm....mm', 'mgg..ggm', '........', '...mm...', '...mm...', '..kkkk..', '........', '........'] },
+  // ---- 15. bölüm: Kuş Yuvası (yumurta: 2 vuruşta çatlar, içinden çıkan civciv en alta inince yuvaya uçar) ----
+  { no: 141, hamle: 30, tur: 6, hedef: { civciv: 2 }, yildiz: [6000, 7250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '........', '..y..y..', '........', '........', '........', '........', '........'], yeni: 'civciv' },
+  { no: 142, hamle: 39, tur: 6, hedef: { civciv: 3 }, yildiz: [8250, 9750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '.y..y..y', '........', '........', '........', '........', '........', '........'] },
+  { no: 143, hamle: 35, tur: 6, hedef: { civciv: 3, topla: { 1: 12 } }, yildiz: [7250, 8750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '..y.....', '.....y..', '...y....', '........', '........', '........', '........'] },
+  { no: 144, hamle: 30, tur: 6, hedef: { civciv: 2, buz: 8 }, yildiz: [6000, 7250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '..y..y..', '........', '.bbbbbb.', '.b....b.', '........', '........', '........'] },
+  { no: 145, hamle: 26, tur: 6, hedef: { puan: 6500 }, yildiz: [8000, 9250], ozel: { cizgili: true, bomba: true, gokkusagi: true } },
+  { no: 146, hamle: 38, tur: 6, hedef: { civciv: 4 }, yildiz: [7500, 8750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['.y....y.', '........', '...yy...', '........', '........', '........', '........', '........'] },
+  { no: 147, hamle: 38, tur: 6, hedef: { civciv: 3, kar: 8 }, yildiz: [8000, 9500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '.y..y..y', '........', '........', '........', '........', 'ssssssss', '........'] },
+  { no: 148, hamle: 34, tur: 6, hedef: { civciv: 2, tohum: 2 }, yildiz: [7000, 8250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '.t.yy.t.', '........', '........', '........', '........', '........', '........'] },
+  { no: 149, hamle: 18, tur: 6, hedef: { topla: { 2: 20, 3: 20 } }, yildiz: [4250, 5250], ozel: { cizgili: true, bomba: true, gokkusagi: true } },
+  { no: 150, hamle: 44, tur: 6, hedef: { civciv: 4, sis: 4, mantar: 4 }, yildiz: [8750, 10500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', 'yggyyggy', '........', 'm......m', 'm......m', '........', '........', '........'] },
 ];
 
 export const TANITIM = {
+  civciv: { baslik: 'Yeni: Yumurta ve civciv', metin: 'Yuvadaki yumurtanın yanında iki kez eşleşme yap: önce çatlar, sonra içinden civciv çıkar. Civciv tohum gibi aşağı iner; en alt sıraya ulaşınca yuvaya uçar!' },
   mantar: { baslik: 'Yeni: Mantar', metin: 'Mantarlı meyve yer değiştiremez; yanında eşleşme yap, mantar temizlensin. Dikkat: mantarlar her 3 hamlede bir yanlarındaki meyveye çoğalır. Hepsini temizle!' },
   bant: { baslik: 'Yeni: Rüzgâr', metin: 'Tepede rüzgâr esiyor! Mavi şeritli satırlar her hamleden sonra okların yönünde bir kare kayar; uçtan çıkan meyve öbür uçtan girer. Kayınca yeni eşleşmeler kendiliğinden patlar.' },
   saat: { baslik: 'Yeni: Saatli meyve', metin: 'Saatli meyvenin köşesindeki sayı her hamlede bir azalır. Sıfıra inmeden o meyveyi patlat; yoksa seviye biter! Sayı 3 ve altına inince saat kırmızı olur.' },

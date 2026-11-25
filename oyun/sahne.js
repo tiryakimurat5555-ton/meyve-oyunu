@@ -286,6 +286,24 @@ const RENKLER = [
       { tip: 'yaprak', renk: '#5c9a5c' },
     ],
   },
+  // 14: Kuş Yuvası (sabah gökyüzü, yumuşak yeşil tepeler, uçuşan tüyler ve kelebekler)
+  {
+    gok: ['#8fd3ff', '#fff8e8'],
+    gunes: '#ffe066',
+    gunesKenar: '#ffc233',
+    tepeArka: ['#9fd67a', '#8ac666'],
+    tepeArka2: ['#b0de88', '#99cf74'],
+    tepeOn: ['#cdeaa0', '#b8dd88'],
+    tac: ['#6cb34f', '#5a9e42', '#86c766'],
+    nokta: ['#ffffff', '#ffd93a', '#ffb3c7'],
+    cicek: ['#ffd93a', '#ffffff', '#ffb3c7'],
+    parca: [
+      { tip: 'kar', buyuk: true },
+      { tip: 'kar' },
+      { tip: 'kelebek', renk: '#ffd93a' },
+      { tip: 'kelebek', renk: '#ffb3c7' },
+    ],
+  },
 ];
 export const geceMi = (bolum) => !!(RENKLER[bolum] && RENKLER[bolum].gece);
 

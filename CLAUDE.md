@@ -29,8 +29,8 @@ Murat'ın meyve temalı 3'lü eşleştirme oyunu (Kasım 2026). Geçici ad "Meyv
   4-5 seviyede bir dinlenme. Parça parça: 4-5 (31-50), 6 (51-60), 7 Kiraz Çiçeği (61-70, dinlenme: karışık engeller, bot %74-100), 8 Bağ Bozumu (71-80, bot %73-95), 9 Gece Bahçesi (81-90, bot %72-100) YAPILDI (25 Kasım);
   25 Kasım Murat: SON BÖLÜM YOK. 100 seviye sınır değil; bölüm çeşitliliği olabildiğince artırılacak (her bölüm yeni bir mekanik/tema).
   Murat'ın onayladığı sıra (25 Kasım): 10 Kristal Bahçe (şekilli tahtalar) YAPILDI (91-100, bot %65-99); 11 Arı Bahçesi (101-110, %69-97) ve 12 Saat Kulesi (111-120, %70-98)
-  13 Rüzgârlı Tepe (121-130, %78-99), 14 Mantar Ormanı (131-140, %76-100)
-  YAPILDI; sırada 15. Plan: 11 Arı Bahçesi (çiçek
+  13 Rüzgârlı Tepe (121-130, %78-99), 14 Mantar Ormanı (131-140, %76-100),
+  15 Kuş Yuvası (141-150, %67-95) YAPILDI; sırada 16. Plan: 11 Arı Bahçesi (çiçek
   tozu: üstünde eşleşme = tozlanır), 12 Saat Kulesi (geri sayımlı meyve, sıfırda kaybedilir), 13 Rüzgârlı Tepe (taşıyıcı bant),
   14 Mantar Ormanı (her 3 hamlede çoğalır), 15 Kuş Yuvası (yumurta 2 vuruş → civciv, tohum gibi iner), 16 Göl Kıyısı (akıntı kapıları),
   17 Kafes ve Anahtar, 18 Bukalemun Bahçesi (renk değiştiren meyve); sonra mevsim dönüşleri + yeni mekanikler.
@@ -55,6 +55,10 @@ Murat'ın meyve temalı 3'lü eşleştirme oyunu (Kasım 2026). Geçici ad "Meyv
   kesilmese de her M.MANTAR_ARALIK (3) çekiçsiz hamlede bir yayılır (sarmasikYay(..., 'mantar'); Oyun mantarSayac). Hedef kalan-sayılı
   (toplanan.mantarKalan, KALAN_ENGEL/KALAN_HEDEF). Düzen 'm'. MantarKatman/MantarIkon. VO "Mantarlı elma", duyuruda "Mantarlar N hamle
   sonra çoğalacak". Ses 'mantar'. Sahne 13 orman (sporlar).
+- YUMURTA / CİVCİV (141-150, Kuş Yuvası): M.YUMURTA=24 (kasaMi, 2 kat; düzen 'y'), kırılınca yerinde M.CIVCIV=25 olur. Civciv INEN
+  listesinde (tohum gibi: eşleşmez, takas edilir, en alt deliksiz satıra inince toplanır, sayac.civciv). hedef.civciv = yumurta sayısı.
+  Bot: inen parça iki hamle ileri bakış civcivi de kapsar; yumurta vuruşu ödüllü. Çizim Yumurta (yuvada, çatlak), Civciv, CivcivIkon.
+  VO "Yumurta, 2 kat" / "Çatlak yumurta" / "Civciv". Sesler 'yumurta', 'civciv'. Sahne 14 sabah.
 - DELİK (91-100, Kristal Bahçe): t[r][c] = M.DELIK (30), düzen 'x'. Sabit; eşleşmez, takas edilmez (hamleBul/tumHamleler kilitli),
   genislet atlar (özel parçalar deliği temizlemez), yercekimi sütunda deliksiz hücreler üzerinden: meyve deliğin üstünden atlar.
   karistir yalnız renkli meyveleri karıştırır (diğer her şey yerinde). Tohum sütunun en alt deliksiz satırında toplanır (M.enAltSatir).
