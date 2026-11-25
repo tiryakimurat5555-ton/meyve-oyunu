@@ -252,6 +252,19 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
   }, []);
   const asamaRef = useRef('giris');
   asamaRef.current = asama;
+  // Bot açıkken tam otomatik: "Başla"ya basar; seviye bitince sonucu gösterip sonrakine geçer ya da tekrar dener
+  useEffect(() => {
+    if (!bot) return;
+    let z = null;
+    if (asama === 'giris') z = setTimeout(() => botRef.current && asamaRef.current === 'giris' && basla(), 1800);
+    if (asama === 'sonuc' && sonuc)
+      z = setTimeout(() => {
+        if (!botRef.current) return;
+        if (sonuc.basarili && sonrakiVar) sonraki();
+        else tekrar();
+      }, 4500);
+    return () => clearTimeout(z);
+  }, [asama, bot, sonuc]);
 
   const basla = () => {
     setAsama('oyun');
@@ -596,7 +609,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
   // Hedef tamamlanınca kalan hamleler çizgili meyveye dönüşüp patlar
   const senlik = async () => {
     setAsama('senlik');
-    setOvgu({ id: ++sonKimlik, metin: 'Bahçe şenliği!' });
+    setOvgu({ id: ++sonKimlik, metin: 'Garden Party!' });
     duyur('Hedef tamam! Kalan hamleler şenliğe dönüşüyor.');
     await bekle(700);
     const donusecek = Math.min(SENLIK_EN_FAZLA, hamleRef.current);

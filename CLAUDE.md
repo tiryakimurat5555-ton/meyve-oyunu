@@ -25,10 +25,11 @@ Murat'ın meyve temalı 3'lü eşleştirme oyunu (Kasım 2026). Geçici ad "Meyv
   11-30. seviyeler oyun/seviyeler.js'te; bölümler: 1-10 İlkbahar, 11-20 Yaz, 21-30 Sonbahar Bahçesi.
   Bot hedefi: 1-10 ≥%88, 11-20 ≥%85, 21-30 ≥%75 geçme; yıldız eşikleri bottan (2★ ≈ %40'lık, 3★ ≈ %75'lik puan).
   Simülasyon mulberry32 üreteci kullanır (eski LCG tekrarlı dizilerle sonuçları çarpıtıyordu).
-- Zincir övgü yazıları İngilizce (Nice!, Great!, Amazing!, Fantastic!) — Murat: global oyun. Ödüllü reklam sonraki aşama.
+- Zincir övgü yazıları İngilizce (Nice!, Great!, Amazing!, Fantastic!), şenlik yazısı 'Garden Party!' — Murat: global oyun. Ödüllü reklam sonraki aşama.
 - Ekranda VoiceOver'a özel uyarı yazıları olmasın.
 - BOT düğmesi (25 Kasım, Murat istedi): oyun ekranında tahtanın altında "Bot: Kapalı/Açık"; açıkken M.enIyiHamle ile
-  1,1 sn arayla kendi oynar (ekran görüntüsü/video için). Açık kalırsa sonraki seviyede de oynar. Sağ üstte Expo Go dişlisi
+  1,1 sn arayla kendi oynar (ekran görüntüsü/video için). Tam otomatik: giriş kartında 1,8 sn sonra Başla'ya basar, sonuç
+  kartından 4,5 sn sonra sonraki seviyeye geçer (kaybederse tekrar dener). Bot düğmesi Başla'dan sonra açılır (kart üstünü kapatır). Sağ üstte Expo Go dişlisi
   olduğu için oraya düğme koyma. MAĞAZA SÜRÜMÜNDEN ÖNCE kaldırılmalı ya da gizlenmeli (Murat'a sor).
 
 ## Yayın
