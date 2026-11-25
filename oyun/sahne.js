@@ -1,0 +1,343 @@
+// Canlı bahçe sahnesi (tamamen kodla): renk geçişli gökyüzü, gülen güneş, süzülen bulutlar,
+// tepeler, ağaçlar, çiçekler ve bölüme göre uçuşan taç yaprakları / kelebekler / sonbahar yaprakları.
+// Resimli arka planlar gelince gökyüzü ve tepeler resimle değişir; hareketli katmanlar üstte kalır.
+// Hepsi süs: dokunmayı geçirir ve VoiceOver'dan gizlidir. "Hareketi azalt" açıksa sahne durgun kalır.
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { AccessibilityInfo, Animated, Easing, View } from 'react-native';
+
+export const bolumNo = (seviyeNo) => (seviyeNo <= 10 ? 0 : seviyeNo <= 20 ? 1 : 2);
+
+const RENKLER = [
+  // 0: İlkbahar
+  {
+    gok: ['#74c8ff', '#dff5ff'],
+    gunes: '#ffe14d',
+    gunesKenar: '#ffc928',
+    tepeArka: ['#a6e08e', '#86cc6e'],
+    tepeArka2: ['#b4e69a', '#93d47a'],
+    tepeOn: ['#c9f0a6', '#ade08a'],
+    tac: ['#5fbf57', '#4aa847', '#86d672'],
+    nokta: ['#ffc1dc', '#ffffff', '#ff9cc6'],
+    cicek: ['#ff9cc6', '#ffffff', '#ffd1e6'],
+    parca: [
+      { tip: 'yaprak', renk: '#ffb8d6' },
+      { tip: 'yaprak', renk: '#ffffff' },
+      { tip: 'yaprak', renk: '#ff9cc6' },
+      { tip: 'yaprak', renk: '#ffd1e6' },
+      { tip: 'kelebek', renk: '#ffd23f' },
+      { tip: 'kelebek', renk: '#b98cff' },
+    ],
+  },
+  // 1: Yaz
+  {
+    gok: ['#3fb0ff', '#fff2c6'],
+    gunes: '#ffd93a',
+    gunesKenar: '#ffb81c',
+    tepeArka: ['#77c95e', '#5cb44a'],
+    tepeArka2: ['#86d26a', '#69bd54'],
+    tepeOn: ['#a5e07a', '#86cf5e'],
+    tac: ['#3fa94a', '#2f923c', '#5cc45d'],
+    nokta: ['#ff4d4d', '#ffb13b', '#ff4d4d'],
+    cicek: ['#ff5a5a', '#ffd23f', '#a06bff'],
+    parca: [
+      { tip: 'kelebek', renk: '#ff8a3d' },
+      { tip: 'kelebek', renk: '#4fc3ff' },
+      { tip: 'kelebek', renk: '#ff6fb5' },
+      { tip: 'kelebek', renk: '#ffd23f' },
+    ],
+  },
+  // 2: Sonbahar
+  {
+    gok: ['#86bfe6', '#ffd8a6'],
+    gunes: '#ffc94a',
+    gunesKenar: '#ffa62b',
+    tepeArka: ['#d9b056', '#c59a40'],
+    tepeArka2: ['#e2bd62', '#cda54a'],
+    tepeOn: ['#ecd078', '#dcbb5e'],
+    tac: ['#f08a2c', '#d8641f', '#f6c445'],
+    nokta: ['#e0452b', '#ffd34d', '#b8431c'],
+    cicek: ['#e8743b', '#ffb13b', '#c4502a'],
+    parca: [
+      { tip: 'yaprak', renk: '#f08a2c', buyuk: true },
+      { tip: 'yaprak', renk: '#e0452b', buyuk: true },
+      { tip: 'yaprak', renk: '#f6c445', buyuk: true },
+      { tip: 'yaprak', renk: '#d8641f', buyuk: true },
+      { tip: 'yaprak', renk: '#f08a2c', buyuk: true },
+      { tip: 'yaprak', renk: '#b8431c', buyuk: true },
+      { tip: 'yaprak', renk: '#f6c445', buyuk: true },
+    ],
+  },
+];
+
+const GIZLI = { pointerEvents: 'none', importantForAccessibility: 'no-hide-descendants', accessibilityElementsHidden: true };
+
+function hex(h) {
+  const n = parseInt(h.slice(1), 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+function karis(a, b, t) {
+  const x = hex(a);
+  const y = hex(b);
+  const c = x.map((v, i) => Math.round(v + (y[i] - v) * t));
+  return `rgb(${c[0]},${c[1]},${c[2]})`;
+}
+
+// 0'dan 1'e sürekli dönen değer (hareket kapalıysa durur)
+function useDongu(sure, hareket) {
+  const v = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    if (!hareket) return undefined;
+    const a = Animated.loop(Animated.timing(v, { toValue: 1, duration: sure, easing: Easing.linear, useNativeDriver: true }));
+    a.start();
+    return () => a.stop();
+  }, [hareket, sure]);
+  return v;
+}
+
+// ---------- gökyüzü ----------
+function Gok({ renk, EY }) {
+  const n = 18;
+  const h = EY / n;
+  return Array.from({ length: n }, (_, i) => (
+    <View key={i} style={{ position: 'absolute', left: 0, right: 0, top: i * h, height: h + 1, backgroundColor: karis(renk[0], renk[1], i / (n - 1)) }} />
+  ));
+}
+
+// ---------- güneş ----------
+function Gunes({ x, y, boy, renk, kenar, hareket }) {
+  const don = useDongu(48000, hareket);
+  const nefes = useDongu(4200, hareket);
+  const donus = don.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '360deg'] });
+  const olcek = nefes.interpolate({ inputRange: [0, 0.5, 1], outputRange: [1, 1.12, 1] });
+  const isin = boy * 2.7;
+  return (
+    <View style={{ position: 'absolute', left: x - isin / 2, top: y - isin / 2, width: isin, height: isin, alignItems: 'center', justifyContent: 'center' }}>
+      {/* ışınlar */}
+      <Animated.View style={{ position: 'absolute', width: isin, height: isin, transform: [{ rotate: donus }] }}>
+        {[0, 30, 60, 90, 120, 150].map((a) => (
+          <View
+            key={a}
+            style={{ position: 'absolute', left: isin / 2 - boy * 0.09, top: 0, width: boy * 0.18, height: isin, borderRadius: boy * 0.09, backgroundColor: 'rgba(255,240,160,0.45)', transform: [{ rotate: `${a}deg` }] }}
+          />
+        ))}
+      </Animated.View>
+      {/* hale */}
+      <Animated.View style={{ position: 'absolute', width: boy * 1.75, height: boy * 1.75, borderRadius: boy, backgroundColor: 'rgba(255,244,170,0.45)', transform: [{ scale: olcek }] }} />
+      <View style={{ position: 'absolute', width: boy * 1.35, height: boy * 1.35, borderRadius: boy, backgroundColor: 'rgba(255,240,150,0.55)' }} />
+      {/* yüzlü güneş */}
+      <View style={{ width: boy, height: boy, borderRadius: boy / 2, backgroundColor: renk, borderWidth: boy * 0.05, borderColor: kenar, alignItems: 'center' }}>
+        <View style={{ position: 'absolute', left: boy * 0.16, top: boy * 0.12, width: boy * 0.26, height: boy * 0.18, borderRadius: boy * 0.1, backgroundColor: 'rgba(255,255,255,0.7)' }} />
+        <View style={{ flexDirection: 'row', marginTop: boy * 0.36 }}>
+          <View style={{ width: boy * 0.1, height: boy * 0.13, borderRadius: boy * 0.06, backgroundColor: '#7a4a12', marginHorizontal: boy * 0.1 }} />
+          <View style={{ width: boy * 0.1, height: boy * 0.13, borderRadius: boy * 0.06, backgroundColor: '#7a4a12', marginHorizontal: boy * 0.1 }} />
+        </View>
+        <View style={{ width: boy * 0.3, height: boy * 0.14, borderBottomLeftRadius: boy * 0.15, borderBottomRightRadius: boy * 0.15, borderWidth: boy * 0.035, borderTopWidth: 0, borderColor: '#9a5a10', marginTop: boy * 0.03 }} />
+        <View style={{ position: 'absolute', left: boy * 0.14, top: boy * 0.56, width: boy * 0.14, height: boy * 0.08, borderRadius: boy * 0.05, backgroundColor: 'rgba(255,120,120,0.45)' }} />
+        <View style={{ position: 'absolute', right: boy * 0.14, top: boy * 0.56, width: boy * 0.14, height: boy * 0.08, borderRadius: boy * 0.05, backgroundColor: 'rgba(255,120,120,0.45)' }} />
+      </View>
+    </View>
+  );
+}
+
+// ---------- bulut ----------
+function Bulut({ y, olcek, sure, bas, EG, saydam, hareket }) {
+  const v = useDongu(sure, hareket);
+  const g = 130 * olcek;
+  const tx = Animated.modulo(Animated.add(v, bas), 1).interpolate({ inputRange: [0, 1], outputRange: [-g - 20, EG + 20] });
+  const daire = (x, yy, r, renk) => <View key={`${x}-${yy}`} style={{ position: 'absolute', left: (x - r) * olcek, top: (yy - r) * olcek, width: r * 2 * olcek, height: r * 2 * olcek, borderRadius: r * olcek, backgroundColor: renk }} />;
+  return (
+    <Animated.View style={{ position: 'absolute', left: 0, top: y, width: g, height: 70 * olcek, opacity: saydam, transform: [{ translateX: tx }] }}>
+      {/* alt gölge */}
+      <View style={{ position: 'absolute', left: 6 * olcek, top: 40 * olcek, width: 118 * olcek, height: 26 * olcek, borderRadius: 13 * olcek, backgroundColor: '#dcecfa' }} />
+      {daire(36, 36, 24, '#dcecfa')}
+      {daire(70, 30, 30, '#dcecfa')}
+      {daire(100, 40, 20, '#dcecfa')}
+      <View style={{ position: 'absolute', left: 4 * olcek, top: 36 * olcek, width: 120 * olcek, height: 26 * olcek, borderRadius: 13 * olcek, backgroundColor: '#ffffff' }} />
+      {daire(36, 33, 22, '#ffffff')}
+      {daire(70, 27, 28, '#ffffff')}
+      {daire(100, 37, 18, '#ffffff')}
+    </Animated.View>
+  );
+}
+
+// ---------- tepe (büyük daire) ----------
+function Tepe({ cx, ust, cap, renk }) {
+  return (
+    <>
+      <View style={{ position: 'absolute', left: cx - cap / 2, top: ust, width: cap, height: cap, borderRadius: cap / 2, backgroundColor: renk[0] }} />
+      <View style={{ position: 'absolute', left: cx - cap / 2 + 3, top: ust + 7, width: cap - 6, height: cap - 6, borderRadius: cap / 2, backgroundColor: renk[1] }} />
+    </>
+  );
+}
+// Dairenin x noktasındaki üst kenarı
+function tepeY(cx, ust, cap, x) {
+  const r = cap / 2;
+  const d = Math.min(Math.abs(x - cx), r * 0.98);
+  return ust + r - Math.sqrt(r * r - d * d) + 6;
+}
+
+// ---------- ağaç ----------
+function Agac({ x, y, s, renk }) {
+  const daire = (dx, dy, r, c, k) => (
+    <View key={k} style={{ position: 'absolute', left: x + (dx - r) * s, top: y + (dy - r) * s, width: r * 2 * s, height: r * 2 * s, borderRadius: r * s, backgroundColor: c }} />
+  );
+  const [ana, koyu, acik] = renk.tac;
+  const noktalar = [
+    [-11, -46, 0],
+    [7, -58, 1],
+    [15, -38, 2],
+    [-2, -36, 1],
+    [-20, -34, 0],
+    [4, -48, 2],
+    [-8, -62, 1],
+  ];
+  return (
+    <>
+      <View style={{ position: 'absolute', left: x - 5 * s, top: y - 30 * s, width: 10 * s, height: 30 * s, borderRadius: 3 * s, backgroundColor: '#8a5a2b' }} />
+      <View style={{ position: 'absolute', left: x - 5 * s, top: y - 30 * s, width: 4 * s, height: 30 * s, borderRadius: 2 * s, backgroundColor: '#a7713c' }} />
+      {daire(0, -45, 24, koyu, 'a')}
+      {daire(-17, -33, 17, koyu, 'b')}
+      {daire(17, -33, 17, koyu, 'c')}
+      {daire(0, -48, 22, ana, 'd')}
+      {daire(-16, -36, 15, ana, 'e')}
+      {daire(16, -36, 15, ana, 'f')}
+      {daire(-7, -58, 8, acik, 'g')}
+      {noktalar.map(([dx, dy, i], k) => daire(dx, dy, 3.6, renk.nokta[i], `n${k}`))}
+    </>
+  );
+}
+
+// ---------- çiçek ----------
+function Cicek({ x, y, renk, s = 1 }) {
+  const p = 4.2 * s;
+  return (
+    <>
+      <View style={{ position: 'absolute', left: x - 1, top: y - 10 * s, width: 2, height: 10 * s, backgroundColor: '#4e9a3a' }} />
+      {[0, 72, 144, 216, 288].map((a) => {
+        const r = (a * Math.PI) / 180;
+        return (
+          <View
+            key={a}
+            style={{ position: 'absolute', left: x + Math.cos(r) * p - p, top: y - 12 * s + Math.sin(r) * p - p, width: p * 2, height: p * 2, borderRadius: p, backgroundColor: renk }}
+          />
+        );
+      })}
+      <View style={{ position: 'absolute', left: x - 2.6 * s, top: y - 12 * s - 2.6 * s, width: 5.2 * s, height: 5.2 * s, borderRadius: 2.6 * s, backgroundColor: '#ffcf33' }} />
+    </>
+  );
+}
+
+// ---------- uçuşan taç yaprağı / sonbahar yaprağı ----------
+function Yaprak({ x, sure, bas, renk, buyuk, EY, hareket }) {
+  const v = useDongu(sure, hareket);
+  const t = Animated.modulo(Animated.add(v, bas), 1);
+  const ty = t.interpolate({ inputRange: [0, 1], outputRange: [-30, EY * 0.92] });
+  const tx = t.interpolate({ inputRange: [0, 0.25, 0.5, 0.75, 1], outputRange: [0, 22, 0, -22, 0] });
+  const donus = t.interpolate({ inputRange: [0, 1], outputRange: ['0deg', buyuk ? '540deg' : '400deg'] });
+  const op = t.interpolate({ inputRange: [0, 0.06, 0.85, 1], outputRange: [0, 0.95, 0.95, 0] });
+  const g = buyuk ? 16 : 11;
+  const y = buyuk ? 10 : 7;
+  return (
+    <Animated.View
+      style={{
+        position: 'absolute',
+        left: x,
+        top: 0,
+        width: g,
+        height: y,
+        opacity: op,
+        backgroundColor: renk,
+        borderTopLeftRadius: y,
+        borderBottomRightRadius: y,
+        borderTopRightRadius: 1.5,
+        borderBottomLeftRadius: 1.5,
+        transform: [{ translateY: ty }, { translateX: tx }, { rotate: donus }],
+      }}
+    />
+  );
+}
+
+// ---------- kelebek ----------
+function Kelebek({ y, sure, bas, renk, EG, yon, hareket }) {
+  const v = useDongu(sure, hareket);
+  const kanat = useDongu(420, hareket);
+  const t = Animated.modulo(Animated.add(v, bas), 1);
+  const tx = t.interpolate({ inputRange: [0, 1], outputRange: yon > 0 ? [-30, EG + 30] : [EG + 30, -30] });
+  const ty = t.interpolate({ inputRange: [0, 0.2, 0.4, 0.6, 0.8, 1], outputRange: [0, -22, 6, -18, 10, 0] });
+  const cirp = kanat.interpolate({ inputRange: [0, 0.5, 1], outputRange: [1, 0.25, 1] });
+  return (
+    <Animated.View style={{ position: 'absolute', left: 0, top: y, width: 26, height: 22, transform: [{ translateX: tx }, { translateY: ty }, { scaleX: yon }] }}>
+      <Animated.View style={{ position: 'absolute', left: 0, top: 0, width: 26, height: 22, transform: [{ scaleX: cirp }] }}>
+        <View style={{ position: 'absolute', left: 0, top: 0, width: 12, height: 12, borderRadius: 6, backgroundColor: renk }} />
+        <View style={{ position: 'absolute', left: 14, top: 0, width: 12, height: 12, borderRadius: 6, backgroundColor: renk }} />
+        <View style={{ position: 'absolute', left: 2, top: 10, width: 9, height: 9, borderRadius: 5, backgroundColor: renk, opacity: 0.85 }} />
+        <View style={{ position: 'absolute', left: 15, top: 10, width: 9, height: 9, borderRadius: 5, backgroundColor: renk, opacity: 0.85 }} />
+        <View style={{ position: 'absolute', left: 3, top: 3, width: 4, height: 4, borderRadius: 2, backgroundColor: 'rgba(255,255,255,0.8)' }} />
+        <View style={{ position: 'absolute', left: 19, top: 3, width: 4, height: 4, borderRadius: 2, backgroundColor: 'rgba(255,255,255,0.8)' }} />
+      </Animated.View>
+      <View style={{ position: 'absolute', left: 11.5, top: 3, width: 3, height: 15, borderRadius: 2, backgroundColor: '#3b2a1e' }} />
+    </Animated.View>
+  );
+}
+
+function Sahne({ bolum = 0, EG, EY, gunesX, gunesY, gunesBoy = 58 }) {
+  const renk = RENKLER[bolum] || RENKLER[0];
+  const [hareket, setHareket] = useState(true);
+  useEffect(() => {
+    let canli = true;
+    AccessibilityInfo.isReduceMotionEnabled?.().then((a) => canli && setHareket(!a)).catch(() => {});
+    const d = AccessibilityInfo.addEventListener?.('reduceMotionChanged', (a) => setHareket(!a));
+    return () => {
+      canli = false;
+      d && d.remove && d.remove();
+    };
+  }, []);
+
+  // Durgun katman (tepeler, ağaçlar, çiçekler) yalnızca ölçü ya da bölüm değişince yeniden çizilir
+  const durgun = useMemo(() => {
+    const t1 = { cx: EG * 0.12, ust: EY * 0.755, cap: EG * 1.25 };
+    const t2 = { cx: EG * 0.92, ust: EY * 0.775, cap: EG * 1.15 };
+    const t3 = { cx: EG * 0.5, ust: EY * 0.875, cap: EG * 2.4 };
+    const agaclar = [
+      [t1, 0.07, 1.15],
+      [t1, 0.24, 0.85],
+      [t2, 0.74, 0.95],
+      [t2, 0.92, 1.2],
+    ];
+    const cicekler = [0.06, 0.17, 0.31, 0.45, 0.58, 0.7, 0.83, 0.95];
+    return (
+      <>
+        <Tepe {...t1} renk={renk.tepeArka} />
+        <Tepe {...t2} renk={renk.tepeArka2} />
+        {agaclar.map(([t, x, s], i) => (
+          <Agac key={i} x={EG * x} y={tepeY(t.cx, t.ust, t.cap, EG * x)} s={s * Math.min(1.4, EG / 390)} renk={renk} />
+        ))}
+        <Tepe {...t3} renk={renk.tepeOn} />
+        {cicekler.map((x, i) => (
+          <Cicek key={i} x={EG * x} y={tepeY(t3.cx, t3.ust, t3.cap, EG * x) + 14 + (i % 3) * 9} renk={renk.cicek[i % 3]} s={1 + (i % 2) * 0.25} />
+        ))}
+      </>
+    );
+  }, [bolum, EG, EY]);
+
+  return (
+    <View style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, overflow: 'hidden' }} {...GIZLI}>
+      <Gok renk={renk.gok} EY={EY} />
+      <Gunes x={gunesX ?? EG - 62} y={gunesY ?? EY * 0.085} boy={gunesBoy} renk={renk.gunes} kenar={renk.gunesKenar} hareket={hareket} />
+      <Bulut y={EY * 0.035} olcek={0.8} sure={70000} bas={0.15} EG={EG} saydam={0.95} hareket={hareket} />
+      <Bulut y={EY * 0.2} olcek={1.1} sure={95000} bas={0.6} EG={EG} saydam={0.9} hareket={hareket} />
+      <Bulut y={EY * 0.42} olcek={0.9} sure={82000} bas={0.35} EG={EG} saydam={0.85} hareket={hareket} />
+      <Bulut y={EY * 0.6} olcek={0.7} sure={60000} bas={0.85} EG={EG} saydam={0.8} hareket={hareket} />
+      {durgun}
+      {renk.parca.map((p, i) =>
+        p.tip === 'kelebek' ? (
+          <Kelebek key={i} y={EY * (0.66 + (i % 3) * 0.07)} sure={16000 + i * 3500} bas={(i * 0.37) % 1} renk={p.renk} EG={EG} yon={i % 2 ? -1 : 1} hareket={hareket} />
+        ) : (
+          <Yaprak key={i} x={EG * ((i * 0.23 + 0.08) % 1)} sure={11000 + i * 1700} bas={(i * 0.29) % 1} renk={p.renk} buyuk={p.buyuk} EY={EY} hareket={hareket} />
+        )
+      )}
+    </View>
+  );
+}
+
+export default React.memo(Sahne);

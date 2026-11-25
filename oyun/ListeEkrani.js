@@ -4,6 +4,7 @@ import { Animated, Image, Pressable, ScrollView, Text, View, useWindowDimensions
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SEVIYELER } from './seviyeler';
 import { MEYVELER, Yildiz, st } from './gorsel';
+import Sahne, { bolumNo } from './sahne';
 
 // Bölümler (ileride resimli haritada her biri ayrı bir bahçe olacak)
 const BOLUMLER = [
@@ -22,9 +23,7 @@ export default function ListeEkrani({ ilerleme, sec }) {
 
   return (
     <View style={[st.kok, { justifyContent: 'flex-start' }]}>
-      <View style={st.tepe} pointerEvents="none" importantForAccessibility="no-hide-descendants" accessibilityElementsHidden>
-        <View style={[st.tepe2, { left: -EG * 0.3, width: EG * 1.6, height: EG * 0.9, borderRadius: EG * 0.8, top: EY - EG * 0.32 }]} />
-      </View>
+      <Sahne bolum={bolumNo(siradaki)} EG={EG} EY={EY} gunesX={EG - 34} gunesY={ek.top + 20} gunesBoy={50} />
       <ScrollView contentContainerStyle={{ paddingTop: ek.top + 16, paddingBottom: ek.bottom + 40, alignItems: 'center' }} style={{ width: '100%' }}>
         <View style={{ flexDirection: 'row', marginBottom: 6 }} importantForAccessibility="no-hide-descendants" accessibilityElementsHidden>
           {MEYVELER.map((m) => (

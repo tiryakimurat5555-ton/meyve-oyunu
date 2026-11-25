@@ -50,6 +50,9 @@ Murat'ın meyve temalı 3'lü eşleştirme oyunu (Kasım 2026). Geçici ad "Meyv
 - `oyun/gorsel.js`: MEYVELER, TAM, özel parça görünümleri (Cizgiler, BombaHale, GokkusagiKure — kodla), efektler
   (Patlama, Isin, Dalga, GokkusagiIsinlari, Donusum, PuanYazisi, Ovgu), Kutu, GirisKart, Yildiz, ortak stiller st.
   Not: StyleSheet.absoluteFillObject bu RN sürümünde YOK; TAM kullan.
+- `oyun/sahne.js`: kodla canlı bahçe sahnesi (renk geçişli gök, yüzlü güneş, bulutlar, tepeler, ağaçlar, çiçekler; İlkbahar taç
+  yaprağı+kelebek, Yaz kelebek, Sonbahar düşen yaprak). bolumNo(seviyeNo). Hareketi azalt açıksa durgun. Tahta: ahşap çerçeve
+  (yst.cerceve/cerceveIc, köşelerde yaprak+çiçek), kareler yarı saydam açık renk. Resimli arka planlar gelince gök/tepe yerine resim.
 - `oyun/mantik.js`: saf mantık + özel parçalar (ozelOlusumlari, etkiAlani, birlesim, genislet, cozumAdimi).
   Testler: `bun araclar/mantik-testi.mjs`, `bun araclar/ozel-testi.mjs`, `bun araclar/engel-testi.mjs`, `bun araclar/seviye-testi.mjs` (bot;
   ARALIK=11-30, DENEME=200, TOHUM=n, SEVIYE='{...}'). Tarayıcıda engel denemesi: araclar/web-deneme/engel-dene.cjs (NO=20, VO=1).

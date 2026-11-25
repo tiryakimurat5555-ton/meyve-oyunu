@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { AccessibilityInfo, Animated, Easing, Image, PanResponder, Pressable, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as M from './mantik';
+import Sahne, { bolumNo } from './sahne';
 import { TANITIM, hedefTamam, yildizHesapla } from './seviyeler';
 import { cal, meyveSesi, titret } from './ses';
 import {
@@ -837,9 +838,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
 
   return (
     <View style={[st.kok, { paddingTop: ek.top + 4, paddingBottom: ek.bottom + 8, justifyContent: 'flex-start' }]}>
-      <View style={st.tepe} pointerEvents="none" importantForAccessibility="no-hide-descendants" accessibilityElementsHidden>
-        <View style={[st.tepe2, { left: -EG * 0.3, width: EG * 1.6, height: EG * 0.9, borderRadius: EG * 0.8, top: EY - EG * 0.32 }]} />
-      </View>
+      <Sahne bolum={bolumNo(seviye.no)} EG={EG} EY={EY} />
 
       <View style={yst.ustSatir}>
         <Pressable accessibilityRole="button" accessibilityLabel="Seviyelere dön" onPress={geri} hitSlop={10} style={({ pressed }) => [yst.geri, pressed && { opacity: 0.6 }]}>
@@ -857,14 +856,15 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
         <Kutu baslik="Puan" deger={puan} etiket={`Puan ${puan}`} />
       </View>
 
-      <Animated.View style={[st.cerceve, { width: TAHTA + 12, height: TAHTA + 12, transform: [{ translateX: sarsinti }] }]}>
-        <View style={{ width: TAHTA, height: TAHTA, overflow: 'hidden', borderRadius: 12 }} {...(vo ? {} : pan.panHandlers)}>
+      <Animated.View style={[yst.cerceve, { width: TAHTA + 18, height: TAHTA + 18, transform: [{ translateX: sarsinti }] }]}>
+        <View style={yst.cerceveIc}>
+        <View style={{ width: TAHTA, height: TAHTA, overflow: 'hidden', borderRadius: 12, backgroundColor: 'rgba(255,236,200,0.28)' }} {...(vo ? {} : pan.panHandlers)}>
           <View style={TAM} pointerEvents="none" importantForAccessibility="no-hide-descendants" accessibilityElementsHidden>
             {izgara.current.map((satir, r) =>
               satir.map((_, c) => (
                 <View
                   key={`z${r}-${c}`}
-                  style={{ position: 'absolute', left: c * H + 1.5, top: r * H + 1.5, width: H - 3, height: H - 3, borderRadius: H * 0.22, backgroundColor: (r + c) % 2 ? '#fff4df' : '#ffffff' }}
+                  style={{ position: 'absolute', left: c * H + 1.5, top: r * H + 1.5, width: H - 3, height: H - 3, borderRadius: H * 0.22, backgroundColor: (r + c) % 2 ? 'rgba(255,246,226,0.7)' : 'rgba(255,255,255,0.84)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.75)' }}
                 />
               ))
             )}
@@ -906,11 +906,13 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
               })
             )}
         </View>
+        </View>
+        <CerceveSusu />
         <Animated.View
           pointerEvents="none"
           importantForAccessibility="no-hide-descendants"
           accessibilityElementsHidden
-          style={[TAM, { borderRadius: 18, backgroundColor: '#ffffff', opacity: flas }]}
+          style={[TAM, { borderRadius: 22, backgroundColor: '#ffffff', opacity: flas }]}
         />
         {ovgu && <Ovgu key={ovgu.id} metin={ovgu.metin} bitti={() => setOvgu((o) => (o && o.id === ovgu.id ? null : o))} />}
       </Animated.View>
@@ -983,6 +985,58 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
 }
 
 // Hedef kutusu: toplanacak meyveler ve kalan sayılar ya da puan hedefi çubuğu
+// Tahta çerçevesinin süsleri: üstte parlak şerit, köşelerde yaprak ve çiçek (yalnızca görsel)
+function Yaprakcik({ x, y, aci, boy = 1, renk = '#5cb85c' }) {
+  return (
+    <View
+      style={{
+        position: 'absolute',
+        left: x,
+        top: y,
+        width: 30 * boy,
+        height: 16 * boy,
+        backgroundColor: renk,
+        borderTopLeftRadius: 16 * boy,
+        borderBottomRightRadius: 16 * boy,
+        borderTopRightRadius: 2,
+        borderBottomLeftRadius: 2,
+        transform: [{ rotate: `${aci}deg` }],
+      }}
+    >
+      <View style={{ position: 'absolute', left: 4 * boy, right: 4 * boy, top: 7.5 * boy, height: 1.5, backgroundColor: 'rgba(255,255,255,0.45)' }} />
+    </View>
+  );
+}
+function Cicekcik({ x, y, renk }) {
+  return (
+    <View style={{ position: 'absolute', left: x, top: y, width: 26, height: 26 }}>
+      {[0, 72, 144, 216, 288].map((a) => {
+        const r = ((a - 90) * Math.PI) / 180;
+        return <View key={a} style={{ position: 'absolute', left: 13 + Math.cos(r) * 6.5 - 6.5, top: 13 + Math.sin(r) * 6.5 - 6.5, width: 13, height: 13, borderRadius: 6.5, backgroundColor: renk, borderWidth: 1, borderColor: 'rgba(0,0,0,0.06)' }} />;
+      })}
+      <View style={{ position: 'absolute', left: 8.5, top: 8.5, width: 9, height: 9, borderRadius: 4.5, backgroundColor: '#ffcf33' }} />
+    </View>
+  );
+}
+function CerceveSusu() {
+  return (
+    <View style={[TAM, { overflow: 'visible' }]} pointerEvents="none" importantForAccessibility="no-hide-descendants" accessibilityElementsHidden>
+      <View style={{ position: 'absolute', left: 16, right: 16, top: 1.5, height: 3, borderRadius: 2, backgroundColor: 'rgba(255,255,255,0.55)' }} />
+      <View style={{ position: 'absolute', left: 16, right: 16, bottom: 1.5, height: 2, borderRadius: 2, backgroundColor: 'rgba(60,30,0,0.25)' }} />
+      {/* sol üst köşe */}
+      <Yaprakcik x={-14} y={-6} aci={-25} />
+      <Yaprakcik x={4} y={-16} aci={-70} boy={0.85} renk="#4aa847" />
+      <Cicekcik x={-9} y={-11} renk="#ff9cc6" />
+      {/* sağ üst köşe */}
+      <View style={{ position: 'absolute', right: 0, top: 0, width: 1, height: 1 }}>
+        <Yaprakcik x={-16} y={-6} aci={205} />
+        <Yaprakcik x={-32} y={-16} aci={250} boy={0.85} renk="#4aa847" />
+        <Cicekcik x={-17} y={-11} renk="#ffffff" />
+      </View>
+    </View>
+  );
+}
+
 function HedefKutusu({ seviye, toplanan, puan }) {
   const h = seviye.hedef;
   const etiket = 'Hedef: ' + kalanMetni(seviye, toplanan, puan);
@@ -1096,6 +1150,20 @@ function SonucYildizlari({ sayi }) {
 }
 
 const yst = {
+  // Ahşap tahta çerçevesi: koyu dış kenar + açık iç kenar; kareler yarı saydam, arkadaki bahçe hafifçe görünür
+  cerceve: {
+    padding: 5,
+    borderRadius: 22,
+    backgroundColor: '#c27a3a',
+    borderWidth: 1.5,
+    borderColor: '#9c5a24',
+    shadowColor: '#3b2a10',
+    shadowOpacity: 0.35,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 7,
+  },
+  cerceveIc: { flex: 1, padding: 2.5, borderRadius: 17, backgroundColor: '#f6d7a0', alignItems: 'center', justifyContent: 'center' },
   ustSatir: { width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 12, marginBottom: 4 },
   geri: { backgroundColor: 'rgba(255,255,255,0.85)', borderRadius: 18, paddingVertical: 7, paddingHorizontal: 12, minWidth: 96 },
   geriYazi: { fontSize: 15, fontWeight: '800', color: '#2b5876' },

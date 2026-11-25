@@ -76,6 +76,20 @@ class Carpim {
   }
 }
 
+class Mod {
+  constructor(a, m) {
+    this.a = a;
+    this.m = m;
+  }
+  __al() {
+    const x = deger(this.a);
+    return ((x % this.m) + this.m) % this.m;
+  }
+  interpolate(cfg) {
+    return new AraDeger(this, cfg);
+  }
+}
+
 class AnimDegerXY {
   constructor(v) {
     this.x = new AnimDeger(v.x);
@@ -128,6 +142,7 @@ const Animated = {
   ValueXY: AnimDegerXY,
   multiply: (a, b) => new Carpim(a, b),
   add: (a, b) => new Toplam(a, b),
+  modulo: (a, m) => new Mod(a, m),
   timing: (v, cfg) => anim(() => hedefAta(v, cfg.toValue)),
   spring: (v, cfg) => anim(() => hedefAta(v, cfg.toValue)),
   delay: () => anim(() => {}),
