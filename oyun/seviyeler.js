@@ -182,9 +182,21 @@ export const SEVIYELER = [
   { no: 158, hamle: 13, tur: 6, hedef: { sis: 10 }, yildiz: [2500, 3250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, kapilar: [{ giris: [5, 3], cikis: [0, 1] }, { giris: [5, 4], cikis: [0, 6] }], duzen: ['........', '.gg..gg.', '.gg..gg.', '........', '..g..g..', '........', '...xx...', '...xx...'] },
   { no: 159, hamle: 15, tur: 6, hedef: { topla: { 4: 20, 5: 20 } }, yildiz: [4250, 5500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, kapilar: [{ giris: [7, 0], cikis: [0, 3] }, { giris: [7, 7], cikis: [0, 4] }] },
   { no: 160, hamle: 30, tur: 6, hedef: { tohum: 2, mantar: 4, buz: 4 }, yildiz: [7000, 9250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, kapilar: [{ giris: [7, 1], cikis: [0, 6] }, { giris: [7, 6], cikis: [0, 2] }], duzen: ['........', '.t....t.', '........', 'm.bbbb.m', 'm......m', '........', '........', '........'] },
+  // ---- 17. bölüm: Gizli Bahçe (kafes ve anahtar: anahtar en alta inince bütün kafesler açılır) ----
+  { no: 161, hamle: 28, tur: 6, hedef: { kafes: 4 }, yildiz: [5000, 5750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '...a....', '........', '........', 'cc....cc', '........', '........', '........'], yeni: 'kafes' },
+  { no: 162, hamle: 26, tur: 6, hedef: { kafes: 6 }, yildiz: [5000, 5750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '...a....', '........', 'cc....cc', 'c......c', '........', '........', '........'] },
+  { no: 163, hamle: 36, tur: 6, hedef: { kafes: 6, topla: { 0: 15 } }, yildiz: [6500, 7500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '...a....', '........', '........', '........', '.cc..cc.', '..c..c..', '........'] },
+  { no: 164, hamle: 32, tur: 6, hedef: { kafes: 4, buz: 8 }, yildiz: [5750, 6750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '...a....', '.bbbbbb.', '.b....b.', '........', '.cc..cc.', '........', '........'] },
+  { no: 165, hamle: 24, tur: 6, hedef: { puan: 6000 }, yildiz: [7500, 8500], ozel: { cizgili: true, bomba: true, gokkusagi: true } },
+  { no: 166, hamle: 28, tur: 6, hedef: { kafes: 8 }, yildiz: [4750, 5250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['...aa...', '........', '........', 'ccc..ccc', '........', '.c....c.', '........', '........'] },
+  { no: 167, hamle: 40, tur: 6, hedef: { kafes: 6, kar: 8 }, yildiz: [7500, 9000], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '....a...', '........', '.cc..cc.', '..c..c..', '........', 'ssssssss', '........'] },
+  { no: 168, hamle: 30, tur: 6, hedef: { kafes: 8, tohum: 1 }, yildiz: [6000, 7250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '..a..t..', '........', '........', 'c......c', 'cc....cc', 'c......c', '........'] },
+  { no: 169, hamle: 18, tur: 6, hedef: { topla: { 1: 22, 4: 22 } }, yildiz: [4500, 5500], ozel: { cizgili: true, bomba: true, gokkusagi: true } },
+  { no: 170, hamle: 45, tur: 6, hedef: { kafes: 8, sis: 4, civciv: 2 }, yildiz: [8250, 9750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '.ya..ay.', '.gg..gg.', '........', 'cc....cc', 'cc....cc', '........', '........'] },
 ];
 
 export const TANITIM = {
+  kafes: { baslik: 'Yeni: Kafes ve anahtar', metin: 'Kafesli meyveler kilitli: eşleşme, özel meyve ya da çekiç onları açamaz. Altın anahtarı tohum gibi en alt sıraya indir; anahtar inince bütün kafesler açılır!' },
   kapi: { baslik: 'Yeni: Akıntı kapıları', metin: 'Göl kıyısında meyveler akıntıya kapılıyor! Numaralı kapı girişine düşen meyve, aynı numaralı çıkışın olduğu sütunun üstünden iner. Tohumlar da kapıdan geçer.' },
   civciv: { baslik: 'Yeni: Yumurta ve civciv', metin: 'Yuvadaki yumurtanın yanında iki kez eşleşme yap: önce çatlar, sonra içinden civciv çıkar. Civciv tohum gibi aşağı iner; en alt sıraya ulaşınca yuvaya uçar!' },
   mantar: { baslik: 'Yeni: Mantar', metin: 'Mantarlı meyve yer değiştiremez; yanında eşleşme yap, mantar temizlensin. Dikkat: mantarlar her 3 hamlede bir yanlarındaki meyveye çoğalır. Hepsini temizle!' },

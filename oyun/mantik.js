@@ -14,6 +14,9 @@ export const KASA = 20;
 export const FICI = 22;
 export const FICI_ODUL = 23;
 // Yumurta (Kuş Yuvası): kasa gibi (2 kat), kırılınca yerinde civciv çıkar. Civciv tohum gibi iner, en alta inince yuvaya uçar.
+// Kafes ve anahtar: engel 'kafes' meyveyi kilitler; eşleşme, özel parça ve çekiç kafesi açmaz, kafesli meyve de temizlenmez.
+// ANAHTAR tohum gibi iner; en alta inince tahtadaki bütün kafesler açılır (hedef.kafes). Düzende 'c' kafesli meyve, 'a' anahtar.
+export const ANAHTAR = 26;
 export const YUMURTA = 24;
 export const CIVCIV = 25;
 export const kasaMi = (v) => v === KASA || v === FICI || v === FICI_ODUL || v === YUMURTA;
@@ -460,7 +463,7 @@ export function genislet(t, oz, baslangic, korunan = []) {
 // (eşleşmeye komşu olanlar ve özel parça alanına girenler).
 export function cozumAdimi(t, oz, { hamle = null, ek = [], izinli = null, engel = null } = {}) {
   const gruplar = eslesmeleriBul(t);
-  const buzlu = (r, c) => engel && (ortuMu(engel[r][c]) || saatMi(engel[r][c]));
+  const buzlu = (r, c) => engel && (ortuMu(engel[r][c]) || saatMi(engel[r][c]) || engel[r][c] === 'kafes' || engel[r][c] === 'buk');
   // Yeni özel parça, zaten özel parça olan ya da buzlu bir hücreye konmaz; şeklin başka bir hücresi seçilir
   const olusan = [];
   for (const o of ozelOlusumlari(gruplar, hamle, izinli)) {
@@ -479,7 +482,7 @@ export function cozumAdimi(t, oz, { hamle = null, ek = [], izinli = null, engel 
   for (const [r, c] of silinecekler(gruplar))
     for (const [i, j] of [[r - 1, c], [r + 1, c], [r, c - 1], [r, c + 1]])
       if (i >= 0 && j >= 0 && i < SATIR && j < SUTUN && kasaMi(t[i][j])) vur.set(anahtar(i, j), [i, j]);
-  let hucreler = g.hucreler.filter(([r, c]) => !kasaMi(t[r][c]) && !inenMi(t[r][c]));
+  let hucreler = g.hucreler.filter(([r, c]) => !kasaMi(t[r][c]) && !inenMi(t[r][c]) && !(engel && engel[r][c] === 'kafes'));
   if (buzKomsuKirar && engel) {
     // Eşleşmeye komşu buzlar da kırılır (meyve yerinde kalır): buzlu hücre listeye eklenir
     const var_ = new Set(hucreler.map(([r, c]) => anahtar(r, c)));
@@ -544,12 +547,23 @@ export function adimUygula(t, oz, engel, adim, rnd = Math.random, zemin = null) 
       }
     }
   }
+  let anahtarGeldi = false;
   for (const [r, c] of adim.tohumlar || []) {
     if (t[r][c] === CIVCIV) sayac.civciv = (sayac.civciv || 0) + 1;
-    else sayac.tohum++;
+    else if (t[r][c] === ANAHTAR) {
+      sayac.anahtar = (sayac.anahtar || 0) + 1;
+      anahtarGeldi = true;
+    } else sayac.tohum++;
     t[r][c] = -1;
     oz[r][c] = null;
   }
+  if (anahtarGeldi)
+    for (let r = 0; r < SATIR; r++)
+      for (let c = 0; c < SUTUN; c++)
+        if (engel[r][c] === 'kafes') {
+          engel[r][c] = null;
+          sayac.kafes = (sayac.kafes || 0) + 1;
+        }
   for (const [r, c] of adim.hucreler) {
     if (engel[r][c] === 'buz') {
       engel[r][c] = null;
@@ -574,6 +588,10 @@ export function adimUygula(t, oz, engel, adim, rnd = Math.random, zemin = null) 
     if (saatMi(engel[r][c])) {
       engel[r][c] = null;
       sayac.saat = (sayac.saat || 0) + 1;
+    }
+    if (engel[r][c] === 'buk') {
+      engel[r][c] = null;
+      sayac.bukalemun = (sayac.bukalemun || 0) + 1;
     }
     if (renkli(t[r][c])) sayac.topla[t[r][c]] = (sayac.topla[t[r][c]] || 0) + 1;
     t[r][c] = -1;
@@ -627,7 +645,7 @@ export function adimUygula(t, oz, engel, adim, rnd = Math.random, zemin = null) 
 const ODUL_OZEL = ['satir', 'sutun', 'bomba'];
 
 // Seviye düzeninden (8 satırlık metin: '.' boş, 'b' buz, 'k' kasa, 'K' iki katlı kasa, 's' kar, 'S' iki katlı kar,
-// 't' tohum, 'v' sarmaşık, 'g' sis, 'x' delik, 'z' saatli meyve, 'm' mantar, 'y' yumurta (2 kat, içinden civciv), '1'-'6' çiçek (çilek, limon, üzüm, portakal, elma, erik), 'f' fıçı, 'F' ödüllü fıçı) başlangıç tahtası kurar. Dönüş: { t, oz, engel, zemin } — eşleşmesiz ve en az bir hamlesi olan.
+// 't' tohum, 'v' sarmaşık, 'g' sis, 'x' delik, 'z' saatli meyve, 'm' mantar, 'y' yumurta (2 kat, içinden civciv), 'c' kafesli meyve, 'a' anahtar, 'u' bukalemun, '1'-'6' çiçek (çilek, limon, üzüm, portakal, elma, erik), 'f' fıçı, 'F' ödüllü fıçı) başlangıç tahtası kurar. Dönüş: { t, oz, engel, zemin } — eşleşmesiz ve en az bir hamlesi olan.
 export function duzenliTahta(duzen, rnd = Math.random) {
   for (let d = 0; d < 300; d++) {
     const t = yeniTahta(rnd);
@@ -648,6 +666,9 @@ export function duzenliTahta(duzen, rnd = Math.random) {
           else if (h === 'v') engel[r][c] = 'sarmasik';
           else if (h === 'g') engel[r][c] = 'sis';
           else if (h === 'm') engel[r][c] = 'mantar';
+          else if (h === 'c') engel[r][c] = 'kafes';
+          else if (h === 'a') t[r][c] = ANAHTAR;
+          else if (h === 'u') engel[r][c] = 'buk';
           else if (h === 'x') t[r][c] = DELIK;
           else if (h === 'z') engel[r][c] = 'saat' + ((etkinSeviye && etkinSeviye.saat) || 10);
           else if (h === 'y') {
@@ -760,6 +781,11 @@ export function zincirCoz(t, oz, engel, zemin, { hamle = null, ek = [], izinli =
   };
 }
 
+// Bukalemun meyveler bir sonraki renge geçer
+export function bukalemunDegistir(t, engel) {
+  return t.map((s, r) => s.map((v, c) => (engel[r][c] === 'buk' && renkli(v) ? (v + 1) % etkinTur : v)));
+}
+
 // Taşıyıcı bant (Rüzgârlı Tepe): seviye.bant = [{ satir, yon: 1 (sağa) | -1 (sola) }]. Her hamleden sonra o satırdaki parçalar
 // (meyve, engeli ve özel hali ile) bir kare kayar; uçtan çıkan öbür uçtan girer. Zemin (kar, çiçek) yerinde kalır.
 export function bantKaydir(t, oz, engel, bantlar) {
@@ -786,11 +812,11 @@ export function bantKaydir(t, oz, engel, bantlar) {
 // Tohumların toplam derinliği (bot için: tohumu aşağı indiren hamle iyidir)
 // ---------------- Ortak kurallar (oyun, bot ve simülasyon aynı fonksiyonları kullanır) ----------------
 // İnen parçalar: en alta inince toplanır (tohum; ileride civciv ve anahtar)
-export const INEN = [TOHUM, CIVCIV];
-export const INEN_DUZEN = 't';
+export const INEN = [TOHUM, CIVCIV, ANAHTAR];
+export const INEN_DUZEN = 'ta';
 export const inenMi = (v) => INEN.includes(v);
-const INEN_SAYAC = ['tohum', 'civciv'];
-export const inenHedefMi = (hedef) => INEN_SAYAC.some((k) => hedef[k]);
+const INEN_SAYAC = ['tohum', 'civciv', 'anahtar'];
+export const inenHedefMi = (hedef) => INEN_SAYAC.some((k) => hedef[k]) || !!hedef.kafes;
 export const inenToplandi = (sayac) => INEN_SAYAC.some((k) => sayac[k]);
 export function inenDerinligi(t) {
   let d = 0;
@@ -800,7 +826,7 @@ export function inenDerinligi(t) {
 export const inenDegeri = (s, d0) => INEN_SAYAC.reduce((a, k) => a + (s.sayac[k] || 0) * 400, 0) + (inenDerinligi(s.t) - d0) * 60;
 
 // Bot: hamle sonucunun hedefe katkısı
-export const HEDEF_AGIRLIK = { buz: 150, kasa: 150, kar: 150, sarmasik: 170, fici: 200, sis: 160, cicek: 180, saat: 220, mantar: 180 };
+export const HEDEF_AGIRLIK = { buz: 150, kasa: 150, kar: 150, sarmasik: 170, fici: 200, sis: 160, cicek: 180, saat: 220, mantar: 180, kafes: 300, bukalemun: 200 };
 export function hamleDegeri(s, hedef, derin0 = 0) {
   if (hedef.puan) return s.puan;
   let d = s.puan / 100;
@@ -833,7 +859,7 @@ export function sayacEkle(hedef, ek) {
 }
 
 // Düzen harfi -> hedef anahtarı ve sayısı (düzen ile hedef tutarlı mı denetimi için)
-const DUZEN_HEDEF = { b: ['buz', 1], k: ['kasa', 1], K: ['kasa', 1], s: ['kar', 1], S: ['kar', 2], t: ['tohum', 1], v: ['sarmasik', 1], f: ['fici', 1], F: ['fici', 1], g: ['sis', 1], 1: ['cicek', 1], 2: ['cicek', 1], 3: ['cicek', 1], 4: ['cicek', 1], 5: ['cicek', 1], 6: ['cicek', 1], z: ['saat', 1], m: ['mantar', 1], y: ['civciv', 1] };
+const DUZEN_HEDEF = { b: ['buz', 1], k: ['kasa', 1], K: ['kasa', 1], s: ['kar', 1], S: ['kar', 2], t: ['tohum', 1], v: ['sarmasik', 1], f: ['fici', 1], F: ['fici', 1], g: ['sis', 1], 1: ['cicek', 1], 2: ['cicek', 1], 3: ['cicek', 1], 4: ['cicek', 1], 5: ['cicek', 1], 6: ['cicek', 1], z: ['saat', 1], m: ['mantar', 1], y: ['civciv', 1], c: ['kafes', 1], u: ['bukalemun', 1] };
 export const DUZEN_HEDEF_ANAHTAR = [...new Set(Object.values(DUZEN_HEDEF).map((x) => x[0]))];
 export function duzenSayilari(duzen) {
   const say = {};
@@ -865,7 +891,9 @@ export function baslangicToplanan(seviye, engel) {
 // Her hamleden sonra bir azalır; sıfıra inen saat olursa seviye kaybedilir. Düzende 'z' (başlangıç seviye.saat, yoksa 10).
 export const saatMi = (e) => typeof e === 'string' && e.startsWith('saat');
 export const saatDeger = (e) => Number(e.slice(4));
-export const serbestMi = (e) => e == null || saatMi(e);
+// Bukalemun (Bukalemun Bahçesi): engel 'buk'. Meyve takas edilir ve eşleşir; her hamleden sonra bir sonraki renge geçer
+// (çilek → limon → ... ). Temizlenince hedef.bukalemun sayılır. Düzende 'u'.
+export const serbestMi = (e) => e == null || saatMi(e) || e === 'buk';
 
 // Seviyeye özel ayarlar (ileride: kapılar)
 let etkinSeviye = null;
@@ -901,6 +929,15 @@ export function hamleSonrasiKurallar(durum, seviye, ctx, rnd = Math.random) {
       engel = y.engel;
       olaylar.push({ tip: 'mantarYay', hucre: y.hucre });
     }
+  }
+  // Bukalemun: renk değiştirir, oluşan eşleşmeler çözülür
+  if (h.bukalemun && engel.some((s) => s.includes('buk'))) {
+    t = bukalemunDegistir(t, engel);
+    const z = zincirCoz(t, oz, engel, zemin, { izinli: seviye.ozel, rnd });
+    ({ t, oz, engel, zemin } = z);
+    puan += z.puan;
+    sayacBirlestir(sayac, z.sayac);
+    olaylar.push({ tip: 'bukalemun' });
   }
   // Taşıyıcı bant: satırlar kayar, oluşan eşleşmeler çözülür
   if (seviye.bant && seviye.bant.length) {

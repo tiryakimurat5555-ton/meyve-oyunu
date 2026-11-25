@@ -322,6 +322,24 @@ const RENKLER = [
       { tip: 'kelebek', renk: '#2f9fe0' },
     ],
   },
+  // 16: Gizli Bahçe (kafes ve anahtar: lila gök, sarmaşıklı duvarların ardında mor çiçekler)
+  {
+    gok: ['#b9a7ef', '#f6efff'],
+    gunes: '#fff2a8',
+    gunesKenar: '#ffd36b',
+    tepeArka: ['#8fbf8a', '#7aab76'],
+    tepeArka2: ['#a0c99a', '#88b583'],
+    tepeOn: ['#c4ddb4', '#adcf9c'],
+    tac: ['#6a9e5c', '#57884b', '#84b676'],
+    nokta: ['#c9a7ff', '#ffd23f', '#ffffff'],
+    cicek: ['#c9a7ff', '#ff9cd0', '#ffffff'],
+    parca: [
+      { tip: 'yaprak', renk: '#c9a7ff' },
+      { tip: 'yaprak', renk: '#ff9cd0' },
+      { tip: 'kelebek', renk: '#ffd23f' },
+      { tip: 'kelebek', renk: '#c9a7ff' },
+    ],
+  },
 ];
 export const geceMi = (bolum) => !!(RENKLER[bolum] && RENKLER[bolum].gece);
 

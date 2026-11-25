@@ -30,8 +30,8 @@ Murat'ın meyve temalı 3'lü eşleştirme oyunu (Kasım 2026). Geçici ad "Meyv
   25 Kasım Murat: SON BÖLÜM YOK. 100 seviye sınır değil; bölüm çeşitliliği olabildiğince artırılacak (her bölüm yeni bir mekanik/tema).
   Murat'ın onayladığı sıra (25 Kasım): 10 Kristal Bahçe (şekilli tahtalar) YAPILDI (91-100, bot %65-99); 11 Arı Bahçesi (101-110, %69-97) ve 12 Saat Kulesi (111-120, %70-98)
   13 Rüzgârlı Tepe (121-130, %78-99), 14 Mantar Ormanı (131-140, %76-100),
-  15 Kuş Yuvası (141-150, %67-95), 16 Göl Kıyısı (151-160, %71-100) YAPILDI;
-  sırada 17. Plan: 11 Arı Bahçesi (çiçek
+  15 Kuş Yuvası (141-150, %67-95), 16 Göl Kıyısı (151-160, %71-100), 17 Gizli Bahçe (161-170, %75-96)
+  YAPILDI; sırada 18. Plan: 11 Arı Bahçesi (çiçek
   tozu: üstünde eşleşme = tozlanır), 12 Saat Kulesi (geri sayımlı meyve, sıfırda kaybedilir), 13 Rüzgârlı Tepe (taşıyıcı bant),
   14 Mantar Ormanı (her 3 hamlede çoğalır), 15 Kuş Yuvası (yumurta 2 vuruş → civciv, tohum gibi iner), 16 Göl Kıyısı (akıntı kapıları),
   17 Kafes ve Anahtar, 18 Bukalemun Bahçesi (renk değiştiren meyve); sonra mevsim dönüşleri + yeni mekanikler.
@@ -65,6 +65,12 @@ Murat'ın meyve temalı 3'lü eşleştirme oyunu (Kasım 2026). Geçici ad "Meyv
   zincirin dibinde (batak hücre) toplanır. Kapılar DÖNGÜ kurmamalı (seviye-testi denetler). seviyeKur kapıları kurar (Oyun da çağırır).
   Oyun: kapıdan geçen parça çıkış sütununun üstünden düşer (ses 'kapi'). KapiIsareti (numaralı renkli şerit, meyvelerin üstünde).
   VO hücre etiketine ", 1. akıntı kapısı girişi, meyveler 7. sütuna akar" / "çıkışı".
+- KAFES / ANAHTAR (161-170, Gizli Bahçe): engel 'kafes' (Oyun.js p.kafes; düzen 'c'): takas yok, eşleşme/özel parça/çekiç açmaz, kafesli
+  meyve temizlenmez (cozumAdimi hücrelerden çıkarır). M.ANAHTAR=26 (düzen 'a') INEN listesinde; en alta inince bütün kafesler açılır
+  (sayac.kafes). DİKKAT: anahtarın sütununda altında kafes olmamalı (takılır; seviye-testi denetler). KafesKatman, Anahtar, KafesIkon.
+  VO "Kafesli çilek", "Anahtar"; çekiçte "Kafes çekiçle kırılmaz". Ses 'anahtar'. Sahne 16 lila.
+- BUKALEMUN (171-180): engel 'buk' (düzen 'u'), serbestMi (takas edilir); her çekiçsiz hamleden sonra bir sonraki renge geçer
+  (bukalemunDegistir), sonra zincirCoz. Temizlenince hedef.bukalemun.
 - DELİK (91-100, Kristal Bahçe): t[r][c] = M.DELIK (30), düzen 'x'. Sabit; eşleşmez, takas edilmez (hamleBul/tumHamleler kilitli),
   genislet atlar (özel parçalar deliği temizlemez), yercekimi sütunda deliksiz hücreler üzerinden: meyve deliğin üstünden atlar.
   karistir yalnız renkli meyveleri karıştırır (diğer her şey yerinde). Tohum sütunun en alt deliksiz satırında toplanır (M.enAltSatir).

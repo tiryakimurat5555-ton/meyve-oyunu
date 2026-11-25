@@ -55,6 +55,14 @@ for (const sv of DENENECEK) {
       }
     }
   }
+  // Anahtarın sütununda altında kafes olmamalı (kafesli meyve temizlenmez, anahtar takılı kalır)
+  if (sv.duzen)
+    for (let c = 0; c < 8; c++)
+      for (let r = 0; r < 8; r++)
+        if (sv.duzen[r][c] === 'a' && sv.duzen.slice(r + 1).some((s) => s[c] === 'c')) {
+          hata++;
+          console.log(`HATA: seviye ${sv.no} anahtarın (${c + 1}. sütun) altında kafes var`);
+        }
   // Akış zincirleri her deliksiz hücreyi bir kez içermeli (kapılar döngü kurmamalı)
   {
     const d = M.duzenliTahta(sv.duzen, rnd);

@@ -5,6 +5,7 @@ import { Animated, Easing, Image, StyleSheet, Text, View } from 'react-native';
 export const TOHUM_TUR = 21; // mantik.js TOHUM ile aynı
 export const YUMURTA_TUR = 24; // mantik.js YUMURTA
 export const CIVCIV_TUR = 25; // mantik.js CIVCIV
+export const ANAHTAR_TUR = 26; // mantik.js ANAHTAR
 export const FICI_TUR = 22; // mantik.js FICI
 export const FICI_ODUL_TUR = 23; // mantik.js FICI_ODUL
 
@@ -472,6 +473,45 @@ export function CivcivIkon({ boy = 26 }) {
   );
 }
 
+// ---------- Kafes ve anahtar ----------
+export function KafesKatman({ H }) {
+  const b = H * 0.96;
+  return (
+    <View pointerEvents="none" style={{ position: 'absolute', left: (H - b) / 2, top: (H - b) / 2, width: b, height: b, borderRadius: H * 0.16, borderWidth: 3.5, borderColor: '#6b7a88', overflow: 'hidden' }}>
+      {[0.22, 0.42, 0.62, 0.82].map((x) => (
+        <View key={x} style={{ position: 'absolute', top: 0, bottom: 0, left: b * x - 2, width: 3.5, backgroundColor: '#7f8e9c', borderLeftWidth: 1, borderColor: '#c4ced8' }} />
+      ))}
+      <View style={{ position: 'absolute', left: 0, right: 0, top: b * 0.48, height: 3.5, backgroundColor: '#7f8e9c' }} />
+      <View style={{ position: 'absolute', left: b * 0.36, top: b * 0.6, width: b * 0.28, height: b * 0.24, borderRadius: 4, backgroundColor: '#ffc61a', borderWidth: 1.5, borderColor: '#a87a00', alignItems: 'center' }}>
+        <View style={{ marginTop: b * 0.06, width: b * 0.06, height: b * 0.08, borderRadius: b, backgroundColor: '#6b4a00' }} />
+      </View>
+      <View style={{ position: 'absolute', left: b * 0.4, top: b * 0.5, width: b * 0.2, height: b * 0.16, borderTopLeftRadius: b, borderTopRightRadius: b, borderWidth: 2.5, borderBottomWidth: 0, borderColor: '#a87a00' }} />
+    </View>
+  );
+}
+export function KafesIkon({ boy = 26 }) {
+  return (
+    <View style={{ width: boy, height: boy }}>
+      <KafesKatman H={boy / 0.96} />
+    </View>
+  );
+}
+// Anahtar: parlak altın anahtar, halkası ve dişleri
+export function Anahtar({ H }) {
+  const b = H * 0.8;
+  return (
+    <View style={{ width: H, height: H, alignItems: 'center', justifyContent: 'center', transform: [{ rotate: '-35deg' }] }}>
+      <View style={{ position: 'absolute', left: H * 0.12, top: H * 0.3, width: b * 0.46, height: b * 0.46, borderRadius: b, backgroundColor: '#ffd23f', borderWidth: 3, borderColor: '#b07800', alignItems: 'center', justifyContent: 'center' }}>
+        <View style={{ width: b * 0.16, height: b * 0.16, borderRadius: b, backgroundColor: '#fff8d6', borderWidth: 2, borderColor: '#b07800' }} />
+      </View>
+      <View style={{ position: 'absolute', left: H * 0.46, top: H * 0.45, width: b * 0.56, height: b * 0.14, borderRadius: 3, backgroundColor: '#ffd23f', borderWidth: 2, borderColor: '#b07800' }} />
+      <View style={{ position: 'absolute', left: H * 0.74, top: H * 0.52, width: b * 0.1, height: b * 0.16, backgroundColor: '#ffd23f', borderWidth: 2, borderColor: '#b07800' }} />
+      <View style={{ position: 'absolute', left: H * 0.86, top: H * 0.52, width: b * 0.1, height: b * 0.12, backgroundColor: '#ffd23f', borderWidth: 2, borderColor: '#b07800' }} />
+      <View style={{ position: 'absolute', left: H * 0.18, top: H * 0.34, width: b * 0.12, height: b * 0.08, borderRadius: b, backgroundColor: 'rgba(255,255,255,0.8)' }} />
+    </View>
+  );
+}
+
 export function SarmasikKatman({ H }) {
   const b = H * 0.96;
   const dal = (aci, ust) => (
@@ -557,11 +597,11 @@ export function Kirilma({ e, H, bitti }) {
   const sis = e.tur === 'sis';
   const kar = e.tur === 'kar' || sis;
   const mantar = e.tur === 'mantar';
-  const civciv = e.tur === 'civciv' || e.tur === 'yumurta';
+  const civciv = e.tur === 'civciv' || e.tur === 'yumurta' || e.tur === 'kafes';
   const yaprak = e.tur === 'yaprak' || mantar;
   const buz = e.tur === 'buz' || kar;
   const adet = e.az ? 3 : 7;
-  const renkler = civciv ? (e.tur === 'yumurta' ? ['#fff7e6', '#e3d2a8', '#ffffff'] : ['#ffd93a', '#ffe680', '#ffc61a']) : mantar ? ['#e8402e', '#ffffff', '#c9a77a'] : yaprak ? ['#4fbf3a', '#2f8a28', '#6ad957'] : sis ? ['#d3d7ee', '#ffffff', '#b9bfdc'] : kar ? ['#ffffff', '#e4f3ff', '#ffffff'] : buz ? ['#e9f7ff', '#a7dcff', '#ffffff'] : ['#cf8f48', '#8f5a24', '#e0aa66'];
+  const renkler = civciv ? (e.tur === 'kafes' ? ['#7f8e9c', '#c4ced8', '#ffd23f'] : e.tur === 'yumurta' ? ['#fff7e6', '#e3d2a8', '#ffffff'] : ['#ffd93a', '#ffe680', '#ffc61a']) : mantar ? ['#e8402e', '#ffffff', '#c9a77a'] : yaprak ? ['#4fbf3a', '#2f8a28', '#6ad957'] : sis ? ['#d3d7ee', '#ffffff', '#b9bfdc'] : kar ? ['#ffffff', '#e4f3ff', '#ffffff'] : buz ? ['#e9f7ff', '#a7dcff', '#ffffff'] : ['#cf8f48', '#8f5a24', '#e0aa66'];
   return (
     <>
       {!e.az && (
@@ -953,6 +993,8 @@ export function Parca({ p, H }) {
         <Tohum H={H} />
       ) : p.tur === CIVCIV_TUR ? (
         <Civciv H={H} />
+      ) : p.tur === ANAHTAR_TUR ? (
+        <Anahtar H={H} />
       ) : p.kat ? null : p.ozel === 'gokkusagi' || !MEYVELER[p.tur] ? (
         <GokkusagiKure H={H} />
       ) : (
@@ -967,6 +1009,7 @@ export function Parca({ p, H }) {
       {p.buz && <BuzKatman H={H} />}
       {p.sarmasik && <SarmasikKatman H={H} />}
       {p.mantar && <MantarKatman H={H} />}
+      {p.kafes && <KafesKatman H={H} />}
       {p.sis && <SisKatman H={H} />}
       {p.saat ? <SaatRozet H={H} n={p.saat} /> : null}
     </Animated.View>
