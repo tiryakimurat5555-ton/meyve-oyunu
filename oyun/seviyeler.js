@@ -149,9 +149,21 @@ export const SEVIYELER = [
   { no: 128, hamle: 15, tur: 6, hedef: { saat: 3, kasa: 4 }, yildiz: [3250, 4000], ozel: { cizgili: true, bomba: true, gokkusagi: true }, bant: [{ satir: 3, yon: -1 }], saat: 11, duzen: ['........', '........', '.z....z.', '...z....', '........', '........', '..kkkk..', '........'] },
   { no: 129, hamle: 12, tur: 6, hedef: { topla: { 2: 22, 5: 22 } }, yildiz: [4000, 4750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, bant: [{ satir: 1, yon: 1 }, { satir: 6, yon: -1 }] },
   { no: 130, hamle: 24, tur: 6, hedef: { sarmasik: 6, cicek: 4, buz: 6 }, yildiz: [7500, 9000], ozel: { cizgili: true, bomba: true, gokkusagi: true }, bant: [{ satir: 3, yon: 1 }, { satir: 4, yon: -1 }], duzen: ['vv....vv', 'v......v', '........', '.bbbbbb.', '........', '..1..4..', '..2..5..', '........'] },
+  // ---- 14. bölüm: Mantar Ormanı (mantar: kesilse de kesilmese de her 3 hamlede bir yayılır) ----
+  { no: 131, hamle: 18, tur: 6, hedef: { mantar: 2 }, yildiz: [3750, 4000], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '........', '........', '...m....', '....m...', '........', '........', '........'], yeni: 'mantar' },
+  { no: 132, hamle: 23, tur: 6, hedef: { mantar: 12 }, yildiz: [5000, 6250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['mm....mm', 'm......m', '........', '........', '........', '........', 'm......m', 'mm....mm'] },
+  { no: 133, hamle: 12, tur: 6, hedef: { mantar: 6, topla: { 3: 14 } }, yildiz: [2750, 3500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '........', '..mmm...', '..mmm...', '........', '........', '........', '........'] },
+  { no: 134, hamle: 16, tur: 6, hedef: { mantar: 4, buz: 8 }, yildiz: [3500, 4250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', 'm......m', '..bbbb..', '..bbbb..', 'm......m', '........', '........', '........'] },
+  { no: 135, hamle: 24, tur: 6, hedef: { puan: 6000 }, yildiz: [7500, 8750], ozel: { cizgili: true, bomba: true, gokkusagi: true } },
+  { no: 136, hamle: 22, tur: 6, hedef: { mantar: 12 }, yildiz: [4750, 5750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['mm....mm', 'm......m', '...mm...', '........', '........', '...mm...', 'm......m', '........'] },
+  { no: 137, hamle: 23, tur: 6, hedef: { mantar: 4, kar: 10 }, yildiz: [5000, 6250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '.m....m.', '........', '.m....m.', '........', 'sssss...', '...sssss', '........'] },
+  { no: 138, hamle: 25, tur: 6, hedef: { mantar: 4, cicek: 6 }, yildiz: [6250, 7500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['m......m', '........', '..1..2..', '..3..4..', '..5..6..', '........', 'm......m', '........'] },
+  { no: 139, hamle: 16, tur: 6, hedef: { topla: { 0: 20, 1: 20 } }, yildiz: [4000, 5000], ozel: { cizgili: true, bomba: true, gokkusagi: true } },
+  { no: 140, hamle: 20, tur: 6, hedef: { mantar: 10, sis: 4, kasa: 4 }, yildiz: [4000, 4750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['mm....mm', 'mgg..ggm', '........', '...mm...', '...mm...', '..kkkk..', '........', '........'] },
 ];
 
 export const TANITIM = {
+  mantar: { baslik: 'Yeni: Mantar', metin: 'Mantarlı meyve yer değiştiremez; yanında eşleşme yap, mantar temizlensin. Dikkat: mantarlar her 3 hamlede bir yanlarındaki meyveye çoğalır. Hepsini temizle!' },
   bant: { baslik: 'Yeni: Rüzgâr', metin: 'Tepede rüzgâr esiyor! Mavi şeritli satırlar her hamleden sonra okların yönünde bir kare kayar; uçtan çıkan meyve öbür uçtan girer. Kayınca yeni eşleşmeler kendiliğinden patlar.' },
   saat: { baslik: 'Yeni: Saatli meyve', metin: 'Saatli meyvenin köşesindeki sayı her hamlede bir azalır. Sıfıra inmeden o meyveyi patlat; yoksa seviye biter! Sayı 3 ve altına inince saat kırmızı olur.' },
   cicek: { baslik: 'Yeni: Çiçekler', metin: 'Bazı karelerde renkli çiçekler var. Bir çiçeği tozlatmak için üstünde kendi rengindeki meyveyi eşleştir: kırmızı çiçeğe çilek, sarı çiçeğe limon. Çizgili, bomba ya da gökkuşağı patlaması ise her çiçeği tozlar!' },
@@ -195,4 +207,4 @@ export function hedefTamam(seviye, toplanan, puan) {
   }
   return Object.entries(h.topla || {}).every(([tur, n]) => (toplanan[tur] || 0) >= n);
 }
-export const KALAN_HEDEF = ['sarmasik'];
+export const KALAN_HEDEF = ['sarmasik', 'mantar'];

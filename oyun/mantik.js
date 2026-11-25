@@ -29,7 +29,10 @@ export function enAltSatir(t, c) {
 }
 // Sis (Gece Bahçesi): engel 'sis'. Buz gibi meyveyi örter (takas edilemez; eşleşmeye katılınca, yanında eşleşme olunca, özel parça
 // ya da çekiç değince dağılır, meyve kalır) ama üstelik altındaki meyveyi GİZLER: oyuncu (ve bot/ipucu) onu göremez.
-export const ortuMu = (e) => e === 'buz' || e === 'sarmasik' || e === 'sis';
+// Mantar (Mantar Ormanı): engel 'mantar', sarmaşık gibi (takas yok; eşleşme / komşu eşleşme / özel parça / çekiç keser, meyve kalır)
+// ama yayılma kuralı farklı: kesilse de kesilmese de her 3 hamlede bir yanındaki bir meyveye yayılır. Düzende 'm'.
+export const MANTAR_ARALIK = 3;
+export const ortuMu = (e) => e === 'buz' || e === 'sarmasik' || e === 'sis' || e === 'mantar';
 // Botun ve ipucunun gördüğü tahta: sisli hücrelerin türü bilinmez (birbirleriyle de eşleşmeyen benzersiz değerler)
 export function gorunurTahta(t, engel) {
   if (!engel) return t;
@@ -522,6 +525,11 @@ export function adimUygula(t, oz, engel, adim, rnd = Math.random, zemin = null) 
       sayac.sis++;
       continue;
     }
+    if (engel[r][c] === 'mantar') {
+      engel[r][c] = null;
+      sayac.mantar = (sayac.mantar || 0) + 1;
+      continue;
+    }
     if (saatMi(engel[r][c])) {
       engel[r][c] = null;
       sayac.saat = (sayac.saat || 0) + 1;
@@ -572,7 +580,7 @@ export function adimUygula(t, oz, engel, adim, rnd = Math.random, zemin = null) 
 const ODUL_OZEL = ['satir', 'sutun', 'bomba'];
 
 // Seviye düzeninden (8 satırlık metin: '.' boş, 'b' buz, 'k' kasa, 'K' iki katlı kasa, 's' kar, 'S' iki katlı kar,
-// 't' tohum, 'v' sarmaşık, 'g' sis, 'x' delik, 'z' saatli meyve, '1'-'6' çiçek (çilek, limon, üzüm, portakal, elma, erik), 'f' fıçı, 'F' ödüllü fıçı) başlangıç tahtası kurar. Dönüş: { t, oz, engel, zemin } — eşleşmesiz ve en az bir hamlesi olan.
+// 't' tohum, 'v' sarmaşık, 'g' sis, 'x' delik, 'z' saatli meyve, 'm' mantar, '1'-'6' çiçek (çilek, limon, üzüm, portakal, elma, erik), 'f' fıçı, 'F' ödüllü fıçı) başlangıç tahtası kurar. Dönüş: { t, oz, engel, zemin } — eşleşmesiz ve en az bir hamlesi olan.
 export function duzenliTahta(duzen, rnd = Math.random) {
   for (let d = 0; d < 300; d++) {
     const t = yeniTahta(rnd);
@@ -592,6 +600,7 @@ export function duzenliTahta(duzen, rnd = Math.random) {
           else if (h === 't') t[r][c] = TOHUM;
           else if (h === 'v') engel[r][c] = 'sarmasik';
           else if (h === 'g') engel[r][c] = 'sis';
+          else if (h === 'm') engel[r][c] = 'mantar';
           else if (h === 'x') t[r][c] = DELIK;
           else if (h === 'z') engel[r][c] = 'saat' + ((etkinSeviye && etkinSeviye.saat) || 10);
           else if (h === 'f' || h === 'F') {
@@ -614,11 +623,11 @@ export function sarmasikSay(engel) {
 
 // Sarmaşık yayılır: rastgele bir sarmaşığın yanındaki sade bir meyveyi (engelsiz, özel değil) sarar.
 // Dönüş: { engel, hucre } ya da yayılacak yer yoksa null. Yayıldıktan sonra tahtada hamle kalmazsa o yer seçilmez.
-export function sarmasikYay(t, oz, engel, rnd = Math.random) {
+export function sarmasikYay(t, oz, engel, rnd = Math.random, tip = 'sarmasik') {
   const adaylar = [];
   for (let r = 0; r < SATIR; r++)
     for (let c = 0; c < SUTUN; c++) {
-      if (engel[r][c] !== 'sarmasik') continue;
+      if (engel[r][c] !== tip) continue;
       for (const [i, j] of [[r - 1, c], [r + 1, c], [r, c - 1], [r, c + 1]])
         if (i >= 0 && j >= 0 && i < SATIR && j < SUTUN && renkli(t[i][j]) && engel[i][j] == null && !oz[i][j]) adaylar.push([i, j]);
     }
@@ -626,7 +635,7 @@ export function sarmasikYay(t, oz, engel, rnd = Math.random) {
     const k = Math.floor(rnd() * adaylar.length);
     const h = adaylar.splice(k, 1)[0];
     const y = kopya(engel);
-    y[h[0]][h[1]] = 'sarmasik';
+    y[h[0]][h[1]] = tip;
     if (hamleBul(t, oz, y.map((s) => s.map((e) => !serbestMi(e))))) return { engel: y, hucre: h };
   }
   return null;
@@ -741,7 +750,7 @@ export function inenDerinligi(t) {
 export const inenDegeri = (s, d0) => INEN_SAYAC.reduce((a, k) => a + (s.sayac[k] || 0) * 400, 0) + (inenDerinligi(s.t) - d0) * 60;
 
 // Bot: hamle sonucunun hedefe katkısı
-export const HEDEF_AGIRLIK = { buz: 150, kasa: 150, kar: 150, sarmasik: 170, fici: 200, sis: 160, cicek: 180, saat: 220 };
+export const HEDEF_AGIRLIK = { buz: 150, kasa: 150, kar: 150, sarmasik: 170, fici: 200, sis: 160, cicek: 180, saat: 220, mantar: 180 };
 export function hamleDegeri(s, hedef, derin0 = 0) {
   if (hedef.puan) return s.puan;
   let d = s.puan / 100;
@@ -773,7 +782,7 @@ export function sayacEkle(hedef, ek) {
 }
 
 // Düzen harfi -> hedef anahtarı ve sayısı (düzen ile hedef tutarlı mı denetimi için)
-const DUZEN_HEDEF = { b: ['buz', 1], k: ['kasa', 1], K: ['kasa', 1], s: ['kar', 1], S: ['kar', 2], t: ['tohum', 1], v: ['sarmasik', 1], f: ['fici', 1], F: ['fici', 1], g: ['sis', 1], 1: ['cicek', 1], 2: ['cicek', 1], 3: ['cicek', 1], 4: ['cicek', 1], 5: ['cicek', 1], 6: ['cicek', 1], z: ['saat', 1] };
+const DUZEN_HEDEF = { b: ['buz', 1], k: ['kasa', 1], K: ['kasa', 1], s: ['kar', 1], S: ['kar', 2], t: ['tohum', 1], v: ['sarmasik', 1], f: ['fici', 1], F: ['fici', 1], g: ['sis', 1], 1: ['cicek', 1], 2: ['cicek', 1], 3: ['cicek', 1], 4: ['cicek', 1], 5: ['cicek', 1], 6: ['cicek', 1], z: ['saat', 1], m: ['mantar', 1] };
 export const DUZEN_HEDEF_ANAHTAR = [...new Set(Object.values(DUZEN_HEDEF).map((x) => x[0]))];
 export function duzenSayilari(duzen) {
   const say = {};
@@ -787,7 +796,7 @@ export function duzenSayilari(duzen) {
 }
 
 // Tahtada kalanla ölçülen hedefler (yayılabildikleri için): sarmaşık
-const KALAN_ENGEL = { sarmasik: 'sarmasik' };
+const KALAN_ENGEL = { sarmasik: 'sarmasik', mantar: 'mantar' };
 export function kalanlariYaz(toplanan, engel) {
   for (const k in KALAN_ENGEL) {
     let n = 0;
@@ -827,6 +836,14 @@ export function hamleSonrasiKurallar(durum, seviye, ctx, rnd = Math.random) {
     if (y) {
       engel = y.engel;
       olaylar.push({ tip: 'sarmasikYay', hucre: y.hucre });
+    }
+  }
+  // Mantar: her MANTAR_ARALIK hamlede bir (kalan varsa) yayılır
+  if (h.mantar && ctx.yapilan % MANTAR_ARALIK === 0 && !ctx.hedefTamam(seviye, kalanlariYaz({ ...ctx.top }, engel), ctx.puan)) {
+    const y = sarmasikYay(t, oz, engel, rnd, 'mantar');
+    if (y) {
+      engel = y.engel;
+      olaylar.push({ tip: 'mantarYay', hucre: y.hucre });
     }
   }
   // Taşıyıcı bant: satırlar kayar, oluşan eşleşmeler çözülür

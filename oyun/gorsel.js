@@ -391,6 +391,35 @@ export function SisIkon({ boy = 26 }) {
   );
 }
 
+// Mantar (Mantar Ormanı): meyvenin köşelerinden çıkan kırmızı benekli sevimli mantarlar ve yosun çerçeve
+function MantarTek({ x, y, boy }) {
+  return (
+    <View style={{ position: 'absolute', left: x - boy / 2, top: y - boy / 2, width: boy, height: boy }}>
+      <View style={{ position: 'absolute', left: boy * 0.36, top: boy * 0.42, width: boy * 0.28, height: boy * 0.5, borderRadius: boy * 0.1, backgroundColor: '#fff4dc', borderWidth: 1, borderColor: '#c9a77a' }} />
+      <View style={{ position: 'absolute', left: 0, top: 0, width: boy, height: boy * 0.6, borderTopLeftRadius: boy, borderTopRightRadius: boy, borderBottomLeftRadius: boy * 0.15, borderBottomRightRadius: boy * 0.15, backgroundColor: '#e8402e', borderWidth: 1.5, borderColor: '#9c1f12' }} />
+      <View style={{ position: 'absolute', left: boy * 0.2, top: boy * 0.14, width: boy * 0.18, height: boy * 0.18, borderRadius: boy, backgroundColor: '#ffffff' }} />
+      <View style={{ position: 'absolute', left: boy * 0.58, top: boy * 0.22, width: boy * 0.14, height: boy * 0.14, borderRadius: boy, backgroundColor: '#ffffff' }} />
+    </View>
+  );
+}
+export function MantarKatman({ H }) {
+  const b = H * 0.96;
+  return (
+    <View pointerEvents="none" style={{ position: 'absolute', left: (H - b) / 2, top: (H - b) / 2, width: b, height: b, borderRadius: H * 0.2, borderWidth: 3, borderColor: 'rgba(110,150,60,0.85)' }}>
+      <MantarTek x={b * 0.2} y={b * 0.8} boy={H * 0.38} />
+      <MantarTek x={b * 0.82} y={b * 0.78} boy={H * 0.3} />
+      <MantarTek x={b * 0.8} y={b * 0.18} boy={H * 0.24} />
+    </View>
+  );
+}
+export function MantarIkon({ boy = 26 }) {
+  return (
+    <View style={{ width: boy, height: boy }}>
+      <MantarTek x={boy / 2} y={boy / 2} boy={boy} />
+    </View>
+  );
+}
+
 export function SarmasikKatman({ H }) {
   const b = H * 0.96;
   const dal = (aci, ust) => (
@@ -475,10 +504,11 @@ export function Kirilma({ e, H, bitti }) {
   const cy = e.r * H + H / 2;
   const sis = e.tur === 'sis';
   const kar = e.tur === 'kar' || sis;
-  const yaprak = e.tur === 'yaprak';
+  const mantar = e.tur === 'mantar';
+  const yaprak = e.tur === 'yaprak' || mantar;
   const buz = e.tur === 'buz' || kar;
   const adet = e.az ? 3 : 7;
-  const renkler = yaprak ? ['#4fbf3a', '#2f8a28', '#6ad957'] : sis ? ['#d3d7ee', '#ffffff', '#b9bfdc'] : kar ? ['#ffffff', '#e4f3ff', '#ffffff'] : buz ? ['#e9f7ff', '#a7dcff', '#ffffff'] : ['#cf8f48', '#8f5a24', '#e0aa66'];
+  const renkler = mantar ? ['#e8402e', '#ffffff', '#c9a77a'] : yaprak ? ['#4fbf3a', '#2f8a28', '#6ad957'] : sis ? ['#d3d7ee', '#ffffff', '#b9bfdc'] : kar ? ['#ffffff', '#e4f3ff', '#ffffff'] : buz ? ['#e9f7ff', '#a7dcff', '#ffffff'] : ['#cf8f48', '#8f5a24', '#e0aa66'];
   return (
     <>
       {!e.az && (
@@ -861,6 +891,7 @@ export function Parca({ p, H }) {
       {(p.ozel === 'satir' || p.ozel === 'sutun') && <Cizgiler key={p.ozel} H={H} yon={p.ozel} renk={MEYVELER[p.tur].koyu} />}
       {p.buz && <BuzKatman H={H} />}
       {p.sarmasik && <SarmasikKatman H={H} />}
+      {p.mantar && <MantarKatman H={H} />}
       {p.sis && <SisKatman H={H} />}
       {p.saat ? <SaatRozet H={H} n={p.saat} /> : null}
     </Animated.View>

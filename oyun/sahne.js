@@ -267,6 +267,25 @@ const RENKLER = [
       { tip: 'yaprak', renk: '#ffd23f' },
     ],
   },
+  // 13: Mantar Ormanı (puslu yeşil gök, koyu orman tepeleri, havada süzülen sporlar)
+  {
+    gok: ['#8cc9b5', '#eef8e6'],
+    gunes: '#fff6b0',
+    gunesKenar: '#e8d77a',
+    tepeArka: ['#4f8a52', '#427a46'],
+    tepeArka2: ['#5c9a5c', '#4c884e'],
+    tepeOn: ['#7fb36a', '#6ca35a'],
+    tac: ['#2f6e3a', '#255c30', '#3f8a4a'],
+    nokta: ['#e8402e', '#ffffff', '#ffd23f'],
+    cicek: ['#e8402e', '#ffffff', '#c9a7ff'],
+    parca: [
+      { tip: 'parilti', renk: '#fffbe0' },
+      { tip: 'parilti', renk: '#e6ffd6' },
+      { tip: 'parilti', renk: '#fffbe0' },
+      { tip: 'yaprak', renk: '#8a6a3a' },
+      { tip: 'yaprak', renk: '#5c9a5c' },
+    ],
+  },
 ];
 export const geceMi = (bolum) => !!(RENKLER[bolum] && RENKLER[bolum].gece);
 
