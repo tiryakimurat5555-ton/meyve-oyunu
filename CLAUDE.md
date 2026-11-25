@@ -23,6 +23,16 @@ Murat'ın meyve temalı 3'lü eşleştirme oyunu (Kasım 2026). Geçici ad "Meyv
   parça değince kırılır, meyve kalır. KASA = meyve değil (tur M.KASA), takas/eşleşme yok, yerçekimiyle düşer, yanında eşleşme
   ya da özel parça değince bir kat azalır; iki katlı (K) iki vuruş ister. Seviye düzeni 8 satır metin: '.', 'b', 'k', 'K'.
   11-30. seviyeler oyun/seviyeler.js'te; bölümler: 1-10 İlkbahar, 11-20 Yaz, 21-30 Sonbahar Bahçesi.
+- HEDEF: 10 bölüm × 10 = 100 seviye (Murat 25 Kasım onayladı). Plan: 4 Kış (kar), 5 Çiçek (tohum), 6 Tropik (sarmaşık: kesilmezse
+  yayılır), 7 Kiraz Çiçeği (dinlenme, iki katlı kar), 8 Bağ Bozumu (fıçı: 3 vuruş, bazısından özel meyve), 9 Gece (sis: gizler,
+  VoiceOver "sisli" der), 10 Kristal Bahçe (final, hepsi). Bot geçme: 31-50 ≥%75, 51-80 ≥%70, 81-100 ≥%65; bölüm başı tanıtım,
+  4-5 seviyede bir dinlenme. Parça parça: önce 4-5 (31-50) YAPILDI (25 Kasım), Murat deneyecek; sonra 6-10.
+- KAR (31-40): zemin katmanı (Oyun.js zemin ref, mantik zemin[r][c]=kat), parçayla düşmez. Üstündeki parça temizlenince / orada özel
+  parça oluşunca / üstündeki kasa kırılınca bir kat erir (karEriyen); buz kırılması eritmez; komşu eşleşme eritmez. Düzen 's'/'S'.
+  Çizim: KarZemin (altta) + KarUst (meyvenin üstünde alt kenar kar yığını + mavi kenar). VO: "Karlı çilek", "İki kat karlı ...".
+- TOHUM (41-50): M.TOHUM=21; eşleşmez, patlamaz, özel parça işlemez, takas edilebilir, düşer; en alt sıraya inince toplanır
+  (cozumAdimi.tohumlar, çiçek efekti). Çekiç tohuma işlemez. Düzen 't' (en alt sırada başlamaz). Bot (mantik.enIyiHamle ve
+  seviye-testi) tohum seviyelerinde 2 hamle ileri bakar (1 hamlelik bot tohumu alt sıranın üstünde takılı bırakıyordu).
   Bot hedefi: 1-10 ≥%88, 11-20 ≥%85, 21-30 ≥%75 geçme; yıldız eşikleri bottan (2★ ≈ %40'lık, 3★ ≈ %75'lik puan).
   Simülasyon mulberry32 üreteci kullanır (eski LCG tekrarlı dizilerle sonuçları çarpıtıyordu).
 - Zincir övgü yazıları İngilizce (Nice!, Great!, Amazing!, Fantastic!), şenlik yazısı 'Garden Party!' — Murat: global oyun. Ödüllü reklam sonraki aşama.

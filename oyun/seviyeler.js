@@ -2,7 +2,8 @@
 // (ilke: uzun soluklu oyun, ilk seviyelerde oyuncu zorlanmaz; bot ilk 10 seviyeyi en az ~%88 geçmeli).
 // meyve numaraları: 0 çilek, 1 limon, 2 üzüm, 3 portakal, 4 elma, 5 erik
 // hedef: { topla: { tur: adet }, buz: n, kasa: n } ya da { puan: n }; yildiz: [2 yıldız, 3 yıldız] puan eşikleri
-// duzen: 8 satır; '.' boş, 'b' buzlu meyve, 'k' kasa, 'K' iki katlı kasa (hedefteki buz/kasa sayısı düzendekiyle aynı olmalı)
+// duzen: 8 satır; '.' boş, 'b' buzlu meyve, 'k' kasa, 'K' iki katlı kasa, 's' kar, 'S' iki katlı kar, 't' tohum
+// (hedefteki buz/kasa/kar katı/tohum sayısı düzendekiyle aynı olmalı)
 // ozel: hangi özel parçalar oluşabilir; yeni: bu seviyede tanıtılan özel parça
 export const SEVIYELER = [
   { no: 1, hamle: 20, tur: 5, hedef: { topla: { 0: 10 } }, yildiz: [1500, 2500], ozel: {} },
@@ -39,9 +40,33 @@ export const SEVIYELER = [
   { no: 28, hamle: 26, tur: 6, hedef: { buz: 18, kasa: 10 }, yildiz: [5500, 6750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '.bbbbbb.', '.bbbbbb.', '.bbbbbb.', '........', '........', '..kkkk..', '.kkkkkk.'] },
   { no: 29, hamle: 28, tur: 6, hedef: { puan: 7000 }, yildiz: [8750, 9750], ozel: { cizgili: true, bomba: true, gokkusagi: true } },
   { no: 30, hamle: 34, tur: 6, hedef: { buz: 24, kasa: 12 }, yildiz: [6750, 8250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '.bbbbbb.', '.bbbbbb.', '.bbbbbb.', '.bbbbbb.', '........', '..kKKk..', 'kkkkkkkk'] },
+  // ---- 4. bölüm: Kış Bahçesi (kar) ve 5. bölüm: Çiçek Bahçesi (tohum) ----
+  { no: 31, hamle: 20, tur: 6, hedef: { kar: 8 }, yildiz: [4250, 5000], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '........', '........', '..ssss..', '..ssss..', '........', '........', '........'], yeni: 'kar' },
+  { no: 32, hamle: 24, tur: 6, hedef: { kar: 16 }, yildiz: [5000, 5750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '........', '..ssss..', '..ssss..', '..ssss..', '..ssss..', '........', '........'] },
+  { no: 33, hamle: 25, tur: 6, hedef: { kar: 12, topla: { 4: 20 } }, yildiz: [5500, 6750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '........', '........', '........', '........', 'ssssssss', '..ssss..', '........'] },
+  { no: 34, hamle: 25, tur: 6, hedef: { puan: 6000 }, yildiz: [7750, 8750], ozel: { cizgili: true, bomba: true, gokkusagi: true } },
+  { no: 35, hamle: 26, tur: 6, hedef: { kar: 24 }, yildiz: [5500, 6500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '........', '..ssss..', '.sSSSSs.', '.sSSSSs.', '........', '........', '........'], yeni: 'kar2' },
+  { no: 36, hamle: 32, tur: 6, hedef: { kar: 16, buz: 8 }, yildiz: [7000, 8250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', 'ssssssss', '........', '..bbbb..', '..bbbb..', '........', 'ssssssss', '........'] },
+  { no: 37, hamle: 43, tur: 6, hedef: { kar: 20 }, yildiz: [9500, 11500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['ss....ss', 's......s', '........', '...SS...', '...SS...', '........', 's......s', 'ss....ss'] },
+  { no: 38, hamle: 30, tur: 6, hedef: { kar: 16, kasa: 8 }, yildiz: [6000, 7250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '........', 'ssssssss', 'ssssssss', '........', '........', '..kkkk..', '.kk..kk.'] },
+  { no: 39, hamle: 24, tur: 6, hedef: { topla: { 0: 25, 2: 25 } }, yildiz: [5750, 6750], ozel: { cizgili: true, bomba: true, gokkusagi: true } },
+  { no: 40, hamle: 46, tur: 6, hedef: { kar: 40 }, yildiz: [9750, 11250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '........', '........', '........', 'ssSSSSss', 'ssSSSSss', 'ssssssss', 'ssssssss'] },
+  { no: 41, hamle: 20, tur: 6, hedef: { tohum: 1 }, yildiz: [4000, 4750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '........', '........', '...t....', '........', '........', '........', '........'], yeni: 'tohum' },
+  { no: 42, hamle: 24, tur: 6, hedef: { tohum: 2 }, yildiz: [5250, 6250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '........', '..t..t..', '........', '........', '........', '........', '........'] },
+  { no: 43, hamle: 28, tur: 6, hedef: { tohum: 2, topla: { 3: 20 } }, yildiz: [6250, 7250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '........', '.t....t.', '........', '........', '........', '........', '........'] },
+  { no: 44, hamle: 28, tur: 6, hedef: { puan: 6500 }, yildiz: [8250, 9500], ozel: { cizgili: true, bomba: true, gokkusagi: true } },
+  { no: 45, hamle: 34, tur: 6, hedef: { tohum: 2, kar: 12 }, yildiz: [6250, 8000], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '...tt...', '........', '........', '........', '........', 'ssssssss', '..ssss..'] },
+  { no: 46, hamle: 38, tur: 6, hedef: { tohum: 3, buz: 8 }, yildiz: [8000, 9750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', 't..t..t.', '........', 'bb....bb', 'bb....bb', '........', '........', '........'] },
+  { no: 47, hamle: 34, tur: 6, hedef: { tohum: 2, kasa: 8 }, yildiz: [6750, 8750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '..t..t..', '........', '........', '........', '........', '.kkkkkk.', '.k....k.'] },
+  { no: 48, hamle: 24, tur: 6, hedef: { topla: { 1: 28, 5: 28 } }, yildiz: [6000, 7000], ozel: { cizgili: true, bomba: true, gokkusagi: true } },
+  { no: 49, hamle: 47, tur: 6, hedef: { tohum: 4 }, yildiz: [9000, 10750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', 't.t..t.t', '........', '........', '........', '........', '........', '........'] },
+  { no: 50, hamle: 43, tur: 6, hedef: { tohum: 3, kar: 20 }, yildiz: [8250, 10250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '.t..t..t', '........', '........', '........', 'ssSSSSss', 'ssssssss', '........'] },
 ];
 
 export const TANITIM = {
+  kar: { baslik: 'Yeni: Kar', metin: 'Bazı karelerin zemini karla kaplı. Karın üstündeki meyveyi patlat, kar erisin. Bütün karı erit!' },
+  kar2: { baslik: 'Yeni: Kalın kar', metin: 'Mavi kenarlı kar iki kat: erimesi için üstünde iki kez meyve patlatman gerekir.' },
+  tohum: { baslik: 'Yeni: Tohum', metin: 'Tohumlar patlamaz. Altındaki meyveleri patlat, tohum aşağı insin. En alt sıraya ulaşınca çiçek açar!' },
   guc: { baslik: 'Yeni: Güçlendiriciler', metin: 'Tahtanın altındaki Çekiç tek bir parçayı kırar, Karıştır meyveleri karıştırır, +3 Hamle seviyene 3 hamle ekler. Hiçbiri hamle harcamaz.' },
   cizgili: { baslik: 'Yeni: Çizgili meyve', metin: '4 meyveyi yan yana getir. Çizgili meyve patlayınca bütün satırı ya da sütunu temizler.' },
   bomba: { baslik: 'Yeni: Bomba meyve', metin: '5 meyveyi L ya da T şeklinde birleştir. Bomba patlayınca çevresini temizler.' },
@@ -66,5 +91,7 @@ export function hedefTamam(seviye, toplanan, puan) {
   if (h.puan) return puan >= h.puan;
   if (h.buz && (toplanan.buz || 0) < h.buz) return false;
   if (h.kasa && (toplanan.kasa || 0) < h.kasa) return false;
+  if (h.kar && (toplanan.kar || 0) < h.kar) return false;
+  if (h.tohum && (toplanan.tohum || 0) < h.tohum) return false;
   return Object.entries(h.topla || {}).every(([tur, n]) => (toplanan[tur] || 0) >= n);
 }

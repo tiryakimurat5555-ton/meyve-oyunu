@@ -2,6 +2,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Image, StyleSheet, Text, View } from 'react-native';
 
+export const TOHUM_TUR = 21; // mantik.js TOHUM ile aynı
+
 export const MEYVELER = [
   { ad: 'cilek', koyu: '#a3122a', isim: 'Çilek', renk: '#ff3b4e', resim: require('../assets/meyve/cilek.png') },
   { ad: 'limon', koyu: '#b98a00', isim: 'Limon', renk: '#ffd21f', resim: require('../assets/meyve/limon.png') },
@@ -375,9 +377,10 @@ export function Kirilma({ e, H, bitti }) {
   }, []);
   const cx = e.c * H + H / 2;
   const cy = e.r * H + H / 2;
-  const buz = e.tur === 'buz';
+  const kar = e.tur === 'kar';
+  const buz = e.tur === 'buz' || kar;
   const adet = e.az ? 3 : 7;
-  const renkler = buz ? ['#e9f7ff', '#a7dcff', '#ffffff'] : ['#cf8f48', '#8f5a24', '#e0aa66'];
+  const renkler = kar ? ['#ffffff', '#e4f3ff', '#ffffff'] : buz ? ['#e9f7ff', '#a7dcff', '#ffffff'] : ['#cf8f48', '#8f5a24', '#e0aa66'];
   return (
     <>
       {!e.az && (
@@ -409,10 +412,10 @@ export function Kirilma({ e, H, bitti }) {
               top: cy - yuk / 2,
               width: gen,
               height: yuk,
-              borderRadius: buz ? 2 : 3,
+              borderRadius: kar ? H : buz ? 2 : 3,
               backgroundColor: renkler[i % 3],
               borderWidth: 1,
-              borderColor: buz ? 'rgba(90,160,210,0.8)' : '#6b4019',
+              borderColor: kar ? 'rgba(140,200,240,0.7)' : buz ? 'rgba(90,160,210,0.8)' : '#6b4019',
               opacity: t.interpolate({ inputRange: [0, 0.7, 1], outputRange: [1, 1, 0] }),
               transform: [
                 { translateX: t.interpolate({ inputRange: [0, 1], outputRange: [0, Math.cos(aci) * uz] }) },
@@ -428,7 +431,121 @@ export function Kirilma({ e, H, bitti }) {
   );
 }
 
+// Kar (zemin katmanı): hücrenin içinde beyaz kar yığını; iki katlıda daha kalın, mavimsi kenarlı ve tepeli.
+// Parçaların ALTINDA çizilir; meyvenin kenarlarından görünür.
+export function KarZemin({ H, kat, r, c }) {
+  const b = H - 3;
+  const iki = kat >= 2;
+  return (
+    <View pointerEvents="none" style={{ position: 'absolute', left: c * H + 1.5, top: r * H + 1.5, width: b, height: b, borderRadius: H * 0.22, overflow: 'hidden' }}>
+      <View style={{ ...TAM, backgroundColor: iki ? '#e4f3ff' : '#f7fcff', borderRadius: H * 0.22, borderWidth: iki ? 3.5 : 2, borderColor: iki ? '#9fd0f5' : '#cfe9fb' }} />
+      {/* alttaki kar tepecikleri */}
+      <View style={{ position: 'absolute', left: -b * 0.1, bottom: -b * 0.25, width: b * 0.65, height: b * 0.55, borderRadius: b, backgroundColor: '#ffffff' }} />
+      <View style={{ position: 'absolute', right: -b * 0.12, bottom: -b * 0.3, width: b * 0.7, height: b * 0.6, borderRadius: b, backgroundColor: iki ? '#f3faff' : '#ffffff' }} />
+      {iki && <View style={{ position: 'absolute', left: b * 0.2, top: -b * 0.18, width: b * 0.6, height: b * 0.36, borderRadius: b, backgroundColor: '#ffffff' }} />}
+      {/* parıltılar */}
+      {[
+        [0.14, 0.18],
+        [0.8, 0.22],
+        [0.5, 0.82],
+      ].map(([x, y], i) => (
+        <View key={i} style={{ position: 'absolute', left: b * x, top: b * y, width: b * 0.07, height: b * 0.07, borderRadius: b, backgroundColor: '#8fcaf3' }} />
+      ))}
+    </View>
+  );
+}
+
+// Karın meyvenin ÜSTÜNDE görünen kısmı: hücrenin alt kenarında kar yığını ve kenarda buzlu çerçeve.
+// Meyvenin yüzünü kapatmaz (yalnız alt %30); iki katlıda yığın daha yüksek ve mavimsi.
+export function KarUst({ H, kat, r, c }) {
+  const b = H - 3;
+  const iki = kat >= 2;
+  const y = b * (iki ? 0.34 : 0.26);
+  return (
+    <View pointerEvents="none" style={{ position: 'absolute', left: c * H + 1.5, top: r * H + 1.5, width: b, height: b, borderRadius: H * 0.22, overflow: 'hidden', borderWidth: iki ? 3 : 2, borderColor: iki ? 'rgba(120,190,240,0.95)' : 'rgba(170,215,245,0.95)' }}>
+      <View style={{ position: 'absolute', left: -b * 0.08, bottom: -y * 0.55, width: b * 0.62, height: y * 1.6, borderRadius: b, backgroundColor: '#ffffff', borderWidth: 1.5, borderColor: '#cfe6f7' }} />
+      <View style={{ position: 'absolute', right: -b * 0.1, bottom: -y * 0.6, width: b * 0.66, height: y * 1.5, borderRadius: b, backgroundColor: iki ? '#f1f8fe' : '#ffffff', borderWidth: 1.5, borderColor: '#cfe6f7' }} />
+      <View style={{ position: 'absolute', left: b * 0.2, bottom: -y * 0.3, width: b * 0.5, height: y * 1.1, borderRadius: b, backgroundColor: '#ffffff' }} />
+      <View style={{ position: 'absolute', left: b * 0.22, bottom: y * 0.35, width: b * 0.06, height: b * 0.06, borderRadius: b, backgroundColor: '#8fcaf3' }} />
+      <View style={{ position: 'absolute', right: b * 0.24, bottom: y * 0.25, width: b * 0.05, height: b * 0.05, borderRadius: b, backgroundColor: '#8fcaf3' }} />
+      {iki && <View style={{ position: 'absolute', left: b * 0.06, top: b * 0.06, width: b * 0.16, height: b * 0.16, borderRadius: b, backgroundColor: 'rgba(255,255,255,0.85)', borderWidth: 1, borderColor: '#cfe6f7' }} />}
+    </View>
+  );
+}
+
+// Tohum: tombul kahverengi tohum, tepesinde iki yapraklı filiz, sevimli yüz
+export function Tohum({ H }) {
+  const b = H * 0.72;
+  return (
+    <View style={{ width: H, height: H, alignItems: 'center', justifyContent: 'flex-end' }}>
+      {/* filiz */}
+      <View style={{ position: 'absolute', top: H * 0.06, left: H * 0.485, width: H * 0.04, height: H * 0.2, borderRadius: 2, backgroundColor: '#3f9a2b' }} />
+      <View style={{ position: 'absolute', top: H * 0.05, left: H * 0.28, width: H * 0.22, height: H * 0.12, backgroundColor: '#5fcf3c', borderTopLeftRadius: H * 0.12, borderBottomRightRadius: H * 0.12, borderTopRightRadius: 2, borderBottomLeftRadius: 2, transform: [{ rotate: '-20deg' }] }} />
+      <View style={{ position: 'absolute', top: H * 0.05, left: H * 0.5, width: H * 0.22, height: H * 0.12, backgroundColor: '#4dbb2e', borderTopRightRadius: H * 0.12, borderBottomLeftRadius: H * 0.12, borderTopLeftRadius: 2, borderBottomRightRadius: 2, transform: [{ rotate: '20deg' }] }} />
+      {/* tohum gövdesi */}
+      <View style={{ width: b, height: b * 0.95, marginBottom: H * 0.06, borderRadius: b * 0.5, borderTopLeftRadius: b * 0.62, borderTopRightRadius: b * 0.62, backgroundColor: '#b9773a', borderWidth: 2.5, borderColor: '#6e3f17', alignItems: 'center', overflow: 'hidden' }}>
+        <View style={{ position: 'absolute', left: b * 0.14, top: b * 0.1, width: b * 0.28, height: b * 0.2, borderRadius: b, backgroundColor: 'rgba(255,225,170,0.6)' }} />
+        <View style={{ position: 'absolute', left: b * 0.5 - 1, top: b * 0.04, width: 2, height: b * 0.3, backgroundColor: 'rgba(110,63,23,0.45)' }} />
+        <View style={{ flexDirection: 'row', marginTop: b * 0.42 }}>
+          <View style={{ width: b * 0.1, height: b * 0.13, borderRadius: b, backgroundColor: '#3b2210', marginHorizontal: b * 0.09 }} />
+          <View style={{ width: b * 0.1, height: b * 0.13, borderRadius: b, backgroundColor: '#3b2210', marginHorizontal: b * 0.09 }} />
+        </View>
+        <View style={{ width: b * 0.22, height: b * 0.1, borderBottomLeftRadius: b * 0.12, borderBottomRightRadius: b * 0.12, borderWidth: 2, borderTopWidth: 0, borderColor: '#3b2210', marginTop: b * 0.03 }} />
+      </View>
+    </View>
+  );
+}
+
+// Tohum en alt sıraya inince açan çiçek (büyüyüp yukarı süzülür ve kaybolur)
+export function CicekAcma({ e, H, bitti }) {
+  const t = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    Animated.timing(t, { toValue: 1, duration: 900, easing: Easing.out(Easing.quad), useNativeDriver: true }).start(() => bitti(e.id));
+  }, []);
+  const b = H * 1.2;
+  const yaprak = b * 0.34;
+  return (
+    <Animated.View
+      pointerEvents="none"
+      style={{
+        position: 'absolute',
+        left: e.c * H + H / 2 - b / 2,
+        top: e.r * H + H / 2 - b / 2,
+        width: b,
+        height: b,
+        opacity: t.interpolate({ inputRange: [0, 0.15, 0.75, 1], outputRange: [0, 1, 1, 0] }),
+        transform: [
+          { translateY: t.interpolate({ inputRange: [0, 1], outputRange: [0, -H * 0.9] }) },
+          { scale: t.interpolate({ inputRange: [0, 0.35, 1], outputRange: [0.2, 1.15, 1] }) },
+          { rotate: t.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '40deg'] }) },
+        ],
+      }}
+    >
+      {[0, 60, 120, 180, 240, 300].map((a) => {
+        const rad = (a * Math.PI) / 180;
+        return (
+          <View
+            key={a}
+            style={{ position: 'absolute', left: b / 2 + Math.cos(rad) * b * 0.24 - yaprak / 2, top: b / 2 + Math.sin(rad) * b * 0.24 - yaprak / 2, width: yaprak, height: yaprak, borderRadius: yaprak, backgroundColor: a % 120 ? '#ff9cc6' : '#ff7ab2', borderWidth: 1.5, borderColor: '#ffffff' }}
+          />
+        );
+      })}
+      <View style={{ position: 'absolute', left: b / 2 - b * 0.14, top: b / 2 - b * 0.14, width: b * 0.28, height: b * 0.28, borderRadius: b, backgroundColor: '#ffd23f', borderWidth: 2, borderColor: '#fff6c4' }} />
+    </Animated.View>
+  );
+}
+
 // Hedef kutusundaki küçük simgeler
+export function KarIkon({ boy = 26 }) {
+  return (
+    <View style={{ width: boy, height: boy, borderRadius: boy * 0.22, backgroundColor: '#f7fcff', borderWidth: 2, borderColor: '#9fd0f5', overflow: 'hidden', alignItems: 'center', justifyContent: 'center' }}>
+      <Text style={{ fontSize: boy * 0.62, color: '#5aaee8', lineHeight: boy * 0.8 }}>❄</Text>
+    </View>
+  );
+}
+export function TohumIkon({ boy = 26 }) {
+  return <Tohum H={boy * 1.05} />;
+}
 export function BuzIkon({ boy = 26 }) {
   return (
     <View style={{ width: boy, height: boy, borderRadius: boy * 0.22, backgroundColor: '#bfe6ff', borderWidth: 2, borderColor: '#ffffff', overflow: 'hidden' }}>
@@ -487,7 +604,9 @@ export function Parca({ p, H }) {
         <Kasa H={H} kat={p.kat} />
       ) : null}
       {p.ozel === 'bomba' && <BombaHale key="b" H={H} renk={MEYVELER[p.tur].renk} />}
-      {p.kat ? null : p.ozel === 'gokkusagi' || !MEYVELER[p.tur] ? (
+      {p.tur === TOHUM_TUR ? (
+        <Tohum H={H} />
+      ) : p.kat ? null : p.ozel === 'gokkusagi' || !MEYVELER[p.tur] ? (
         <GokkusagiKure H={H} />
       ) : (
         <Image

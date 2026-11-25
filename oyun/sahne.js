@@ -5,7 +5,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { AccessibilityInfo, Animated, Easing, View } from 'react-native';
 
-export const bolumNo = (seviyeNo) => (seviyeNo <= 10 ? 0 : seviyeNo <= 20 ? 1 : 2);
+export const bolumNo = (seviyeNo) => Math.min(4, Math.floor((seviyeNo - 1) / 10));
 
 const RENKLER = [
   // 0: İlkbahar
@@ -65,6 +65,48 @@ const RENKLER = [
       { tip: 'yaprak', renk: '#f08a2c', buyuk: true },
       { tip: 'yaprak', renk: '#b8431c', buyuk: true },
       { tip: 'yaprak', renk: '#f6c445', buyuk: true },
+    ],
+  },
+  // 3: Kış
+  {
+    gok: ['#8fc2e6', '#eef6fb'],
+    gunes: '#fff3b0',
+    gunesKenar: '#ffe07a',
+    tepeArka: ['#f4f9fd', '#dcebf6'],
+    tepeArka2: ['#f7fbfe', '#e2eff8'],
+    tepeOn: ['#ffffff', '#eaf4fb'],
+    tac: ['#eaf4fb', '#c9dfee', '#ffffff'],
+    nokta: ['#ffffff', '#b9d9f0', '#ffffff'],
+    cicek: ['#ffffff', '#cfe6f7', '#e8f3fb'],
+    parca: [
+      { tip: 'kar' },
+      { tip: 'kar' },
+      { tip: 'kar', buyuk: true },
+      { tip: 'kar' },
+      { tip: 'kar', buyuk: true },
+      { tip: 'kar' },
+      { tip: 'kar' },
+      { tip: 'kar', buyuk: true },
+    ],
+  },
+  // 4: Çiçek
+  {
+    gok: ['#6cc4ff', '#fde9f6'],
+    gunes: '#ffe14d',
+    gunesKenar: '#ffc928',
+    tepeArka: ['#9fdc7e', '#82c964'],
+    tepeArka2: ['#aee48c', '#8fd16f'],
+    tepeOn: ['#c4ee9c', '#a8de80'],
+    tac: ['#5fbf57', '#4aa847', '#86d672'],
+    nokta: ['#ff6fb5', '#ffd23f', '#b98cff'],
+    cicek: ['#ff6fb5', '#ffd23f', '#b98cff'],
+    parca: [
+      { tip: 'yaprak', renk: '#ff9cc6' },
+      { tip: 'yaprak', renk: '#ffd23f' },
+      { tip: 'yaprak', renk: '#c9a8ff' },
+      { tip: 'kelebek', renk: '#ff6fb5' },
+      { tip: 'kelebek', renk: '#4fc3ff' },
+      { tip: 'kelebek', renk: '#ffd23f' },
     ],
   },
 ];
@@ -257,6 +299,17 @@ function Yaprak({ x, sure, bas, renk, buyuk, EY, hareket }) {
   );
 }
 
+// ---------- kar tanesi ----------
+function KarTanesi({ x, sure, bas, buyuk, EY, hareket }) {
+  const v = useDongu(sure, hareket);
+  const t = Animated.modulo(Animated.add(v, bas), 1);
+  const ty = t.interpolate({ inputRange: [0, 1], outputRange: [-20, EY * 0.95] });
+  const tx = t.interpolate({ inputRange: [0, 0.25, 0.5, 0.75, 1], outputRange: [0, 14, 0, -14, 0] });
+  const op = t.interpolate({ inputRange: [0, 0.05, 0.9, 1], outputRange: [0, 0.95, 0.95, 0] });
+  const g = buyuk ? 9 : 6;
+  return <Animated.View style={{ position: 'absolute', left: x, top: 0, width: g, height: g, borderRadius: g, backgroundColor: '#ffffff', borderWidth: 1, borderColor: 'rgba(150,190,220,0.6)', opacity: op, transform: [{ translateY: ty }, { translateX: tx }] }} />;
+}
+
 // ---------- kelebek ----------
 function Kelebek({ y, sure, bas, renk, EG, yon, hareket }) {
   const v = useDongu(sure, hareket);
@@ -330,7 +383,9 @@ function Sahne({ bolum = 0, EG, EY, gunesX, gunesY, gunesBoy = 58 }) {
       <Bulut y={EY * 0.6} olcek={0.7} sure={60000} bas={0.85} EG={EG} saydam={0.8} hareket={hareket} />
       {durgun}
       {renk.parca.map((p, i) =>
-        p.tip === 'kelebek' ? (
+        p.tip === 'kar' ? (
+          <KarTanesi key={i} x={EG * ((i * 0.17 + 0.05) % 1)} sure={14000 + i * 1900} bas={(i * 0.31) % 1} buyuk={p.buyuk} EY={EY} hareket={hareket} />
+        ) : p.tip === 'kelebek' ? (
           <Kelebek key={i} y={EY * (0.66 + (i % 3) * 0.07)} sure={16000 + i * 3500} bas={(i * 0.37) % 1} renk={p.renk} EG={EG} yon={i % 2 ? -1 : 1} hareket={hareket} />
         ) : (
           <Yaprak key={i} x={EG * ((i * 0.23 + 0.08) % 1)} sure={11000 + i * 1700} bas={(i * 0.29) % 1} renk={p.renk} buyuk={p.buyuk} EY={EY} hareket={hareket} />

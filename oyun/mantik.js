@@ -9,6 +9,11 @@ export const TUR_SAYISI = 6;
 export const GOKKUSAGI = 9;
 // Kasa: meyve değil; eşleşmez, takas edilemez, yerçekimiyle düşer. Kat sayısı engel ızgarasında tutulur.
 export const KASA = 20;
+// Tohum (4. bölüm sonrası, Çiçek Bahçesi): meyve değil; eşleşmez, patlamaz, takas edilebilir, yerçekimiyle düşer.
+// En alt sıraya inince toplanır (çiçek açar). Özel parçalar ona işlemez.
+export const TOHUM = 21;
+// Kar (Kış Bahçesi): parçayla birlikte DÜŞMEYEN zemin katmanı, zemin[r][c] = kat sayısı (0, 1, 2).
+// Üstündeki parça temizlenince (eşleşme, özel parça, kırılan kasa) ya da orada özel parça oluşunca bir kat erir.
 // Buz yanındaki eşleşmeyle de kırılır (Murat 25 Kasım 2026'da onayladı; önceki kural yalnız eşleşmeye katılınca kırıyordu)
 let buzKomsuKirar = true;
 export function buzKuraliAyarla(komsu) {
@@ -380,7 +385,7 @@ export function cozumAdimi(t, oz, { hamle = null, ek = [], izinli = null, engel 
   for (const [r, c] of silinecekler(gruplar))
     for (const [i, j] of [[r - 1, c], [r + 1, c], [r, c - 1], [r, c + 1]])
       if (i >= 0 && j >= 0 && i < SATIR && j < SUTUN && t[i][j] === KASA) vur.set(anahtar(i, j), [i, j]);
-  let hucreler = g.hucreler.filter(([r, c]) => t[r][c] !== KASA);
+  let hucreler = g.hucreler.filter(([r, c]) => t[r][c] !== KASA && t[r][c] !== TOHUM);
   if (buzKomsuKirar && engel) {
     // Eşleşmeye komşu buzlar da kırılır (meyve yerinde kalır): buzlu hücre listeye eklenir
     const var_ = new Set(hucreler.map(([r, c]) => anahtar(r, c)));
@@ -391,16 +396,46 @@ export function cozumAdimi(t, oz, { hamle = null, ek = [], izinli = null, engel 
           hucreler.push([i, j]);
         }
   }
-  return { gruplar, olusan, hucreler, tetiklenen: g.tetiklenen, kasaVurus: [...vur.values()] };
+  // En alt sıraya inmiş tohumlar toplanır
+  const tohumlar = [];
+  for (let c = 0; c < SUTUN; c++) if (t[SATIR - 1][c] === TOHUM) tohumlar.push([SATIR - 1, c]);
+  return { gruplar, olusan, hucreler, tetiklenen: g.tetiklenen, kasaVurus: [...vur.values()], tohumlar };
 }
+
+// Bu adımda karı eriyen hücreler: temizlenen parçalar (buz kırılması hariç), oluşan özel parçaların yeri, kırılan kasalar.
+export function karEriyen(adim, engel, zemin) {
+  if (!zemin) return [];
+  const l = new Map();
+  const ekle = ([r, c]) => {
+    if (zemin[r][c] > 0) l.set(anahtar(r, c), [r, c]);
+  };
+  for (const h of adim.hucreler) if (!(engel && engel[h[0]][h[1]] === 'buz')) ekle(h);
+  for (const o of adim.olusan) ekle(o.hucre);
+  for (const h of adim.kasaVurus) if (!engel || (engel[h[0]][h[1]] || 1) <= 1) ekle(h);
+  return [...l.values()];
+}
+
+export const adimBos = (adim) => !adim.hucreler.length && !adim.olusan.length && !adim.kasaVurus.length && !(adim.tohumlar && adim.tohumlar.length);
 
 // Bir çözüm adımını ızgaralara uygular (bot ve testler için; oyun ekranı aynı kuralları animasyonla uygular).
 // Dönüş: { t, oz, engel, sayac: { topla:{tur:n}, buz, kasa } } — yerçekimi ve yeni meyveler dahil.
-export function adimUygula(t, oz, engel, adim, rnd = Math.random) {
+export function adimUygula(t, oz, engel, adim, rnd = Math.random, zemin = null) {
   t = kopya(t);
   oz = kopya(oz);
   engel = kopya(engel);
-  const sayac = { topla: {}, buz: 0, kasa: 0 };
+  const sayac = { topla: {}, buz: 0, kasa: 0, kar: 0, tohum: 0 };
+  if (zemin) {
+    zemin = kopya(zemin);
+    for (const [r, c] of karEriyen(adim, engel, zemin)) {
+      zemin[r][c]--;
+      sayac.kar++;
+    }
+  }
+  for (const [r, c] of adim.tohumlar || []) {
+    t[r][c] = -1;
+    oz[r][c] = null;
+    sayac.tohum++;
+  }
   for (const [r, c] of adim.hucreler) {
     if (engel[r][c] === 'buz') {
       engel[r][c] = null;
@@ -438,16 +473,17 @@ export function adimUygula(t, oz, engel, adim, rnd = Math.random) {
     yoz[n.yeni[0]][n.yeni[1]] = null;
     yen[n.yeni[0]][n.yeni[1]] = null;
   }
-  return { t: y.tahta, oz: yoz, engel: yen, sayac, yercekimi: y };
+  return { t: y.tahta, oz: yoz, engel: yen, sayac, yercekimi: y, zemin };
 }
 
-// Seviye düzeninden (8 satırlık metin: '.' boş, 'b' buz, 'k' kasa, 'K' iki katlı kasa) başlangıç tahtası kurar.
-// Dönüş: { t, oz, engel } — eşleşmesiz ve en az bir hamlesi olan.
+// Seviye düzeninden (8 satırlık metin: '.' boş, 'b' buz, 'k' kasa, 'K' iki katlı kasa, 's' kar, 'S' iki katlı kar,
+// 't' tohum) başlangıç tahtası kurar. Dönüş: { t, oz, engel, zemin } — eşleşmesiz ve en az bir hamlesi olan.
 export function duzenliTahta(duzen, rnd = Math.random) {
   for (let d = 0; d < 300; d++) {
     const t = yeniTahta(rnd);
     const oz = t.map((s) => s.map(() => null));
     const engel = t.map((s) => s.map(() => null));
+    const zemin = t.map((s) => s.map(() => 0));
     if (duzen)
       for (let r = 0; r < SATIR; r++)
         for (let c = 0; c < SUTUN; c++) {
@@ -456,10 +492,11 @@ export function duzenliTahta(duzen, rnd = Math.random) {
           else if (h === 'k' || h === 'K') {
             t[r][c] = KASA;
             engel[r][c] = h === 'K' ? 2 : 1;
-          }
+          } else if (h === 's' || h === 'S') zemin[r][c] = h === 'S' ? 2 : 1;
+          else if (h === 't') t[r][c] = TOHUM;
         }
     const kilit = engel.map((s) => s.map((e) => e != null));
-    if (!eslesmeleriBul(t).length && hamleBul(t, oz, kilit)) return { t, oz, engel };
+    if (!eslesmeleriBul(t).length && hamleBul(t, oz, kilit)) return { t, oz, engel, zemin };
   }
   throw new Error('Düzenli tahta kurulamadı');
 }
@@ -479,9 +516,9 @@ export function tumHamleler(t, oz, engel) {
 }
 
 // Bir hamlenin sonucunu (zincirler dahil) hesaplar: { t, oz, engel, puan, sayac }
-export function hamleSonucu(t, oz, engel, a, b, izinli, rnd = Math.random) {
+export function hamleSonucu(t, oz, engel, a, b, izinli, rnd = Math.random, zemin = null) {
   let puan = 0;
-  const sayac = { topla: {}, buz: 0, kasa: 0 };
+  const sayac = { topla: {}, buz: 0, kasa: 0, kar: 0, tohum: 0 };
   const bir = birlesim(t, oz, a, b);
   t = takasla(t, a, b);
   oz = takasla(oz, a, b);
@@ -496,38 +533,69 @@ export function hamleSonucu(t, oz, engel, a, b, izinli, rnd = Math.random) {
   for (;;) {
     const adim = cozumAdimi(t, oz, { hamle: zincir === 0 ? [a, b] : null, ek, izinli, engel });
     ek = [];
-    if (!adim.hucreler.length && !adim.olusan.length && !adim.kasaVurus.length) break;
+    if (adimBos(adim)) break;
     zincir++;
     if (zincir > 60) break;
     for (const g of adim.gruplar) puan += grupPuani(g.hucreler.length, zincir);
     const eslesen = new Set(silinecekler(adim.gruplar).map(([r, c]) => anahtar(r, c)));
     puan += adim.hucreler.filter(([r, c]) => !eslesen.has(anahtar(r, c))).length * OZEL_HUCRE_PUANI * Math.max(1, zincir);
-    const u = adimUygula(t, oz, engel, adim, rnd);
+    const u = adimUygula(t, oz, engel, adim, rnd, zemin);
     t = u.t;
     oz = u.oz;
     engel = u.engel;
+    zemin = u.zemin;
     for (const k in u.sayac.topla) sayac.topla[k] = (sayac.topla[k] || 0) + u.sayac.topla[k];
     sayac.buz += u.sayac.buz;
     sayac.kasa += u.sayac.kasa;
+    sayac.kar += u.sayac.kar;
+    sayac.tohum += u.sayac.tohum;
   }
-  return { t, oz, engel, puan, sayac };
+  return { t, oz, engel, puan, sayac, zemin };
 }
 
 // Hedefe en çok katkı yapan hamleyi seçer. hedef: seviye hedefi. Hamle yoksa null.
-export function enIyiHamle(t, oz, engel, hedef, izinli, enFazla = 30) {
+// Tohumların toplam derinliği (bot için: tohumu aşağı indiren hamle iyidir)
+function tohumDerinligi(t) {
+  let d = 0;
+  for (let r = 0; r < SATIR; r++) for (let c = 0; c < SUTUN; c++) if (t[r][c] === TOHUM) d += r;
+  return d;
+}
+
+export function enIyiHamle(t, oz, engel, hedef, izinli, enFazla = 30, zemin = null) {
   const hl = tumHamleler(t, oz, engel);
   if (!hl.length) return null;
   const adaylar = hl.length <= enFazla ? hl : hl.slice().sort(() => Math.random() - 0.5).slice(0, enFazla);
   let en = null;
+  const derin0 = hedef.tohum ? tohumDerinligi(t) : 0;
+  const adayDeger = [];
   for (const h of adaylar) {
-    const s = hamleSonucu(t, oz, engel, h[0], h[1], izinli);
+    const s = hamleSonucu(t, oz, engel, h[0], h[1], izinli, Math.random, zemin);
     let deger = s.puan / 100;
     if (hedef.topla) deger += Object.keys(hedef.topla).reduce((a, k) => a + (s.sayac.topla[k] || 0), 0) * 100;
     if (hedef.buz) deger += s.sayac.buz * 150;
     if (hedef.kasa) deger += s.sayac.kasa * 150;
+    if (hedef.kar) deger += s.sayac.kar * 150;
+    if (hedef.tohum) deger += s.sayac.tohum * 400 + (tohumDerinligi(s.t) - derin0) * 60;
     if (hedef.puan) deger = s.puan;
     deger += Math.random() * 0.01; // eşitlikte çeşitlilik
+    adayDeger.push({ deger, h, s });
     if (!en || deger > en.deger) en = { deger, h };
+  }
+  // Tohum seviyelerinde iki hamle ileri bak (tohumun altını hazırlayan hamleyi bulmak için); en iyi 4 aday, her birinde 12 devam
+  if (hedef.tohum && !(en && en.deger >= 400)) {
+    adayDeger.sort((a, b) => b.deger - a.deger);
+    let en2 = null;
+    for (const x of adayDeger.slice(0, 4)) {
+      const d1 = tohumDerinligi(x.s.t);
+      let iki = 0;
+      for (const h2 of tumHamleler(x.s.t, x.s.oz, x.s.engel).slice(0, 12)) {
+        const s2 = hamleSonucu(x.s.t, x.s.oz, x.s.engel, h2[0], h2[1], izinli, Math.random, x.s.zemin);
+        iki = Math.max(iki, s2.sayac.tohum * 400 + (tohumDerinligi(s2.t) - d1) * 60);
+      }
+      const top = x.deger + iki * 0.8;
+      if (!en2 || top > en2.top) en2 = { top, h: x.h };
+    }
+    if (en2) return en2.h;
   }
   return en.h;
 }

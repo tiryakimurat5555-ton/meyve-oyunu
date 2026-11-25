@@ -65,5 +65,55 @@ for (let i = 0; i < 30; i++) {
   dogru(x.t.flat().filter((v) => v === M.KASA).length === 12, 'düzen 12 kasa');
   dogru(!M.eslesmeleriBul(x.t).length, 'düzen eşleşmesiz');
 }
-console.log(hata ? `${hata} HATA` : 'ENGEL TESTLERİ GEÇTİ');
+
+// ---------------- Kar ve tohum (4. ve 5. bölüm) ----------------
+{
+  M.turSayisiAyarla(6);
+  // Kar: üstündeki meyve eşleşince bir kat erir; komşu eşleşme eritmez; iki katlı kar iki kez ister
+  const t = [];
+  for (let r = 0; r < 8; r++) t.push(Array.from({ length: 8 }, (_, c) => (r * 3 + c * 2 + (r % 2)) % 6));
+  t[7][0] = 0; t[7][1] = 0; t[7][2] = 0; // alt sırada çilek üçlüsü
+  const oz = t.map((s) => s.map(() => null));
+  const en = t.map((s) => s.map(() => null));
+  const zemin = t.map((s) => s.map(() => 0));
+  zemin[7][0] = 1; zemin[7][1] = 2; zemin[6][0] = 1; // 6,0 komşu: erimemeli
+  const ad = M.cozumAdimi(t, oz, { engel: en });
+  const u = M.adimUygula(t, oz, en, ad, Math.random, zemin);
+  dogru(u.zemin[7][0] === 0 && u.zemin[7][1] === 1 && u.zemin[6][0] === 1, 'kar erimesi: ' + JSON.stringify([u.zemin[7][0], u.zemin[7][1], u.zemin[6][0]]));
+  dogru(u.sayac.kar === 2, 'kar sayacı 2 olmalı: ' + u.sayac.kar);
+  dogru(zemin[7][0] === 1, 'zemin kopyalanmalı (asıl dizi değişmemeli)');
+}
+{
+  // Tohum: eşleşmez, özel parça alanında patlamaz, alt sıraya inince toplanır
+  const t = [];
+  for (let r = 0; r < 8; r++) t.push(Array.from({ length: 8 }, (_, c) => (r * 3 + c * 2 + (r % 2)) % 6));
+  t[5][3] = M.TOHUM;
+  t[6][3] = 1; t[6][2] = 1; t[6][4] = 1; // tohumun altında limon üçlüsü
+  t[7][3] = 2; t[7][2] = 4; t[7][4] = 5;
+  const oz = t.map((s) => s.map(() => null));
+  const en = t.map((s) => s.map(() => null));
+  let ad = M.cozumAdimi(t, oz, { engel: en });
+  dogru(!ad.hucreler.some(([r, c]) => r === 5 && c === 3), 'tohum silinmemeli');
+  let u = M.adimUygula(t, oz, en, ad, () => 0.3);
+  dogru(u.t[6][3] === M.TOHUM, 'tohum bir sıra düşmeli: ' + u.t[6][3]);
+  // Satır temizleyen özel parça tohuma işlemez
+  const t2 = M.kopya(u.t);
+  const oz2 = t2.map((s) => s.map(() => null));
+  ad = M.cozumAdimi(t2, oz2, { engel: en, ek: M.etkiAlani('satir', 6, 0, t2) });
+  dogru(!ad.hucreler.some(([r, c]) => r === 6 && c === 3), 'çizgili tohumu silmemeli');
+  // Alt sıradaki tohum toplanır
+  const t3 = M.kopya(u.t);
+  t3[7][3] = M.TOHUM; t3[6][3] = 0;
+  ad = M.cozumAdimi(t3, oz2, { engel: en });
+  dogru(ad.tohumlar.length === 1 && !M.adimBos(ad), 'alt sıradaki tohum toplanmalı');
+  u = M.adimUygula(t3, oz2, en, ad, () => 0.3);
+  dogru(u.sayac.tohum === 1 && u.t[7][3] !== M.TOHUM, 'tohum sayacı');
+  // Tohum takas edilebilir (hamle sayılır)
+  dogru(M.tumHamleler(t, oz, en).length > 0, 'hamle var');
+  // Düzen: s/S/t
+  const d = ['........', '...t....', '........', '........', '........', '..sSs...', '........', '........'];
+  const x = M.duzenliTahta(d);
+  dogru(x.t[1][3] === M.TOHUM && x.zemin[5][3] === 2 && x.zemin[5][2] === 1, 'düzen kar/tohum');
+}
+console.log(hata ? `${hata} HATA` : 'ENGEL TESTLERİ GEÇTİ (kar ve tohum dahil)');
 process.exit(hata ? 1 : 0);

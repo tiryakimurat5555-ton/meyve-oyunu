@@ -11,6 +11,8 @@ const BOLUMLER = [
   { ad: 'İlkbahar Bahçesi', ilk: 1, son: 10, renk: '#ff9fc4' },
   { ad: 'Yaz Bahçesi', ilk: 11, son: 20, renk: '#ffc93d' },
   { ad: 'Sonbahar Bahçesi', ilk: 21, son: 30, renk: '#ff8f4a' },
+  { ad: 'Kış Bahçesi', ilk: 31, son: 40, renk: '#6fb6e8' },
+  { ad: 'Çiçek Bahçesi', ilk: 41, son: 50, renk: '#e86fb0' },
 ];
 
 export default function ListeEkrani({ ilerleme, sec, ayarlarAc }) {
