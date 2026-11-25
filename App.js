@@ -9,12 +9,12 @@ import * as M from './oyun/mantik';
 import { cal, meyveSesi, sesleriHazirla, titret } from './oyun/ses';
 
 const MEYVELER = [
-  { ad: 'cilek', isim: 'Çilek', renk: '#ff3b4e', resim: require('./assets/meyve/cilek.png') },
-  { ad: 'limon', isim: 'Limon', renk: '#ffd21f', resim: require('./assets/meyve/limon.png') },
-  { ad: 'uzum', isim: 'Üzüm', renk: '#a24dff', resim: require('./assets/meyve/uzum.png') },
-  { ad: 'portakal', isim: 'Portakal', renk: '#ff8a1f', resim: require('./assets/meyve/portakal.png') },
-  { ad: 'elma', isim: 'Elma', renk: '#7ed321', resim: require('./assets/meyve/elma.png') },
-  { ad: 'erik', isim: 'Erik', renk: '#4263eb', resim: require('./assets/meyve/erik.png') },
+  { ad: 'cilek', koyu: '#a3122a', isim: 'Çilek', renk: '#ff3b4e', resim: require('./assets/meyve/cilek.png') },
+  { ad: 'limon', koyu: '#b98a00', isim: 'Limon', renk: '#ffd21f', resim: require('./assets/meyve/limon.png') },
+  { ad: 'uzum', koyu: '#5a1fa8', isim: 'Üzüm', renk: '#a24dff', resim: require('./assets/meyve/uzum.png') },
+  { ad: 'portakal', koyu: '#b8540a', isim: 'Portakal', renk: '#ff8a1f', resim: require('./assets/meyve/portakal.png') },
+  { ad: 'elma', koyu: '#3f7d0f', isim: 'Elma', renk: '#7ed321', resim: require('./assets/meyve/elma.png') },
+  { ad: 'erik', koyu: '#1c2f8a', isim: 'Erik', renk: '#4263eb', resim: require('./assets/meyve/erik.png') },
 ];
 
 // ÖNERİ (Murat onaylamadı): deneme oyununda 30 hamle
@@ -22,6 +22,9 @@ const BASLANGIC_HAMLE = 30;
 const OVGU = ['', '', 'Güzel!', 'Harika!', 'Muhteşem!', 'Efsane!'];
 const KAYIT_EN_IYI = 'meyve-en-iyi-v1';
 const IPUCU_SURE = 7000;
+
+// Tüm alanı kaplayan katman. StyleSheet.absoluteFillObject bu React Native sürümünde yok (telefonda boş geliyordu).
+const TAM = { position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 };
 
 let sonKimlik = 0;
 const bekle = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -252,12 +255,13 @@ function Oyun() {
 
       // Puan ve sesler
       let sesSay = 0;
+      const puanYazilari = [];
       for (const g of gruplar) {
         const kazanc = M.grupPuani(g.hucreler.length, zincir);
         toplam += kazanc;
         const orta = g.hucreler[Math.floor(g.hucreler.length / 2)];
         if (sesSay++ < 3) meyveSesi(MEYVELER[g.tur].ad, orta[1], M.SUTUN);
-        efektEkle({ tip: 'puan', x: orta[1], y: orta[0], metin: '+' + kazanc, renk: MEYVELER[g.tur].renk });
+        puanYazilari.push({ tip: 'puan', x: orta[1], y: orta[0], metin: '+' + kazanc, renk: MEYVELER[g.tur].renk });
       }
       if (zincir >= 2) {
         cal('zincir_' + Math.min(6, zincir - 1));
@@ -282,19 +286,21 @@ function Oyun() {
         animler.push(
           Animated.sequence([
             Animated.parallel([
-              Animated.spring(p.olcek, { toValue: 1.28, speed: 40, bounciness: 10, useNativeDriver: true }),
-              Animated.sequence([-0.6, 0.6, 0].map((v) => Animated.timing(p.don, { toValue: v, duration: 45, useNativeDriver: true }))),
+              Animated.timing(p.olcek, { toValue: 1.25, duration: 120, easing: Easing.out(Easing.back(3)), useNativeDriver: true }),
+              Animated.sequence([-0.6, 0.6, 0].map((v) => Animated.timing(p.don, { toValue: v, duration: 40, useNativeDriver: true }))),
             ]),
-            Animated.timing(p.olcek, { toValue: 0, duration: 120, easing: Easing.in(Easing.back(2)), useNativeDriver: true }),
+            Animated.timing(p.olcek, { toValue: 0, duration: 90, easing: Easing.in(Easing.quad), useNativeDriver: true }),
           ])
         );
       }
       const patlat = oynat(Animated.parallel(animler));
-      await bekle(150);
+      // Efekt, meyve küçülmeye başladığı anda çıkar (üstünde değil, yerinde patlar)
+      await bekle(115);
       for (const [r, c] of sil) {
         const p = parcaAt(r, c);
-        efektEkle({ tip: 'patlama', x: c, y: r, renk: MEYVELER[p.tur].renk });
+        efektEkle({ tip: 'patlama', x: c, y: r, renk: MEYVELER[p.tur].renk, koyu: MEYVELER[p.tur].koyu });
       }
+      for (const y of puanYazilari) efektEkle(y);
       await patlat;
       for (const [r, c] of sil) {
         parcalar.current.delete(izgara.current[r][c]);
@@ -526,7 +532,7 @@ function Oyun() {
           {...(vo ? {} : pan.panHandlers)}
         >
           {/* Zemin kareleri */}
-          <View style={StyleSheet.absoluteFill} pointerEvents="none" importantForAccessibility="no-hide-descendants" accessibilityElementsHidden>
+          <View style={TAM} pointerEvents="none" importantForAccessibility="no-hide-descendants" accessibilityElementsHidden>
             {izgara.current.map((satir, r) =>
               satir.map((_, c) => (
                 <View
@@ -548,14 +554,14 @@ function Oyun() {
           {secili && <SeciliHalka r={secili[0]} c={secili[1]} H={H} />}
 
           {/* Meyveler */}
-          <View style={StyleSheet.absoluteFill} pointerEvents="none" importantForAccessibility="no-hide-descendants" accessibilityElementsHidden>
+          <View style={TAM} pointerEvents="none" importantForAccessibility="no-hide-descendants" accessibilityElementsHidden>
             {liste.map((p) => (
               <Parca key={p.id} p={p} H={H} />
             ))}
           </View>
 
           {/* Efektler */}
-          <View style={StyleSheet.absoluteFill} pointerEvents="none" importantForAccessibility="no-hide-descendants" accessibilityElementsHidden>
+          <View style={TAM} pointerEvents="none" importantForAccessibility="no-hide-descendants" accessibilityElementsHidden>
             {efektler.map((e) =>
               e.tip === 'patlama' ? (
                 <Patlama key={e.id} e={e} H={H} bitti={efektKaldir} />
@@ -589,7 +595,7 @@ function Oyun() {
           pointerEvents="none"
           importantForAccessibility="no-hide-descendants"
           accessibilityElementsHidden
-          style={[StyleSheet.absoluteFill, { borderRadius: 18, backgroundColor: '#ffffff', opacity: flas }]}
+          style={[TAM, { borderRadius: 18, backgroundColor: '#ffffff', opacity: flas }]}
         />
         {ovgu && <Ovgu key={ovgu.id} metin={ovgu.metin} bitti={() => setOvgu(null)} />}
       </Animated.View>
@@ -699,45 +705,46 @@ function SeciliHalka({ r, c, H }) {
   );
 }
 
-// Patlama: meyve rengi damlalar (parlak noktalı), beyaz yıldız pırıltıları ve genişleyen ışık halkası
-const DAMLALAR = [0, 40, 80, 125, 165, 205, 250, 290, 330].map((aci, i) => ({ aci, uzak: 0.7 + ((i * 37) % 10) / 22, boy: 0.13 + ((i * 53) % 7) / 70 }));
-const PIRILTILAR = [20, 140, 260].map((aci, i) => ({ aci, uzak: 0.55 + i * 0.12 }));
-function Patlama({ e, H, bitti }) {
+// Patlama: beyaz ışık patlaması, genişleyen halka, koyu kenarlı meyve suyu damlaları (önce fırlar, sonra düşer), yıldız pırıltıları
+const DAMLALAR = [0, 36, 72, 108, 144, 180, 216, 252, 288, 324].map((aci, i) => ({
+  aci: aci + ((i * 17) % 20),
+  uzak: 0.85 + ((i * 37) % 10) / 16,
+  boy: 0.2 + ((i * 53) % 7) / 60,
+}));
+const PIRILTILAR = [15, 105, 195, 285].map((aci, i) => ({ aci, uzak: 0.5 + (i % 2) * 0.25 }));
+export function Patlama({ e, H, bitti }) {
   const t = useRef(new Animated.Value(0)).current;
   useEffect(() => {
-    Animated.timing(t, { toValue: 1, duration: 600, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start(() => bitti(e.id));
+    Animated.timing(t, { toValue: 1, duration: 650, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start(() => bitti(e.id));
   }, []);
   const cx = e.x * H + H / 2;
   const cy = e.y * H + H / 2;
-  const sondur = t.interpolate({ inputRange: [0, 0.55, 1], outputRange: [1, 1, 0] });
+  const sondur = t.interpolate({ inputRange: [0, 0.6, 1], outputRange: [1, 1, 0] });
+  const daire = (boy) => ({ position: 'absolute', left: cx - boy / 2, top: cy - boy / 2, width: boy, height: boy, borderRadius: boy / 2 });
   return (
     <>
+      {/* Beyaz ışık patlaması */}
       <Animated.View
-        style={{
-          position: 'absolute',
-          left: cx - H * 0.5,
-          top: cy - H * 0.5,
-          width: H,
-          height: H,
-          borderRadius: H / 2,
-          backgroundColor: e.renk,
-          opacity: t.interpolate({ inputRange: [0, 0.25, 1], outputRange: [0.45, 0.2, 0] }),
-          transform: [{ scale: t.interpolate({ inputRange: [0, 1], outputRange: [0.5, 1.3] }) }],
-        }}
+        style={[
+          daire(H * 1.05),
+          {
+            backgroundColor: '#ffffff',
+            opacity: t.interpolate({ inputRange: [0, 0.08, 0.35], outputRange: [0.95, 0.9, 0], extrapolate: 'clamp' }),
+            transform: [{ scale: t.interpolate({ inputRange: [0, 0.35], outputRange: [0.55, 1.25], extrapolate: 'clamp' }) }],
+          },
+        ]}
       />
+      {/* Halka */}
       <Animated.View
-        style={{
-          position: 'absolute',
-          left: cx - H * 0.5,
-          top: cy - H * 0.5,
-          width: H,
-          height: H,
-          borderRadius: H / 2,
-          borderWidth: 3,
-          borderColor: '#ffffff',
-          opacity: t.interpolate({ inputRange: [0, 1], outputRange: [0.95, 0] }),
-          transform: [{ scale: t.interpolate({ inputRange: [0, 1], outputRange: [0.3, 1.6] }) }],
-        }}
+        style={[
+          daire(H),
+          {
+            borderWidth: 4,
+            borderColor: '#ffffff',
+            opacity: t.interpolate({ inputRange: [0, 0.6], outputRange: [1, 0], extrapolate: 'clamp' }),
+            transform: [{ scale: t.interpolate({ inputRange: [0, 0.6], outputRange: [0.5, 2.0], extrapolate: 'clamp' }) }],
+          },
+        ]}
       />
       {DAMLALAR.map((d) => {
         const rad = (d.aci * Math.PI) / 180;
@@ -747,30 +754,29 @@ function Patlama({ e, H, bitti }) {
         return (
           <Animated.View
             key={d.aci}
-            style={{
-              position: 'absolute',
-              left: cx - b / 2,
-              top: cy - b / 2,
-              width: b,
-              height: b,
-              borderRadius: b / 2,
-              backgroundColor: e.renk,
-              opacity: sondur,
-              transform: [
-                { translateX: t.interpolate({ inputRange: [0, 1], outputRange: [0, ux] }) },
-                // Damlalar önce dışarı fırlar, sonra hafifçe aşağı düşer
-                { translateY: t.interpolate({ inputRange: [0, 0.6, 1], outputRange: [0, uy, uy + H * 0.35] }) },
-                { scale: t.interpolate({ inputRange: [0, 0.2, 1], outputRange: [0.4, 1.1, 0.5] }) },
-              ],
-            }}
+            style={[
+              daire(b),
+              {
+                backgroundColor: e.renk,
+                borderWidth: 1.5,
+                borderColor: e.koyu || 'rgba(0,0,0,0.25)',
+                opacity: sondur,
+                transform: [
+                  { translateX: t.interpolate({ inputRange: [0, 1], outputRange: [0, ux] }) },
+                  // Önce dışarı fırlar, sonra yerçekimiyle aşağı düşer
+                  { translateY: t.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, uy, uy + H * 0.55] }) },
+                  { scale: t.interpolate({ inputRange: [0, 0.15, 1], outputRange: [0.5, 1.15, 0.55] }) },
+                ],
+              },
+            ]}
           >
-            <View style={{ position: 'absolute', left: b * 0.2, top: b * 0.16, width: b * 0.32, height: b * 0.32, borderRadius: b, backgroundColor: 'rgba(255,255,255,0.85)' }} />
+            <View style={{ position: 'absolute', left: b * 0.18, top: b * 0.14, width: b * 0.34, height: b * 0.34, borderRadius: b, backgroundColor: 'rgba(255,255,255,0.9)' }} />
           </Animated.View>
         );
       })}
       {PIRILTILAR.map((p) => {
         const rad = (p.aci * Math.PI) / 180;
-        const b = H * 0.34;
+        const b = H * 0.5;
         return (
           <Animated.View
             key={'p' + p.aci}
@@ -782,18 +788,18 @@ function Patlama({ e, H, bitti }) {
               height: b,
               alignItems: 'center',
               justifyContent: 'center',
-              opacity: t.interpolate({ inputRange: [0, 0.15, 0.6, 1], outputRange: [0, 1, 1, 0] }),
+              opacity: t.interpolate({ inputRange: [0, 0.1, 0.55, 1], outputRange: [0, 1, 1, 0] }),
               transform: [
                 { translateX: t.interpolate({ inputRange: [0, 1], outputRange: [0, Math.cos(rad) * H * p.uzak] }) },
                 { translateY: t.interpolate({ inputRange: [0, 1], outputRange: [0, Math.sin(rad) * H * p.uzak] }) },
-                { rotate: t.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '90deg'] }) },
-                { scale: t.interpolate({ inputRange: [0, 0.3, 1], outputRange: [0.2, 1, 0.3] }) },
+                { rotate: t.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '120deg'] }) },
+                { scale: t.interpolate({ inputRange: [0, 0.25, 1], outputRange: [0.3, 1, 0.2] }) },
               ],
             }}
           >
-            <View style={{ position: 'absolute', width: b, height: b * 0.16, borderRadius: b, backgroundColor: '#ffffff' }} />
-            <View style={{ position: 'absolute', width: b * 0.16, height: b, borderRadius: b, backgroundColor: '#ffffff' }} />
-            <View style={{ position: 'absolute', width: b * 0.3, height: b * 0.3, borderRadius: b, backgroundColor: '#fffbe0' }} />
+            <View style={{ position: 'absolute', width: b, height: b * 0.14, borderRadius: b, backgroundColor: '#ffffff' }} />
+            <View style={{ position: 'absolute', width: b * 0.14, height: b, borderRadius: b, backgroundColor: '#ffffff' }} />
+            <View style={{ position: 'absolute', width: b * 0.34, height: b * 0.34, borderRadius: b, backgroundColor: '#fff6b0' }} />
           </Animated.View>
         );
       })}
@@ -909,7 +915,7 @@ function Kutu({ baslik, deger, etiket, vurgu, buyuk }) {
 
 const st = StyleSheet.create({
   kok: { flex: 1, backgroundColor: '#bfe7ff', alignItems: 'center', justifyContent: 'center' },
-  tepe: { ...StyleSheet.absoluteFillObject, overflow: 'hidden' },
+  tepe: { ...TAM, overflow: 'hidden' },
   tepe2: { position: 'absolute', backgroundColor: '#c9eeb0' },
   ust: { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'center', marginTop: 8, marginBottom: 14 },
   kutu: {
@@ -960,7 +966,7 @@ const st = StyleSheet.create({
     textShadowRadius: 4,
     textShadowOffset: { width: 0, height: 0 },
   },
-  ovguKap: { ...StyleSheet.absoluteFillObject, alignItems: 'center', justifyContent: 'center' },
+  ovguKap: { ...TAM, alignItems: 'center', justifyContent: 'center' },
   ovgu: {
     fontSize: 46,
     fontWeight: '900',
@@ -969,7 +975,7 @@ const st = StyleSheet.create({
     textShadowRadius: 2,
     textShadowOffset: { width: 3, height: 3 },
   },
-  perde: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(20,40,60,0.55)', alignItems: 'center', justifyContent: 'center' },
+  perde: { ...TAM, backgroundColor: 'rgba(20,40,60,0.55)', alignItems: 'center', justifyContent: 'center' },
   kart: {
     backgroundColor: '#ffffff',
     borderRadius: 26,

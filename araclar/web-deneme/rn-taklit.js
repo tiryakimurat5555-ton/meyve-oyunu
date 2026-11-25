@@ -118,6 +118,7 @@ function anim(fn) {
 }
 
 function hedefAta(v, to) {
+  if (typeof window.__dondur === 'number' && typeof to === 'number' && !(v instanceof AnimDegerXY)) return v.setValue(to * window.__dondur);
   if (v instanceof AnimDegerXY) v.setValue(to);
   else v.setValue(to);
 }
