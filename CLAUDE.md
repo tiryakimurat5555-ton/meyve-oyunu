@@ -9,8 +9,15 @@ Murat'ın meyve temalı 3'lü eşleştirme oyunu (Kasım 2026). Geçici ad "Meyv
   Şu anki resimler Higgsfield Seedream 5.5 ile üretilen "tombul parlak" yüzlü meyveler (assets/meyve, 256 px, şeffaf).
 - Renkler: çilek kırmızı, limon sarı, üzüm mor, portakal turuncu, elma yeşil, erik lacivert. Koyu zeminde üzüm/erik kaybolur:
   tahta zemini açık renk kalmalı.
-- Yapı (önerildi): seviyeli (hedef + hamle sınırı + 1-3 yıldız), özel parçalar, engeller, ödüllü reklam. Denge sayıları
-  Murat'a önerilir, onaylarsa uygulanır. Şu an tek deneme oyunu: 30 hamle (ÖNERİ, onaylanmadı), puan 30/60/100 × zincir.
+- Yapı: seviyeli (hedef + hamle sınırı + 1-3 yıldız). Denge sayıları Murat'a önerilir, onaylarsa uygulanır.
+  25 Kasım ONAYLANDI: özel parçalar (4'lü = çizgili: yatay eşleşme satırı, dikey sütunu temizler; L/T = bomba 3x3;
+  5 düz = gökkuşağı), birleşimler (çizgili+çizgili artı, çizgili+bomba 3 satır+3 sütun, bomba+bomba 5x5,
+  gökkuşağı+meyve o rengin hepsi, gökkuşağı+özel o renk özel parçaya dönüşüp patlar, gökkuşağı+gökkuşağı tahta),
+  puan 30/60/100 × zincir + özel parçanın temizlediği meyve başına 20 × zincir, seviye sonu şenliği (kalan hamleler
+  çizgiliye dönüşüp patlar, en çok 15; fazlası 100 puan), can sistemi yok, ilk 3 seviye 5 tür meyve,
+  ilk 10 seviye oyun/seviyeler.js'teki gibi. Özel parçalar seviye 4 (çizgili), 6 (bomba), 9 (gökkuşağı) itibarıyla açılır.
+  Bot simülasyonu (araclar/seviye-testi.mjs): 9. seviye (20 hamle, 5000 puan) zor, bot %33 geçiyor; Murat'a soruldu.
+- Engeller (buz vb.) ve ödüllü reklam sonraki aşama. 11-30. seviyeler önerilecek.
 - Ekranda VoiceOver'a özel uyarı yazıları olmasın.
 
 ## Yayın
@@ -21,15 +28,24 @@ Murat'ın meyve temalı 3'lü eşleştirme oyunu (Kasım 2026). Geçici ad "Meyv
 - Expo derlemesi (build) Murat'a sormadan başlatılmaz.
 
 ## Dosyalar
-- `App.js`: oyun ekranı. Parçalar kimlikli nesneler (poz ValueXY hücre biriminde, olcek); `izgara` ref'i kimlikleri tutar.
-  Görerek kipte tahtaya PanResponder (kaydır = takas, dokun = seç). VoiceOver kipinde 64 hücre Pressable
-  ("Çilek seçili, 3. satır 5. sütun"), seç + komşuya dokun = takas; sonuçlar announceForAccessibility ile.
-  Efektler: patlama parçacıkları, uçan puan, zincir övgüsü (Güzel/Harika/Muhteşem/Efsane), seçili halka, 7 sn sonra ipucu.
-- `oyun/mantik.js`: saf mantık (test: `bun araclar/mantik-testi.mjs`).
+- `App.js`: kök; ekran (liste/oyun) ve ilerleme kaydı (AsyncStorage 'meyve-ilerleme-v1': acik, yildiz, enIyi).
+- `oyun/ListeEkrani.js`: seviye listesi (Oyna düğmesi, 4 sütun yuvarlak düğmeler, yıldızlar, kilit).
+- `oyun/Oyun.js`: bir seviye. Parçalar kimlikli nesneler (tur, ozel, poz ValueXY hücre biriminde, olcek, ez, don, zip);
+  `izgara` ref'i kimlikleri tutar. Aşamalar: giris (hedef kartı + tanıtım) → oyun → senlik → sonuc (yıldızlar).
+  Görerek kipte PanResponder (kaydır = takas, dokun = seç). VoiceOver kipinde 64 hücre Pressable
+  ("Çilek bomba seçili, 3. satır 5. sütun"), seç + komşuya dokun = takas; sonuçlar announceForAccessibility ile.
+  Bilgisayar denemesi için globalThis.__denemeTahta (hazır tahta) ve __denemeOyun kancası (telefonda yok).
+- `oyun/gorsel.js`: MEYVELER, TAM, özel parça görünümleri (Cizgiler, BombaHale, GokkusagiKure — kodla), efektler
+  (Patlama, Isin, Dalga, GokkusagiIsinlari, Donusum, PuanYazisi, Ovgu), Kutu, GirisKart, Yildiz, ortak stiller st.
+  Not: StyleSheet.absoluteFillObject bu RN sürümünde YOK; TAM kullan.
+- `oyun/mantik.js`: saf mantık + özel parçalar (ozelOlusumlari, etkiAlani, birlesim, genislet, cozumAdimi).
+  Testler: `bun araclar/mantik-testi.mjs`, `bun araclar/ozel-testi.mjs`, `bun araclar/seviye-testi.mjs` (bot).
+- `oyun/seviyeler.js`: SEVIYELER, TANITIM, yildizHesapla, hedefTamam.
 - `oyun/ses.js`: expo-audio havuzu + expo-haptics. Meyve sesi sütuna göre sol/orta/sağ.
 - `araclar/sesleri-uret.py`: geçici kristal sesleri üretir (assets/ses + oyun/sesListesi.js). İleride ElevenLabs.
-- `araclar/web-deneme`: tarayıcı denemesi (animasyonlar anında biter):
-  `bash araclar/web-deneme/yap.sh /tmp/meyve-web && NODE_PATH=/opt/npm-tools/node_modules node araclar/web-deneme/dene.cjs /tmp/meyve-web /tmp/meyve-ekran`
+- `araclar/web-deneme`: tarayıcı denemesi (animasyonlar anında biter; window.__dondur=0..1 animasyonu o anda dondurur):
+  `bash araclar/web-deneme/yap.sh /tmp/meyve-web && NODE_PATH=/opt/npm-tools/node_modules node araclar/web-deneme/seviye-dene.cjs /tmp/meyve-web /tmp/meyve-ekran`
+- Murat ekran videosu gönderirse ffmpeg ile kare kare incele (Expo Go eski güncellemeyi açabilir: yeşil tepe var mı bak).
 
 ## Murat ile çalışma
 - Yalnızca iPhone'u var, kodu elle düzenleyemez; bütün dosyaları ben yazar, depoya gönderirim. "Şu satırı değiştir" deme.

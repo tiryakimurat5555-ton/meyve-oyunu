@@ -21,17 +21,17 @@ for (let i = 0; i < 300; i++) {
 
 // Bilinen eşleşme
 const t = [];
-for (let r = 0; r < M.SATIR; r++) t.push(Array.from({ length: M.SUTUN }, (_, c) => (r * 7 + c * 3) % 6));
-t[2][1] = 9; t[2][2] = 9; t[2][3] = 9; // yatay 3
-t[4][5] = 8; t[5][5] = 8; t[6][5] = 8; t[7][5] = 8; // dikey 4
+for (let r = 0; r < M.SATIR; r++) t.push(Array.from({ length: M.SUTUN }, (_, c) => (((r % 2) * 2 + c) % 4 === 0 ? 1 : (r + c) % 2 ? 2 : 3)));
+t[2][1] = 5; t[2][2] = 5; t[2][3] = 5; // yatay 3
+t[4][5] = 4; t[5][5] = 4; t[6][5] = 4; t[7][5] = 4; // dikey 4
 const g = M.eslesmeleriBul(t);
-dogru(g.some((x) => x.tur === 9 && x.yon === 'yatay' && x.hucreler.length === 3), 'yatay 3 bulunamadı');
-dogru(g.some((x) => x.tur === 8 && x.yon === 'dikey' && x.hucreler.length === 4), 'dikey 4 bulunamadı');
+dogru(g.some((x) => x.tur === 5 && x.yon === 'yatay' && x.hucreler.length === 3), 'yatay 3 bulunamadı');
+dogru(g.some((x) => x.tur === 4 && x.yon === 'dikey' && x.hucreler.length === 4), 'dikey 4 bulunamadı');
 
 // L şekli: ortak hücre bir kez silinmeli
 const L = M.kopya(t);
-L[0][0] = 7; L[0][1] = 7; L[0][2] = 7; L[1][0] = 7; L[2][0] = 7;
-const s = M.silinecekler(M.eslesmeleriBul(L).filter((x) => x.tur === 7));
+L[0][0] = 0; L[0][1] = 0; L[0][2] = 0; L[1][0] = 0; L[2][0] = 0;
+const s = M.silinecekler(M.eslesmeleriBul(L).filter((x) => x.tur === 0));
 dogru(s.length === 5, 'L şekli 5 hücre olmalı, ' + s.length);
 
 // Yerçekimi

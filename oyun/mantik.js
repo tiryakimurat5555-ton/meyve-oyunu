@@ -5,10 +5,20 @@
 export const SATIR = 8;
 export const SUTUN = 8;
 export const TUR_SAYISI = 6;
+// Gökkuşağı meyvesinin rengi yoktur; hiçbir meyveyle eşleşmez.
+export const GOKKUSAGI = 9;
+
+// Seviyede kullanılan tür sayısı (ilk seviyelerde 5: erik çıkmaz)
+let etkinTur = TUR_SAYISI;
+export function turSayisiAyarla(n) {
+  etkinTur = Math.max(3, Math.min(TUR_SAYISI, n));
+}
 
 export function rastgeleTur(rnd = Math.random) {
-  return Math.floor(rnd() * TUR_SAYISI);
+  return Math.floor(rnd() * etkinTur);
 }
+
+const renkli = (tur) => tur >= 0 && tur < TUR_SAYISI;
 
 export function kopya(t) {
   return t.map((s) => s.slice());
@@ -51,8 +61,8 @@ export function eslesmeleriBul(t) {
     while (c < SUTUN) {
       const tur = t[r][c];
       let son = c;
-      while (son + 1 < SUTUN && tur >= 0 && t[r][son + 1] === tur) son++;
-      if (tur >= 0 && son - c + 1 >= 3) {
+      while (son + 1 < SUTUN && renkli(tur) && t[r][son + 1] === tur) son++;
+      if (renkli(tur) && son - c + 1 >= 3) {
         const h = [];
         for (let k = c; k <= son; k++) h.push([r, k]);
         gruplar.push({ tur, hucreler: h, yon: 'yatay' });
@@ -65,8 +75,8 @@ export function eslesmeleriBul(t) {
     while (r < SATIR) {
       const tur = t[r][c];
       let son = r;
-      while (son + 1 < SATIR && tur >= 0 && t[son + 1][c] === tur) son++;
-      if (tur >= 0 && son - r + 1 >= 3) {
+      while (son + 1 < SATIR && renkli(tur) && t[son + 1][c] === tur) son++;
+      if (renkli(tur) && son - r + 1 >= 3) {
         const h = [];
         for (let k = r; k <= son; k++) h.push([k, c]);
         gruplar.push({ tur, hucreler: h, yon: 'dikey' });
@@ -106,7 +116,16 @@ export function takasla(t, a, b) {
 }
 
 // Eşleşme oluşturan ilk takası bulur (ipucu ve "hamle kaldı mı" denetimi için). Yoksa null.
-export function hamleBul(t) {
+export function hamleBul(t, oz) {
+  // Gökkuşağı her komşusuyla takas edilebilir; iki özel parça yan yanaysa birleşim de bir hamledir
+  for (let r = 0; r < SATIR; r++)
+    for (let c = 0; c < SUTUN; c++) {
+      if (t[r][c] === GOKKUSAGI) return [[r, c], c + 1 < SUTUN ? [r, c + 1] : [r, c - 1]];
+      if (oz && oz[r][c]) {
+        if (c + 1 < SUTUN && oz[r][c + 1]) return [[r, c], [r, c + 1]];
+        if (r + 1 < SATIR && oz[r + 1][c]) return [[r, c], [r + 1, c]];
+      }
+    }
   for (let r = 0; r < SATIR; r++) {
     for (let c = 0; c < SUTUN; c++) {
       const komsular = [
@@ -171,7 +190,172 @@ export function karistir(t, rnd = Math.random) {
 
 // Puan: 3'lü 30, 4'lü 60, 5 ve üzeri 100; zincir çarpanı (1. patlama x1, 2. x2 ...)
 // ÖNERİ: Murat henüz onaylamadı.
+export const OZEL_HUCRE_PUANI = 20;
+
 export function grupPuani(boy, zincir) {
   const taban = boy >= 5 ? 100 : boy === 4 ? 60 : 30;
   return taban * Math.max(1, zincir);
+}
+
+// ---------------- Özel parçalar ----------------
+// Özel parça türleri: 'satir' (satırı temizler), 'sutun' (sütunu temizler), 'bomba' (3x3), 'gokkusagi' (bir rengin hepsi).
+// izinli: { cizgili, bomba, gokkusagi } — seviyeye göre hangi özel parçaların oluşabileceği.
+
+const anahtar = (r, c) => r * SUTUN + c;
+
+// Eşleşme gruplarından hangi özel parçaların oluşacağını bulur.
+// hamle: takas edilen iki hücre (özel parça oraya konur); zincirde null.
+// Dönüş: [{ hucre:[r,c], ozel, tur, hucreler:[[r,c]...] }]
+export function ozelOlusumlari(gruplar, hamle, izinli) {
+  if (!izinli) return [];
+  // Aynı türden ve ortak hücresi olan grupları birleştir (L ve T şekilleri)
+  const ebeveyn = gruplar.map((_, i) => i);
+  const bul = (i) => (ebeveyn[i] === i ? i : (ebeveyn[i] = bul(ebeveyn[i])));
+  for (let i = 0; i < gruplar.length; i++)
+    for (let j = i + 1; j < gruplar.length; j++) {
+      if (gruplar[i].tur !== gruplar[j].tur) continue;
+      const a = new Set(gruplar[i].hucreler.map(([r, c]) => anahtar(r, c)));
+      if (gruplar[j].hucreler.some(([r, c]) => a.has(anahtar(r, c)))) ebeveyn[bul(i)] = bul(j);
+    }
+  const sekiller = new Map();
+  gruplar.forEach((g, i) => {
+    const k = bul(i);
+    if (!sekiller.has(k)) sekiller.set(k, []);
+    sekiller.get(k).push(g);
+  });
+  const sonuc = [];
+  for (const gs of sekiller.values()) {
+    const hucreMap = new Map();
+    for (const g of gs) for (const [r, c] of g.hucreler) hucreMap.set(anahtar(r, c), [r, c]);
+    const hucreler = [...hucreMap.values()];
+    const enUzun = gs.reduce((a, g) => (g.hucreler.length > a.hucreler.length ? g : a), gs[0]);
+    const yatay = gs.some((g) => g.yon === 'yatay');
+    const dikey = gs.some((g) => g.yon === 'dikey');
+    let ozel = null;
+    if (enUzun.hucreler.length >= 5 && izinli.gokkusagi) ozel = 'gokkusagi';
+    else if (yatay && dikey && hucreler.length >= 5 && izinli.bomba) ozel = 'bomba';
+    else if (enUzun.hucreler.length >= 4 && izinli.cizgili) ozel = enUzun.yon === 'yatay' ? 'satir' : 'sutun';
+    if (!ozel) continue;
+    let yer = null;
+    if (hamle) for (const h of hamle) if (hucreMap.has(anahtar(h[0], h[1]))) yer = h;
+    if (!yer && ozel === 'bomba') {
+      // L/T'nin köşesi: hem yatay hem dikey gruptaki hücre
+      const y = new Set(gs.filter((g) => g.yon === 'yatay').flatMap((g) => g.hucreler.map(([r, c]) => anahtar(r, c))));
+      yer = gs.filter((g) => g.yon === 'dikey').flatMap((g) => g.hucreler).find(([r, c]) => y.has(anahtar(r, c))) || null;
+    }
+    if (!yer) yer = enUzun.hucreler[Math.floor((enUzun.hucreler.length - 1) / 2)];
+    sonuc.push({ hucre: yer, ozel, tur: ozel === 'gokkusagi' ? GOKKUSAGI : enUzun.tur, hucreler });
+  }
+  return sonuc;
+}
+
+// Tahtadaki en çok bulunan renk (gökkuşağı bir patlamayla tetiklenince bunu temizler)
+export function enCokTur(t) {
+  const say = {};
+  for (const s of t) for (const v of s) if (renkli(v)) say[v] = (say[v] || 0) + 1;
+  let en = 0;
+  let tur = 0;
+  for (const k of Object.keys(say)) if (say[k] > en) [en, tur] = [say[k], +k];
+  return tur;
+}
+
+// Bir özel parçanın etki ettiği hücreler
+export function etkiAlani(ozel, r, c, t, hedefTur) {
+  const h = [];
+  if (ozel === 'satir') for (let k = 0; k < SUTUN; k++) h.push([r, k]);
+  else if (ozel === 'sutun') for (let k = 0; k < SATIR; k++) h.push([k, c]);
+  else if (ozel === 'bomba' || ozel === 'bomba5') {
+    const y = ozel === 'bomba5' ? 2 : 1;
+    for (let i = r - y; i <= r + y; i++) for (let j = c - y; j <= c + y; j++) if (i >= 0 && j >= 0 && i < SATIR && j < SUTUN) h.push([i, j]);
+  } else if (ozel === 'arti') {
+    for (let k = 0; k < SUTUN; k++) h.push([r, k]);
+    for (let k = 0; k < SATIR; k++) if (k !== r) h.push([k, c]);
+  } else if (ozel === 'arti3') {
+    for (let d = -1; d <= 1; d++) {
+      if (r + d >= 0 && r + d < SATIR) for (let k = 0; k < SUTUN; k++) h.push([r + d, k]);
+      if (c + d >= 0 && c + d < SUTUN) for (let k = 0; k < SATIR; k++) h.push([k, c + d]);
+    }
+  } else if (ozel === 'gokkusagi') {
+    const hedef = hedefTur == null ? enCokTur(t) : hedefTur;
+    for (let i = 0; i < SATIR; i++) for (let j = 0; j < SUTUN; j++) if (t[i][j] === hedef) h.push([i, j]);
+    h.push([r, c]);
+  } else if (ozel === 'hepsi') {
+    for (let i = 0; i < SATIR; i++) for (let j = 0; j < SUTUN; j++) h.push([i, j]);
+  }
+  return h;
+}
+
+// İki hücrenin takası özel bir birleşim mi? (Gökkuşağı her şeyle; diğer özel parçalar birbiriyle)
+// t: tür ızgarası, oz: özel ızgarası (null ya da tür adı). Dönüş null ya da
+// { merkez:[r,c], etki:'arti'|'arti3'|'bomba5'|'gokkusagi'|'hepsi', hedefTur, donusum:[{hucre, ozel}] }
+export function birlesim(t, oz, a, b) {
+  const oa = oz[a[0]][a[1]];
+  const ob = oz[b[0]][b[1]];
+  if (!oa && !ob) return null;
+  const cizgili = (o) => o === 'satir' || o === 'sutun';
+  if (oa === 'gokkusagi' || ob === 'gokkusagi') {
+    const [g, d] = oa === 'gokkusagi' ? [a, b] : [b, a];
+    const od = oz[d[0]][d[1]];
+    if (od === 'gokkusagi') return { merkez: d, etki: 'hepsi', donusum: [] };
+    const hedefTur = t[d[0]][d[1]];
+    const donusum = [];
+    if (od) {
+      // O renkteki bütün meyveler aynı özel parçaya dönüşür (çizgililer yön değiştirerek)
+      let k = 0;
+      for (let i = 0; i < SATIR; i++)
+        for (let j = 0; j < SUTUN; j++)
+          if (t[i][j] === hedefTur && !(i === g[0] && j === g[1])) donusum.push({ hucre: [i, j], ozel: cizgili(od) ? (k++ % 2 ? 'sutun' : 'satir') : od });
+    }
+    return { merkez: g, etki: 'gokkusagi', hedefTur, donusum };
+  }
+  if (!oa || !ob) return null; // özel + normal: eşleşme gerekir
+  if (cizgili(oa) && cizgili(ob)) return { merkez: b, etki: 'arti', donusum: [] };
+  if (oa === 'bomba' && ob === 'bomba') return { merkez: b, etki: 'bomba5', donusum: [] };
+  return { merkez: b, etki: 'arti3', donusum: [] };
+}
+
+// Başlangıç hücrelerinden yola çıkıp içindeki özel parçaları zincirleme tetikler.
+// korunan: bu adımda yeni oluşan özel parçaların hücreleri (silinmez, tetiklenmez).
+// Dönüş: { hucreler:[[r,c]...], tetiklenen:[{ hucre, ozel, alan:[[r,c]...] }] }
+export function genislet(t, oz, baslangic, korunan = []) {
+  const kor = new Set(korunan.map(([r, c]) => anahtar(r, c)));
+  const gor = new Set();
+  const liste = [];
+  const sira = [];
+  const tetiklenen = [];
+  const ekle = ([r, c]) => {
+    const k = anahtar(r, c);
+    if (gor.has(k) || kor.has(k)) return;
+    gor.add(k);
+    liste.push([r, c]);
+    if (oz[r][c]) sira.push([r, c]);
+  };
+  baslangic.forEach(ekle);
+  while (sira.length) {
+    const [r, c] = sira.shift();
+    const o = oz[r][c];
+    const alan = etkiAlani(o, r, c, t);
+    tetiklenen.push({ hucre: [r, c], ozel: o, alan });
+    alan.forEach(ekle);
+  }
+  return { hucreler: liste, tetiklenen };
+}
+
+// Bir çözüm adımı: eşleşmeleri bulur, oluşacak özel parçaları ayırır, silinecekleri (tetiklenen özel parçalarla) genişletir.
+// ek: eşleşme dışında temizlenecek hücreler (birleşim etkisi). Dönüş: { gruplar, olusan, hucreler, tetiklenen }
+export function cozumAdimi(t, oz, { hamle = null, ek = [], izinli = null } = {}) {
+  const gruplar = eslesmeleriBul(t);
+  // Yeni özel parça, zaten özel parça olan bir hücreye konmaz (eskisi tetiklensin); şeklin başka bir hücresi seçilir
+  const olusan = [];
+  for (const o of ozelOlusumlari(gruplar, hamle, izinli)) {
+    if (oz[o.hucre[0]][o.hucre[1]]) {
+      const bos = o.hucreler.find(([r, c]) => !oz[r][c]);
+      if (!bos) continue;
+      o.hucre = bos;
+    }
+    olusan.push(o);
+  }
+  const korunan = olusan.map((o) => o.hucre);
+  const g = genislet(t, oz, [...silinecekler(gruplar), ...ek], korunan);
+  return { gruplar, olusan, hucreler: g.hucreler, tetiklenen: g.tetiklenen };
 }

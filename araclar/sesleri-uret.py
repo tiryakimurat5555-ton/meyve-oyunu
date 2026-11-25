@@ -130,6 +130,65 @@ for k, f in enumerate([523.25, 659.25, 783.99, 1046.5, 1318.51]):
 y += pirilti(sure, 16, 0.4, 0.8, 0.15)
 adlar.append(yaz('bitis', y))
 
+
+# ---------- Özel parça ve seviye sesleri ----------
+# Çizgi: yükselen lazer süpürmesi + pırıltı
+t = zaman(0.45)
+f = 600 + 2600 * (t / 0.45) ** 0.6
+faz = 2 * np.pi * np.cumsum(f) / SR
+y = (np.sin(faz) + 0.4 * np.sin(2 * faz)) * np.exp(-4 * t) * np.minimum(1, t / 0.01)
+y += 0.6 * rng.standard_normal(len(t)) * np.exp(-14 * t) * 0.3
+y += pirilti(0.45, 10, 0.05, 0.3, 0.25)
+adlar.append(yaz('cizgi', y))
+
+# Bomba: tok gümleme + cam saçılması
+t = zaman(0.9)
+dus = 90 * np.exp(-3 * t) + 45
+faz = 2 * np.pi * np.cumsum(dus) / SR
+y = 1.2 * np.sin(faz) * np.exp(-5 * t)
+y += 0.5 * rng.standard_normal(len(t)) * np.exp(-12 * t)
+y += pirilti(0.9, 30, 0.02, 0.5, 0.3)
+y += 0.5 * can(1046.5, 0.9, 1.3)
+adlar.append(yaz('bomba', y))
+
+# Gökkuşağı: hızla yükselen çan glisandosu
+sure = 1.1
+y = np.zeros(int(round(SR * sure)))
+for k, fq in enumerate(OLCEK + [2349.3, 2637.0]):
+    ekle(y, int(k * 0.06 * SR), can(fq, sure - k * 0.06, 1.2) * 0.6)
+y += pirilti(sure, 30, 0.0, 0.9, 0.2)
+adlar.append(yaz('gokkusagi', y))
+
+# Özel parça oluştu: büyülü çift çan
+sure = 0.7
+y = np.zeros(int(round(SR * sure)))
+ekle(y, 0, can(1318.5, sure, 1.3))
+ekle(y, int(0.08 * SR), can(1975.5, sure - 0.08, 1.3))
+y += pirilti(sure, 12, 0.0, 0.4, 0.22)
+adlar.append(yaz('ozel_olustu', y))
+
+# Şenlik dönüşümü: kısa pling
+adlar.append(yaz('pling', can(1567.98, 0.35, 1.4) + pirilti(0.35, 3, 0, 0.05)))
+
+# Yıldızlar: üç yükselen parlak çan
+for i, fq in enumerate([1046.5, 1318.5, 1567.98]):
+    adlar.append(yaz(f'yildiz_{i + 1}', can(fq, 0.9, 1.3) + pirilti(0.9, 10 + i * 6, 0.0, 0.4, 0.25)))
+
+# Kazandın: majör arpej, en üstte uzun çan
+sure = 2.0
+y = np.zeros(int(round(SR * sure)))
+for k, fq in enumerate([523.25, 659.25, 783.99, 1046.5, 1318.51, 1567.98, 2093.0]):
+    ekle(y, int(k * 0.09 * SR), can(fq, sure - k * 0.09, 1.2) * (0.7 + 0.05 * k))
+y += pirilti(sure, 30, 0.5, 1.2, 0.18)
+adlar.append(yaz('kazandin', y))
+
+# Kaybettin: yavaşça inen yumuşak çanlar
+sure = 1.6
+y = np.zeros(int(round(SR * sure)))
+for k, fq in enumerate([783.99, 659.25, 523.25, 392.0]):
+    ekle(y, int(k * 0.22 * SR), can(fq, sure - k * 0.22, 0.6, 0.4) * 0.8)
+adlar.append(yaz('kaybettin', y))
+
 with open(os.path.join(KOK, 'oyun', 'sesListesi.js'), 'w') as d:
     d.write('// araclar/sesleri-uret.py tarafından üretildi; elle değiştirme.\n')
     d.write('export const SES_DOSYALARI = {\n')
