@@ -1,0 +1,95 @@
+# main dalına her gönderimde oyunu Expo Go için güncelleme olarak yayınlar.
+# Expo'nun derleme kredisini kullanmaz; GitHub Actions süresini kullanır (açık depoda ücretsiz).
+# Gerekli: depo ayarlarında EXPO_TOKEN adlı gizli anahtar.
+# İlk çalışmada app.json'da Expo proje kimliği yoksa "eas init" ile bağlar ve app.json'a yazar.
+# Her çalışmanın kaydı "yayin-kaydi" dalına yazılır (hata ayıklamak için).
+name: Expo Go guncellemesi
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "README.md"
+      - "CLAUDE.md"
+      - "araclar/**"
+  workflow_dispatch: {}
+
+concurrency:
+  group: expo-guncelleme
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  yayinla:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: EAS kurulumu
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Paketleri kur ve guncellemeyi yayinla
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          MESAJ: ${{ github.event.head_commit.message || 'Elle baslatilan guncelleme' }}
+          CI: '1'
+        run: |
+          set -o pipefail
+          {
+            set -e
+            echo "Commit: ${GITHUB_SHA}"
+            if [ -z "${EXPO_TOKEN}" ]; then
+              echo "HATA: EXPO_TOKEN gizli anahtari tanimli degil."
+              exit 1
+            fi
+            npm install --no-audit --no-fund
+            npx expo install --check || true
+            if ! node -e "const a=require('./app.json');process.exit(a.expo.extra&&a.expo.extra.eas&&a.expo.extra.eas.projectId?0:1)"; then
+              echo "Expo projesine baglaniliyor..."
+              eas init --non-interactive --force
+              node -e "const fs=require('fs');const a=require('./app.json');const id=a.expo.extra.eas.projectId;a.expo.updates={url:'https://u.expo.dev/'+id};a.expo.runtimeVersion={policy:'appVersion'};fs.writeFileSync('app.json',JSON.stringify(a,null,2)+'\n');"
+              cat app.json
+              git config user.name "github-actions"
+              git config user.email "github-actions@users.noreply.github.com"
+              git add app.json
+              git commit -m "Expo proje kimligi eklendi"
+              git push origin HEAD:main
+            fi
+            BASLIK="$(printf '%s' "$MESAJ" | head -n 1)"
+            eas update --branch main --message "$BASLIK" --non-interactive --json > sonuc.json
+            cat sonuc.json
+            for KANAL in main preview production; do
+              eas channel:create "$KANAL" --non-interactive >/dev/null 2>&1 || true
+              eas channel:edit "$KANAL" --branch main --non-interactive || echo "UYARI: $KANAL kanali dala baglanamadi"
+            done
+            KIMLIK="$(node -e "console.log(require('./app.json').expo.extra.eas.projectId)")"
+            GRUP="$(node -e "const s=require('./sonuc.json');const a=Array.isArray(s)?s:[s];console.log(a[0].group)")"
+            echo "EXPO_GO_BAGLANTISI=exp://u.expo.dev/${KIMLIK}/group/${GRUP}"
+            echo "### Expo Go baglantisi" >> "$GITHUB_STEP_SUMMARY"
+            echo "exp://u.expo.dev/${KIMLIK}/group/${GRUP}" >> "$GITHUB_STEP_SUMMARY"
+          } 2>&1 | tee yayin-kaydi.txt
+
+      - name: Kaydi yayin-kaydi dalina yaz
+        if: always()
+        run: |
+          [ -f yayin-kaydi.txt ] || echo "Kayit dosyasi olusmadi." > yayin-kaydi.txt
+          echo "Sonuc: ${{ job.status }}" >> yayin-kaydi.txt
+          cp yayin-kaydi.txt "$RUNNER_TEMP/kayit.txt"
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git checkout --orphan yayin-kaydi-gecici
+          git rm -rfq --cached . > /dev/null
+          cp "$RUNNER_TEMP/kayit.txt" yayin-kaydi.txt
+          git add -f yayin-kaydi.txt
+          git commit -qm "Yayin kaydi ${GITHUB_SHA}"
+          git push -f origin yayin-kaydi-gecici:yayin-kaydi

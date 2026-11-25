@@ -1,0 +1,20 @@
+{
+  "expo": {
+    "name": "Meyve Oyunu",
+    "slug": "meyve-oyunu",
+    "owner": "murat5561",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.murat5561.meyveoyunu"
+    },
+    "android": {
+      "package": "com.murat5561.meyveoyunu"
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    }
+  }
+}
