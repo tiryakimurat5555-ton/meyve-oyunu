@@ -292,6 +292,17 @@ export const SEVIYELER = [
   { no: 258, hamle: 11, tur: 6, hedef: { mantar: 6, kar: 8 }, yildiz: [2750, 3500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['mm....mm', 'm......m', '........', '..w..w..', '........', '........', 'ssssssss', '........'] },
   { no: 259, hamle: 16, tur: 6, hedef: { topla: { 1: 22, 3: 22 } }, yildiz: [4000, 4750], ozel: { cizgili: true, bomba: true, gokkusagi: true } },
   { no: 260, hamle: 15, tur: 6, hedef: { buz: 8, sis: 6, kasa: 4, kar: 8 }, yildiz: [3250, 4000], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['ggg..ggg', '.bbbbbb.', '.b....b.', 'w......w', '...ww...', '..kkkk..', 'ssssssss', '........'] },
+  // ---- 27. bölüm: Yaz Dönüşü (mevsim dönüşü: çiçek, rüzgâr, mantar ve bukalemun karışık) ----
+  { no: 261, hamle: 28, tur: 6, hedef: { cicek: 6, mantar: 4 }, yildiz: [6750, 8250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['m......m', '........', '..1..2..', '..3..4..', '..5..6..', '........', 'm......m', '........'] },
+  { no: 262, hamle: 13, tur: 6, hedef: { bukalemun: 6, buz: 8 }, yildiz: [3250, 3750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, bant: [{ satir: 3, yon: 1 }], duzen: ['........', '.bbbbbb.', '.b....b.', '.u.uu.u.', '........', '..u..u..', '........', '........'] },
+  { no: 263, hamle: 25, tur: 6, hedef: { cicek: 8 }, yildiz: [7500, 9000], ozel: { cizgili: true, bomba: true, gokkusagi: true }, bant: [{ satir: 4, yon: -1 }], duzen: ['........', '........', '.1....2.', '.3....4.', '........', '.5....6.', '.1....2.', '........'] },
+  { no: 264, hamle: 18, tur: 6, hedef: { mantar: 6, bukalemun: 4 }, yildiz: [4000, 4750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['mm....mm', 'm......m', '........', '..u..u..', '..u..u..', '........', '........', '........'] },
+  { no: 265, hamle: 22, tur: 6, hedef: { puan: 8000 }, yildiz: [9250, 10000], ozel: { cizgili: true, bomba: true, gokkusagi: true }, bant: [{ satir: 2, yon: 1 }, { satir: 5, yon: -1 }] },
+  { no: 266, hamle: 28, tur: 6, hedef: { cicek: 6, sarmasik: 6 }, yildiz: [7000, 8000], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['vv....vv', 'v......v', '........', '..1..2..', '..3..4..', '..5..6..', '........', '........'] },
+  { no: 267, hamle: 14, tur: 6, hedef: { mantar: 6, buz: 8 }, yildiz: [3500, 4000], ozel: { cizgili: true, bomba: true, gokkusagi: true }, bant: [{ satir: 4, yon: 1 }], duzen: ['mm....mm', 'm......m', '.bbbbbb.', '.b....b.', '........', '........', '........', '........'] },
+  { no: 268, hamle: 30, tur: 6, hedef: { bukalemun: 6, cicek: 6 }, yildiz: [7000, 8500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '.u.uu.u.', '........', '..1..2..', '..3..4..', '..5..6..', '..u..u..', '........'] },
+  { no: 269, hamle: 14, tur: 6, hedef: { topla: { 0: 20, 2: 20 } }, yildiz: [4000, 5000], ozel: { cizgili: true, bomba: true, gokkusagi: true }, bant: [{ satir: 3, yon: -1 }] },
+  { no: 270, hamle: 26, tur: 6, hedef: { cicek: 6, mantar: 4, bukalemun: 4, buz: 6 }, yildiz: [7250, 8750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, bant: [{ satir: 4, yon: 1 }], duzen: ['m......m', '..u..u..', '..1..2..', '.bbbbbb.', '........', '..3..4..', 'm.5..6.m', '..u..u..'] },
 ];
 
 export const TANITIM = {

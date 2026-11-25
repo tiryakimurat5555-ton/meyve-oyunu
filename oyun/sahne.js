@@ -510,6 +510,24 @@ const RENKLER = [
       { tip: 'kelebek', renk: '#ffc94a' },
     ],
   },
+  // 26: Yaz Dönüşü (mevsim dönüşü: parlak yaz göğü, gür yeşil, kelebekler)
+  {
+    gok: ['#3fb0f0', '#e6f7ff'],
+    gunes: '#ffd93a',
+    gunesKenar: '#ffb31c',
+    tepeArka: ['#6cc456', '#5ab244'],
+    tepeArka2: ['#7ccf64', '#68bd52'],
+    tepeOn: ['#9adc78', '#86ce64'],
+    tac: ['#3f9e3a', '#2f8a2c', '#58b850'],
+    nokta: ['#ff3b4e', '#ffd21f', '#ff8a1f'],
+    cicek: ['#ff3b4e', '#ffd21f', '#ffffff'],
+    parca: [
+      { tip: 'kelebek', renk: '#ff3b4e' },
+      { tip: 'kelebek', renk: '#ffd21f' },
+      { tip: 'kelebek', renk: '#4fc3ff' },
+      { tip: 'ari' },
+    ],
+  },
 ];
 export const geceMi = (bolum) => !!(RENKLER[bolum] && RENKLER[bolum].gece);
 
