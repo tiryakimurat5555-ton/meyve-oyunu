@@ -65,7 +65,12 @@ Murat'ın meyve temalı 3'lü eşleştirme oyunu (Kasım 2026). Geçici ad "Meyv
   ARALIK=11-30, DENEME=200, TOHUM=n, SEVIYE='{...}'). Tarayıcıda engel denemesi: araclar/web-deneme/engel-dene.cjs (NO=20, VO=1).
 - `oyun/seviyeler.js`: SEVIYELER, TANITIM, yildizHesapla, hedefTamam.
 - `oyun/ses.js`: expo-audio havuzu + expo-haptics. Meyve sesi sütuna göre sol/orta/sağ.
-- `araclar/sesleri-uret.py`: geçici kristal sesleri üretir (assets/ses + oyun/sesListesi.js). İleride ElevenLabs.
+- SESLER (25 Kasım): ElevenLabs Sound Effects v3 ile "Kristal Bahçe" teması (araclar/ses-tema.md: promptlar). Her meyve ayrı
+  çalgı + ayrı nota (erik Sol4, portakal Do5, elma Do6, limon Mi6, çilek Mi7, üzüm şıngırtı). Seçilen ham adaylar
+  araclar/ham-sesler/*.mp3; `python3 araclar/sesleri-isle.py` kırpar, perde kaydırır, eşitler, sol/orta/sağ + zincir/yıldız
+  notalarını (pling'den) üretir, sesListesi.js'i yazar. ElevenLabs akışı: OBjuJE2oZVloNRL2PvNY. Bu ortam ElevenLabs depolamasına
+  erişemez: adaylar Murat'ın onayıyla `ses-istek` dalındaki ses-indir.yml iş akışıyla indirildi (adaylar/).
+  araclar/sesleri-uret.py eski sentez sesler (artık kullanılmıyor).
 - `araclar/web-deneme`: tarayıcı denemesi (animasyonlar anında biter; window.__dondur=0..1 animasyonu o anda dondurur):
   `bash araclar/web-deneme/yap.sh /tmp/meyve-web && NODE_PATH=/opt/npm-tools/node_modules node araclar/web-deneme/seviye-dene.cjs /tmp/meyve-web /tmp/meyve-ekran`
 - Murat ekran videosu gönderirse ffmpeg ile kare kare incele (Expo Go eski güncellemeyi açabilir: yeşil tepe var mı bak).

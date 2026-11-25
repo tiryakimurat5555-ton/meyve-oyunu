@@ -749,7 +749,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
     mesgul.current = true;
     ipucuDurdur();
     seciliAyarla(null);
-    cal('bomba', 0.8);
+    cal('cekic');
     titret('guclu');
     sars(5);
     await oynat(
