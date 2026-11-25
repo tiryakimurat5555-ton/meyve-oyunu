@@ -35,7 +35,7 @@ Murat'ın meyve temalı 3'lü eşleştirme oyunu (Kasım 2026). Geçici ad "Meyv
   22 Kış Dönüşü (211-220, mevsim dönüşü: karışık, %75-95; sahne 21 kış), 23 Kurbağa Gölü (221-230, %72-100),
   24 Fener Bahçesi (231-240, %66-93), 25 Uzay Bahçesi (241-250, %77-100),
   26 Kovan Arıları (251-260, %79-99), 27 Yaz Dönüşü (261-270, mevsim dönüşü, %73-100),
-  28 Domino Bahçesi (271-280, %72-100), 29 Ayna Gölü (281-290, %69-100) YAPILDI (26 Kasım). Sırada: yeni mekanikler / mevsim dönüşleri (19. bölüm, 181-). Plan: 11 Arı Bahçesi (çiçek
+  28 Domino Bahçesi (271-280, %72-100), 29 Ayna Gölü (281-290, %69-100), 30 Büyük Hasat (291-300, karışık şenlik, %75-97; sahne 29 altın hasat) YAPILDI (26 Kasım). 31. bölümden sonrası için yeni mekanik planı Murat'a önerilecek. Sırada: yeni mekanikler / mevsim dönüşleri (19. bölüm, 181-). Plan: 11 Arı Bahçesi (çiçek
   tozu: üstünde eşleşme = tozlanır), 12 Saat Kulesi (geri sayımlı meyve, sıfırda kaybedilir), 13 Rüzgârlı Tepe (taşıyıcı bant),
   14 Mantar Ormanı (her 3 hamlede çoğalır), 15 Kuş Yuvası (yumurta 2 vuruş → civciv, tohum gibi iner), 16 Göl Kıyısı (akıntı kapıları),
   17 Kafes ve Anahtar, 18 Bukalemun Bahçesi (renk değiştiren meyve); sonra mevsim dönüşleri + yeni mekanikler.

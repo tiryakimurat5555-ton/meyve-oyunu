@@ -564,6 +564,24 @@ const RENKLER = [
       { tip: 'kelebek', renk: '#c9b8ff' },
     ],
   },
+  // 29: Büyük Hasat (şenlikli hasat: altın ikindi göğü, buğday tepeleri, düşen yapraklar ve parıltılar)
+  {
+    gok: ['#ffc46b', '#fff1cf'],
+    gunes: '#ffe680',
+    gunesKenar: '#ffb84d',
+    tepeArka: ['#d9a441', '#c88f30'],
+    tepeArka2: ['#e8bb5a', '#d6a443'],
+    tepeOn: ['#9cc45a', '#86b048'],
+    tac: ['#e07a2e', '#c9562a', '#f0a640'],
+    nokta: ['#ff5a4e', '#ffd23f', '#9b4dca'],
+    cicek: ['#ff5a4e', '#ffd23f', '#ffffff'],
+    parca: [
+      { tip: 'yaprak', renk: '#e07a2e' },
+      { tip: 'yaprak', renk: '#f0a640' },
+      { tip: 'parilti', renk: '#fff3b0' },
+      { tip: 'kelebek', renk: '#ff8a5c' },
+    ],
+  },
 ];
 export const geceMi = (bolum) => !!(RENKLER[bolum] && RENKLER[bolum].gece);
 

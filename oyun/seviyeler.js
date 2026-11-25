@@ -325,6 +325,17 @@ export const SEVIYELER = [
   { no: 288, hamle: 28, tur: 6, hedef: { tohum: 2, buz: 8 }, yildiz: [6250, 7750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, ayna: true, duzen: ['........', '.t....t.', '........', 'bbb..bbb', '.b....b.', '........', '........', '........'] },
   { no: 289, hamle: 18, tur: 6, hedef: { topla: { 2: 20, 3: 20 } }, yildiz: [4250, 5500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, ayna: true },
   { no: 290, hamle: 32, tur: 6, hedef: { buz: 8, sis: 8, kasa: 4, kar: 8 }, yildiz: [6750, 8250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, ayna: true, duzen: ['gg....gg', 'gg....gg', '.bb..bb.', '.bb..bb.', '........', '.kk..kk.', 'ssss....', '....ssss'] },
+  // ---- 30. bölüm: Büyük Hasat (mevsim dönüşü / şenlik: sipariş, balon, bal, kurbağa, domino, yumurta, fener, saat karışık; 300. seviye) ----
+  { no: 291, hamle: 20, tur: 6, hedef: { siparis: 3, buz: 8 }, yildiz: [4500, 5750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, siparisler: [{ tur: 0, n: 10 }, { tur: 3, n: 10 }, { ozel: 'cizgili', n: 1 }], duzen: ['........', '........', '.bb..bb.', '.bb..bb.', '........', '........', '........', '........'] },
+  { no: 292, hamle: 24, tur: 6, hedef: { balon: 3, bal: 4 }, yildiz: [5000, 6500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '........', '........', '...hh...', '...hh...', '.o..o..o', '........', '........'] },
+  { no: 293, hamle: 11, tur: 6, hedef: { kurbaga: 2, kasa: 6 }, yildiz: [2750, 3750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '........', '..q..q..', '........', '........', '.kk..kk.', '...kk...', '........'] },
+  { no: 294, hamle: 10, tur: 6, hedef: { domino: 8, sis: 8 }, yildiz: [2000, 2750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['gggggggg', '........', '.dddd...', '........', '....dddd', '........', '........', '........'] },
+  { no: 295, hamle: 25, tur: 6, hedef: { puan: 6000 }, yildiz: [7750, 8750], ozel: { cizgili: true, bomba: true, gokkusagi: true } },
+  { no: 296, hamle: 37, tur: 6, hedef: { civciv: 2, cicek: 6 }, yildiz: [8250, 9750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '..y..y..', '........', '.1....2.', '.3....4.', '.5....6.', '........', '........'] },
+  { no: 297, hamle: 38, tur: 6, hedef: { fener: 2, buz: 8 }, yildiz: [7750, 9250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, duzen: ['........', '........', '..l..l..', '........', '.bbbbbb.', '.b....b.', '........', '........'] },
+  { no: 298, hamle: 21, tur: 6, hedef: { saat: 3, bal: 4 }, yildiz: [4500, 5500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, saat: 14, duzen: ['........', '........', '.z..z..z', '........', '...hh...', '...hh...', '........', '........'] },
+  { no: 299, hamle: 17, tur: 6, hedef: { topla: { 1: 20, 4: 20 } }, yildiz: [4250, 5250], ozel: { cizgili: true, bomba: true, gokkusagi: true } },
+  { no: 300, hamle: 32, tur: 6, hedef: { siparis: 3, balon: 2, domino: 4, kurbaga: 1 }, yildiz: [7250, 8500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, siparisler: [{ tur: 2, n: 12 }, { ozel: 'bomba', n: 1 }, { tur: 5, n: 12 }], duzen: ['........', '..q.....', '........', '........', '..dddd..', '........', '.o....o.', '........'] },
 ];
 
 export const TANITIM = {
