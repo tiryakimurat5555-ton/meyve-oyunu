@@ -29,6 +29,8 @@ import {
 
 // Zincir yazıları İngilizce (Murat: global oyun). VoiceOver'a okunmaz; duyurular Türkçe kalır.
 const OVGU = ['', '', 'Nice!', 'Great!', 'Amazing!', 'Fantastic!'];
+// Övgü seslendirmeleri (aynı sıra); hamlenin bütün zinciri bitince en yüksek aşamanınki bir kez söylenir
+const OVGU_SES = ['', '', 'ovgu_nice', 'ovgu_great', 'ovgu_amazing', 'ovgu_fantastic'];
 const IPUCU_SURE = 5000;
 const GUC_SEVIYE = 5; // güçlendiriciler bu seviyeden itibaren açılır
 const EK_HAMLE = 5; // kaybedince bir kez verilen ek hamle
@@ -613,6 +615,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
     setAsama('sonuc');
     if (basarili) {
       cal('kazandin');
+      setTimeout(() => cal('ovgu_level'), 250);
       titret('basari');
       duyur(`Seviye ${seviye.no} tamam! ${yildiz} yıldız. Puanın ${p}.${rekor ? ' Yeni rekor!' : ''}${bolumOdulu ? ' Bölüm tamamlandı! Her güçlendiriciden 1 tane kazandın.' : ''}`);
     } else {
@@ -626,6 +629,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
   const senlik = async () => {
     setAsama('senlik');
     setOvgu({ id: ++sonKimlik, metin: 'Garden Party!' });
+    cal('ovgu_garden');
     duyur('Hedef tamam! Kalan hamleler şenliğe dönüşüyor.');
     await bekle(700);
     const donusecek = Math.min(SENLIK_EN_FAZLA, hamleRef.current);
@@ -776,6 +780,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
       await senlik();
       return;
     }
+    if (sonuc.zincir >= 2) cal(OVGU_SES[Math.min(OVGU_SES.length - 1, sonuc.zincir)]);
     if (hamleRef.current <= 0) {
       await bekle(300);
       if (!ekHamleRef.current) teklifGoster();

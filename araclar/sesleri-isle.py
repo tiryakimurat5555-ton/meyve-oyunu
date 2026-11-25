@@ -143,6 +143,28 @@ DIGER = {
 for ad, (dosya, uzun, db) in DIGER.items():
     kaydet(ad, esitle(kirp(oku(dosya), uzun, 0.08), db))
 
+# ---------- övgü seslendirmeleri (ElevenLabs eleven_v4, ses "Miranda": tatlı, neşeli; zincir büyüdükçe coşku artar) ----------
+# Hafif kristal yankı: iki kısa yansıma, ses tema ile bütünleşsin
+def yanki(x):
+    y = np.concatenate([x, np.zeros(int(SR * 0.3))])
+    for gecikme, kat in ((0.07, 0.22), (0.15, 0.12), (0.24, 0.06)):
+        d = int(SR * gecikme)
+        y[d:d + len(x)] += x * kat
+    return y
+
+
+OVGU_SES = {
+    'ovgu_nice': ('ovgu_nice_2', -15),
+    'ovgu_great': ('ovgu_great_2', -14),
+    'ovgu_amazing': ('ovgu_amazing_1', -13),
+    'ovgu_fantastic': ('ovgu_fantastic_2', -12),
+    'ovgu_garden': ('ovgu_garden_1', -12),
+    'ovgu_level': ('ovgu_level_2', -13),
+}
+for ad, (dosya, db) in OVGU_SES.items():
+    x = kirp(oku(dosya), 2.2, sondur=0.1, esik_db=-38)
+    kaydet(ad, esitle(kirp(yanki(x), 2.5, sondur=0.15, esik_db=-40), db))
+
 # ---------- sessiz döngü (yalnız iPhone çalar: ses kanalını açık tutar; bkz. oyun/ses.js) ----------
 with wave.open(os.path.join(HEDEF, 'sessiz.wav'), 'wb') as w:
     w.setnchannels(1)

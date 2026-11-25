@@ -73,6 +73,10 @@ Murat'ın meyve temalı 3'lü eşleştirme oyunu (Kasım 2026). Geçici ad "Meyv
   notalarını (pling'den) üretir, sesListesi.js'i yazar. ElevenLabs akışı: OBjuJE2oZVloNRL2PvNY. Bu ortam ElevenLabs depolamasına
   erişemez: adaylar Murat'ın onayıyla `ses-istek` dalındaki ses-indir.yml iş akışıyla indirildi (adaylar/).
   araclar/sesleri-uret.py eski sentez sesler (artık kullanılmıyor).
+- ÖVGÜ SESLENDİRMESİ (25 Kasım, Murat istedi): ElevenLabs eleven_v4, kütüphane sesi "Miranda" (PoHUWWWMHFrA8z7Q88pu, tatlı/neşeli),
+  akış csKqxNdVJHGnAhNOObTv. ovgu_nice/great/amazing/fantastic (coşku zincirle artar), ovgu_garden (şenlik), ovgu_level (kazanınca,
+  kazandin'dan 250 ms sonra). Zincir sesi hamlenin bütün zinciri bitince en yüksek aşama için bir kez (hamleSonrasi); hedef tamamsa
+  yalnız Garden Party. Hafif kristal yankı sesleri-isle.py'de. VoiceOver için ayrı ayar YOK (Murat: doğrudan çalsın).
 - `araclar/web-deneme`: tarayıcı denemesi (animasyonlar anında biter; window.__dondur=0..1 animasyonu o anda dondurur):
   `bash araclar/web-deneme/yap.sh /tmp/meyve-web && NODE_PATH=/opt/npm-tools/node_modules node araclar/web-deneme/seviye-dene.cjs /tmp/meyve-web /tmp/meyve-ekran`
 - Murat ekran videosu gönderirse ffmpeg ile kare kare incele (Expo Go eski güncellemeyi açabilir: yeşil tepe var mı bak).
