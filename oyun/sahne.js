@@ -414,6 +414,26 @@ const RENKLER = [
       { tip: 'ari' },
     ],
   },
+  // 21: Kış Dönüşü (mevsim dönüşü: karlı, akşamüstü pembemsi kış ışığı)
+  {
+    gok: ['#a9c8ea', '#fbeef4'],
+    gunes: '#fff0c4',
+    gunesKenar: '#ffd9a0',
+    tepeArka: ['#f2f7fc', '#dbe8f4'],
+    tepeArka2: ['#f6fafd', '#e0edf7'],
+    tepeOn: ['#ffffff', '#ecf4fb'],
+    tac: ['#2f7a5a', '#25664a', '#3f8f6a'],
+    nokta: ['#ffffff', '#ffffff', '#d9ecfa'],
+    cicek: ['#ffffff', '#cfe6f7', '#ffd0e0'],
+    parca: [
+      { tip: 'kar' },
+      { tip: 'kar', buyuk: true },
+      { tip: 'kar' },
+      { tip: 'kar', buyuk: true },
+      { tip: 'kar' },
+      { tip: 'kar' },
+    ],
+  },
 ];
 export const geceMi = (bolum) => !!(RENKLER[bolum] && RENKLER[bolum].gece);
 
