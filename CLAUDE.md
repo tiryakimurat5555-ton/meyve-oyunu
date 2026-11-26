@@ -39,12 +39,17 @@ Murat'ın meyve temalı 3'lü eşleştirme oyunu (Kasım 2026). Geçici ad "Meyv
   32 Define Adası (kum altında 2 karelik sandık; üstündeki kumun hepsi temizlenince bulunur), 33 Dev Meyve Bahçesi (2x2 dev meyve,
   yanında eşleşme = çatlar, 4 vuruşta kırılır, o rengin hepsini patlatır), 34 İkiz Bahçe (kurdeleli meyve çifti: biri eşleşince öbürü
   de patlar), 35 Renkli Kristaller (renkli kapak yalnız kendi rengindeki eşleşmeyle kırılır; VO "Kırmızı kristalli elma"),
-  36 Çan Kulesi (yardımcı: yanında eşleşme = satır+sütun temizler), 37 (karışık DEĞİL: yeni mekanik, Murat'a önerildi — Yağmur Bulutu),
+  36 Çan Kulesi (yardımcı: yanında eşleşme = satır+sütun temizler), 37 Yağmur Bulutu (bulutun altındaki sütunda eşleşme = yağar, kuru toprağı sular; hedef kuru toprak),
   38 Salyangoz Yarışı (yanında eşleşme = bir kare sağa; sağ kenarda bitiş), 39 Sihirli Kazan (yanındaki eşleşme kazana atar;
   dolunca özel parça saçar), 40 Kış Masalı (31-39 karışık, 400. seviye). Sonrası için yeni öneriler Murat'a sunulacak.
   KURAL (26 Kasım Murat): KARIŞIK (mevsim dönüşü / şenlik) BÖLÜMLER YALNIZ 10'UN KATLARINDA (40, 50, 60...). Diğer her bölüm yeni mekanik.
-  41-50 önerisi (onay bekliyor): 41 Tren İstasyonu, 42 Lav Adası, 43 Hayalet Bahçesi, 44 Boya Atölyesi, 45 (Kartopu 22. bölüme taşındı; yerine yeni öneri gerekli),
-  46 Işık Kulesi, 47 Sincap Ormanı (karışık yerine), 48 Terazi Pazarı, 49 Kuyruklu Yıldız Gecesi, 50 Yarı Yol Şenliği (karışık, 500). Sırada: yeni mekanikler / mevsim dönüşleri (19. bölüm, 181-). Plan: 11 Arı Bahçesi (çiçek
+  YAPILACAK 41-50 (26 Kasım Murat ekletti): 41 Tren İstasyonu (vagon önündeki engeller temizlendikçe ilerler, istasyonda toplanır),
+  42 Lav Adası (lav her 4 hamlede ilerler, değdiğini taşa çevirir; yanında eşleşme soğutur), 43 Hayalet Bahçesi (hayalet meyve her hamle
+  görünür/görünmez; yalnız görünürken eşleşir), 44 Boya Atölyesi (yardımcı: boya kovası patlayınca çevreyi kendi rengine boyar),
+  45 Panayır Çarkı (her 5 hamlede çark döner: rastgele ödül ya da küçük engel; VO söyler), 46 Işık Kulesi (ışık geçtiği buzu eritir;
+  aynaların yanında eşleşme aynayı döndürür), 47 Sincap Ormanı (sincap birkaç hamlede bir meyveyi fındığa çevirir; fındık iner, toplanır;
+  yanında eşleşme sincabı kaçırır), 48 Terazi Pazarı (sol/sağ yarıda eşit toplama; VO denge söyler), 49 Kuyruklu Yıldız Gecesi
+  (her 5 hamlede yıldız düşüp sütun temizler; yıldız tozu toplanır; gece), 50 Yarı Yol Şenliği (41-49 karışık, 500. seviye). Sırada: yeni mekanikler / mevsim dönüşleri (19. bölüm, 181-). Plan: 11 Arı Bahçesi (çiçek
   tozu: üstünde eşleşme = tozlanır), 12 Saat Kulesi (geri sayımlı meyve, sıfırda kaybedilir), 13 Rüzgârlı Tepe (taşıyıcı bant),
   14 Mantar Ormanı (her 3 hamlede çoğalır), 15 Kuş Yuvası (yumurta 2 vuruş → civciv, tohum gibi iner), 16 Göl Kıyısı (akıntı kapıları),
   17 Kafes ve Anahtar, 18 Bukalemun Bahçesi (renk değiştiren meyve); sonra mevsim dönüşleri + yeni mekanikler.
