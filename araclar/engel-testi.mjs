@@ -385,5 +385,45 @@ for (let i = 0; i < 30; i++) {
   for (let r = 0; r < 8; r++) for (let c = 4; c < 8; c++) t2[r][c] = M.KASA;
   if (h) dogru(M.aynaHamlesi(h, t2, oz, en) === null, 'sağ yarı kasa doluyken ayna olmamalı');
 }
-console.log(hata ? `${hata} HATA` : 'ENGEL TESTLERİ GEÇTİ (kar, tohum sarmaşık, fıçı, sis, delik, çiçek, saat, bant, akıntı kapısı, kafes, bukalemun, balon, bal, kurbağa, fener, yerçekimi yönü, kovan, domino ve ayna dahil)');
+{
+  // Kartopu: yanında eşleşme olunca büyür; en alta inince patlar ve alanı temizler
+  const t = [];
+  for (let r = 0; r < 8; r++) t.push(Array.from({ length: 8 }, (_, c) => (r * 3 + c * 2 + (r % 2)) % 6));
+  const oz = t.map((s) => s.map(() => null));
+  const en = t.map((s) => s.map(() => null));
+  t[3][4] = M.KARTOPU;
+  en[3][4] = 'kt1';
+  t[3][1] = 0; t[3][2] = 0; t[3][3] = 0;
+  const ad = M.cozumAdimi(t, oz, { engel: en });
+  dogru(ad.buyuyen.some(([r, c]) => r === 3 && c === 4), 'kartopu büyümeli');
+  const u = M.adimUygula(t, oz, en, ad, () => 0.4);
+  const yer = u.t.flat().indexOf(M.KARTOPU);
+  dogru(yer >= 0 && u.engel[Math.floor(yer / 8)][yer % 8] === 'kt2', 'kartopu 2 boy olmalı: ' + (yer >= 0 && u.engel[Math.floor(yer / 8)][yer % 8]));
+  const t2 = t.map((s) => s.slice());
+  const en2 = en.map((s) => s.slice());
+  t2[3][4] = 1; en2[3][4] = null; t2[3][1] = 1; t2[3][2] = 2; t2[3][3] = 4;
+  t2[7][3] = M.KARTOPU; en2[7][3] = 'kt2';
+  const z = M.zincirCoz(t2, oz, en2, null, { rnd: () => 0.3 });
+  dogru(z.sayac.kartopu === 1 && (z.sayac.topla ? Object.values(z.sayac.topla).reduce((a, b) => a + b, 0) : 0) >= 6, 'kartopu en altta patlamalı: ' + JSON.stringify(z.sayac));
+}
+{
+  // İstiridye: açıkken yanında eşleşme inci verir, kapalıyken vermez; hamleden sonra açılıp kapanır
+  const yap = (durum) => {
+    const t = [];
+    for (let r = 0; r < 8; r++) t.push(Array.from({ length: 8 }, (_, c) => (r * 3 + c * 2 + (r % 2)) % 6));
+    const oz = t.map((s) => s.map(() => null));
+    const en = t.map((s) => s.map(() => null));
+    t[4][4] = M.ISTIRIDYE;
+    en[4][4] = durum;
+    t[3][3] = 0; t[3][4] = 0; t[3][5] = 0;
+    return M.zincirCoz(t, oz, en, null, { rnd: () => 0.3 });
+  };
+  dogru(yap('ist1').sayac.istiridye === 1, 'açık istiridye inci vermeli');
+  dogru(!yap('ist0').sayac.istiridye, 'kapalı istiridye inci vermemeli');
+  const z = yap('ist0');
+  dogru(z.t.flat().includes(M.ISTIRIDYE), 'kapalı istiridye yerinde kalmalı');
+  const e2 = M.istiridyeDegistir(z.engel);
+  dogru(e2.flat().includes('ist1'), 'istiridye açılmalı');
+}
+console.log(hata ? `${hata} HATA` : 'ENGEL TESTLERİ GEÇTİ (kar, tohum sarmaşık, fıçı, sis, delik, çiçek, saat, bant, akıntı kapısı, kafes, bukalemun, balon, bal, kurbağa, fener, yerçekimi yönü, kovan, domino, ayna, kartopu ve istiridye dahil)');
 process.exit(hata ? 1 : 0);

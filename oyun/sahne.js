@@ -414,7 +414,7 @@ const RENKLER = [
       { tip: 'ari' },
     ],
   },
-  // 21: Kış Dönüşü (mevsim dönüşü: karlı, akşamüstü pembemsi kış ışığı)
+  // 21: Kartopu Tepesi (karlı, akşamüstü pembemsi kış ışığı)
   {
     gok: ['#a9c8ea', '#fbeef4'],
     gunes: '#fff0c4',
@@ -510,22 +510,22 @@ const RENKLER = [
       { tip: 'kelebek', renk: '#ffc94a' },
     ],
   },
-  // 26: Yaz Dönüşü (mevsim dönüşü: parlak yaz göğü, gür yeşil, kelebekler)
+  // 26: İnci Koyu (yaz kumsalı: parlak gök, deniz mavisi arka tepeler, kum rengi ön tepe, palmiyemsi yeşil, parıltılar)
   {
     gok: ['#3fb0f0', '#e6f7ff'],
     gunes: '#ffd93a',
     gunesKenar: '#ffb31c',
-    tepeArka: ['#6cc456', '#5ab244'],
-    tepeArka2: ['#7ccf64', '#68bd52'],
-    tepeOn: ['#9adc78', '#86ce64'],
+    tepeArka: ['#2aa0c8', '#1f8ab0'],
+    tepeArka2: ['#4fc0dc', '#3aaed0'],
+    tepeOn: ['#f4dca0', '#e8cc88'],
     tac: ['#3f9e3a', '#2f8a2c', '#58b850'],
-    nokta: ['#ff3b4e', '#ffd21f', '#ff8a1f'],
-    cicek: ['#ff3b4e', '#ffd21f', '#ffffff'],
+    nokta: ['#ff7aa0', '#ffd21f', '#ffffff'],
+    cicek: ['#ff7aa0', '#ffd21f', '#ffffff'],
     parca: [
-      { tip: 'kelebek', renk: '#ff3b4e' },
-      { tip: 'kelebek', renk: '#ffd21f' },
+      { tip: 'parilti', renk: '#ffffff' },
+      { tip: 'parilti', renk: '#bdeeff' },
       { tip: 'kelebek', renk: '#4fc3ff' },
-      { tip: 'ari' },
+      { tip: 'kelebek', renk: '#ff7aa0' },
     ],
   },
   // 27: Domino Bahçesi (oyun parkı: açık gök, düzenli çimenler, renkli yapraklar)

@@ -11,6 +11,8 @@ export const KURBAGA_TUR = 28; // mantik.js KURBAGA
 export const FENER_TUR = 29; // mantik.js FENER
 export const KOVAN_TUR = 31; // mantik.js KOVAN
 export const DOMINO_TUR = 32; // mantik.js DOMINO
+export const KARTOPU_TUR = 33; // mantik.js KARTOPU
+export const ISTIRIDYE_TUR = 34; // mantik.js ISTIRIDYE
 const KURBAGA_DOY = 5;
 export const FICI_TUR = 22; // mantik.js FICI
 export const FICI_ODUL_TUR = 23; // mantik.js FICI_ODUL
@@ -565,6 +567,59 @@ export function Domino({ H, dikey = false }) {
 }
 export function DominoIkon({ boy = 26 }) {
   return <Domino H={boy * 1.1} />;
+}
+
+// ---------- Kartopu ----------
+export function Kartopu({ H, boy = 1 }) {
+  const b = H * [0.5, 0.66, 0.84][Math.max(0, Math.min(2, boy - 1))];
+  return (
+    <View style={{ width: H, height: H, alignItems: 'center', justifyContent: 'center' }}>
+      <View style={{ width: b, height: b, borderRadius: b, backgroundColor: '#ffffff', borderWidth: 2.5, borderColor: '#8fb8dc', overflow: 'hidden' }}>
+        <View style={{ position: 'absolute', right: -b * 0.1, bottom: -b * 0.1, width: b * 0.7, height: b * 0.7, borderRadius: b, backgroundColor: '#e2eef8' }} />
+        <View style={{ position: 'absolute', left: b * 0.18, top: b * 0.14, width: b * 0.26, height: b * 0.2, borderRadius: b, backgroundColor: 'rgba(255,255,255,0.95)' }} />
+        <View style={{ position: 'absolute', left: b * 0.3, top: b * 0.42, width: b * 0.1, height: b * 0.12, borderRadius: b, backgroundColor: '#2c3e50' }} />
+        <View style={{ position: 'absolute', left: b * 0.6, top: b * 0.42, width: b * 0.1, height: b * 0.12, borderRadius: b, backgroundColor: '#2c3e50' }} />
+        <View style={{ position: 'absolute', left: b * 0.38, top: b * 0.6, width: b * 0.24, height: b * 0.1, borderBottomLeftRadius: b, borderBottomRightRadius: b, borderWidth: 2, borderTopWidth: 0, borderColor: '#2c3e50' }} />
+        <View style={{ position: 'absolute', left: b * 0.14, top: b * 0.56, width: b * 0.14, height: b * 0.08, borderRadius: b, backgroundColor: 'rgba(255,140,170,0.6)' }} />
+        <View style={{ position: 'absolute', right: b * 0.14, top: b * 0.56, width: b * 0.14, height: b * 0.08, borderRadius: b, backgroundColor: 'rgba(255,140,170,0.6)' }} />
+      </View>
+      {boy >= 2 && (
+        <View style={{ position: 'absolute', right: H * 0.02, top: H * 0.02, minWidth: H * 0.28, height: H * 0.26, borderRadius: H, backgroundColor: '#3a7bd5', alignItems: 'center', justifyContent: 'center' }}>
+          <Text style={{ fontSize: H * 0.17, lineHeight: H * 0.22, fontWeight: '900', color: '#ffffff' }}>{boy}</Text>
+        </View>
+      )}
+    </View>
+  );
+}
+export function KartopuIkon({ boy = 26 }) {
+  return <Kartopu H={boy * 1.2} boy={2} />;
+}
+
+// ---------- İstiridye ----------
+export function Istiridye({ H, acik = false }) {
+  const b = H * 0.86;
+  return (
+    <View style={{ width: H, height: H, alignItems: 'center', justifyContent: 'center' }}>
+      {acik && (
+        <View style={{ position: 'absolute', top: H * 0.08, width: b * 0.9, height: b * 0.48, borderTopLeftRadius: b, borderTopRightRadius: b, backgroundColor: '#c9a9d8', borderWidth: 2.5, borderColor: '#7a5a8a', transform: [{ rotate: '-8deg' }] }} />
+      )}
+      <View style={{ position: 'absolute', top: acik ? H * 0.5 : H * 0.36, width: b * 0.92, height: b * (acik ? 0.4 : 0.44), borderBottomLeftRadius: b, borderBottomRightRadius: b, borderTopLeftRadius: acik ? b * 0.08 : b, borderTopRightRadius: acik ? b * 0.08 : b, backgroundColor: '#b48cc8', borderWidth: 2.5, borderColor: '#7a5a8a', alignItems: 'center', justifyContent: 'center' }}>
+        {acik ? (
+          <View style={{ width: b * 0.28, height: b * 0.28, borderRadius: b, backgroundColor: '#fffaf2', borderWidth: 1.5, borderColor: '#d8c8b0', marginTop: -b * 0.16 }}>
+            <View style={{ position: 'absolute', left: b * 0.05, top: b * 0.04, width: b * 0.08, height: b * 0.06, borderRadius: b, backgroundColor: '#ffffff' }} />
+          </View>
+        ) : (
+          <View style={{ flexDirection: 'row', gap: b * 0.16 }}>
+            <View style={{ width: b * 0.12, height: b * 0.05, borderRadius: b, backgroundColor: '#4a2a5a' }} />
+            <View style={{ width: b * 0.12, height: b * 0.05, borderRadius: b, backgroundColor: '#4a2a5a' }} />
+          </View>
+        )}
+      </View>
+    </View>
+  );
+}
+export function IstiridyeIkon({ boy = 26 }) {
+  return <Istiridye H={boy * 1.15} acik />;
 }
 
 // ---------- Arı kovanı ----------
@@ -1225,6 +1280,10 @@ export function Parca({ p, H }) {
         <Fener H={H} />
       ) : p.tur === KURBAGA_TUR ? (
         <Kurbaga H={H} n={p.kurb || 0} />
+      ) : p.tur === KARTOPU_TUR ? (
+        <Kartopu H={H} boy={p.kt || 1} />
+      ) : p.tur === ISTIRIDYE_TUR ? (
+        <Istiridye H={H} acik={!!p.ist} />
       ) : p.kat ? null : p.ozel === 'gokkusagi' || !MEYVELER[p.tur] ? (
         <GokkusagiKure H={H} />
       ) : (

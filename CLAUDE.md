@@ -32,9 +32,9 @@ Murat'ın meyve temalı 3'lü eşleştirme oyunu (Kasım 2026). Geçici ad "Meyv
   13 Rüzgârlı Tepe (121-130, %78-99), 14 Mantar Ormanı (131-140, %76-100),
   15 Kuş Yuvası (141-150, %67-95), 16 Göl Kıyısı (151-160, %71-100), 17 Gizli Bahçe (161-170, %75-96),
   18 Bukalemun Bahçesi (171-180, %79-100), 19 Balon Festivali (181-190, %70-97), 20 Hasat Pazarı (191-200, %70-98), 21 Bal Kovanı (201-210, %70-97),
-  22 Kış Dönüşü (211-220, mevsim dönüşü: karışık, %75-95; sahne 21 kış), 23 Kurbağa Gölü (221-230, %72-100),
+  22 Kartopu Tepesi (211-220, 26 Kasım Kış Dönüşü'nden çevrildi; sahne 21 kış), 23 Kurbağa Gölü (221-230, %72-100),
   24 Fener Bahçesi (231-240, %66-93), 25 Uzay Bahçesi (241-250, %77-100),
-  26 Kovan Arıları (251-260, %79-99), 27 Yaz Dönüşü (261-270, mevsim dönüşü, %73-100),
+  26 Kovan Arıları (251-260, %79-99), 27 İnci Koyu (261-270, 26 Kasım Yaz Dönüşü'nden çevrildi; sahne 26 kumsal),
   28 Domino Bahçesi (271-280, %72-100), 29 Ayna Gölü (281-290, %69-100), 30 Büyük Hasat (291-300, karışık şenlik, %75-97; sahne 29 altın hasat) YAPILDI (26 Kasım). YAPILACAK (26 Kasım Murat ekletti): 31 Değirmen Tepesi (301-310, 2x2 çark her 2 hamlede saat yönünde döner; hedef çark tozu),
   32 Define Adası (kum altında 2 karelik sandık; üstündeki kumun hepsi temizlenince bulunur), 33 Dev Meyve Bahçesi (2x2 dev meyve,
   yanında eşleşme = çatlar, 4 vuruşta kırılır, o rengin hepsini patlatır), 34 İkiz Bahçe (kurdeleli meyve çifti: biri eşleşince öbürü
@@ -43,7 +43,7 @@ Murat'ın meyve temalı 3'lü eşleştirme oyunu (Kasım 2026). Geçici ad "Meyv
   38 Salyangoz Yarışı (yanında eşleşme = bir kare sağa; sağ kenarda bitiş), 39 Sihirli Kazan (yanındaki eşleşme kazana atar;
   dolunca özel parça saçar), 40 Kış Masalı (31-39 karışık, 400. seviye). Sonrası için yeni öneriler Murat'a sunulacak.
   KURAL (26 Kasım Murat): KARIŞIK (mevsim dönüşü / şenlik) BÖLÜMLER YALNIZ 10'UN KATLARINDA (40, 50, 60...). Diğer her bölüm yeni mekanik.
-  41-50 önerisi (onay bekliyor): 41 Tren İstasyonu, 42 Lav Adası, 43 Hayalet Bahçesi, 44 Boya Atölyesi, 45 Kartopu Tepesi,
+  41-50 önerisi (onay bekliyor): 41 Tren İstasyonu, 42 Lav Adası, 43 Hayalet Bahçesi, 44 Boya Atölyesi, 45 (Kartopu 22. bölüme taşındı; yerine yeni öneri gerekli),
   46 Işık Kulesi, 47 Sincap Ormanı (karışık yerine), 48 Terazi Pazarı, 49 Kuyruklu Yıldız Gecesi, 50 Yarı Yol Şenliği (karışık, 500). Sırada: yeni mekanikler / mevsim dönüşleri (19. bölüm, 181-). Plan: 11 Arı Bahçesi (çiçek
   tozu: üstünde eşleşme = tozlanır), 12 Saat Kulesi (geri sayımlı meyve, sıfırda kaybedilir), 13 Rüzgârlı Tepe (taşıyıcı bant),
   14 Mantar Ormanı (her 3 hamlede çoğalır), 15 Kuş Yuvası (yumurta 2 vuruş → civciv, tohum gibi iner), 16 Göl Kıyısı (akıntı kapıları),
@@ -117,6 +117,12 @@ Murat'ın meyve temalı 3'lü eşleştirme oyunu (Kasım 2026). Geçici ad "Meyv
 - AYNA (281-290, Ayna Gölü): seviye.ayna = true. Oyuncunun hamlesinin aynası (sütun → 7-sütun) geçerli bir eşleşme hamlesiyse
   hamleSonrasi başında kendiliğinden yapılır (hamle harcamaz; mantik.aynaHamlesi, kurallar ctx.sonHamle; Oyun hamleYap(a,b,true),
   sonHamle ref). Ortada dikey ayna çizgisi. VO "Ayna hamlesi yapıldı". Ses 'kapi'. Sahne 28 göl (parıltı). Engeller karışık.
+- KARTOPU (211-220, Kartopu Tepesi): M.KARTOPU=33, engel 'kt<n>' (boy 1-3; serbestMi), INEN listesinde (tohum gibi iner, takas edilir,
+  eşleşmez). Yanında eşleşme = büyür (cozumAdimi.buyuyen, en çok 3). En alta inince toplanır (sayac.kartopu, hedef.kartopu) ve
+  kartopuAlani(r,c,boy) bir sonraki adımın ek'i olur: boy 1 artı, 2 3x3, 3 5x5. Düzen 'n'. Kartopu çizimi (boy rozeti). VO "Küçük/Orta/Büyük kartopu".
+- İSTİRİDYE (261-270, İnci Koyu): M.ISTIRIDYE=34, engel 'ist0' kapalı / 'ist1' açık; gecilmez (yerçekimi atlar, takas yok). Her çekiçsiz
+  hamleden sonra hepsi açılır/kapanır (istiridyeDegistir; Oyun hamleSonrasi). Açıkken komşu eşleşme ya da özel parça alanı → inci verir,
+  gider (cozumAdimi.istiridyeler, hedef.istiridye). Düzen 'i' / 'I'. Istiridye çizimi. VO "Açık/Kapalı istiridye", "İstiridyeler döndü, 2 tanesi açık".
 - 26 Kasım Murat onayı ("Yap"): 19 Balon, 20 Hasat Pazarı (sırayla sipariş), 21 Bal Kovanı (bal lekesi yayılır), 22 Kış Dönüşü (karışık),
   23 Kurbağa Gölü, 24 Fener Bahçesi (yalnız özel parça yakar), 25 Uzay Bahçesi (yerçekimi yönü), 26 Kovan Arıları (yardımcı arılar),
   27 Yaz Dönüşü (karışık), 28 Domino, 29 Ayna Gölü (hamle aynalanır), 30 Büyük Hasat (karışık, 300. seviye).
