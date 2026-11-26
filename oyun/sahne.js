@@ -583,6 +583,8 @@ const RENKLER = [
     ],
   },
 ];
+// Bölümün gök renkleri (harita bantları için)
+export const gokRenk = (bolum) => (RENKLER[bolum] || RENKLER[0]).gok;
 export const geceMi = (bolum) => !!(RENKLER[bolum] && RENKLER[bolum].gece);
 
 const GIZLI = { pointerEvents: 'none', importantForAccessibility: 'no-hide-descendants', accessibilityElementsHidden: true };

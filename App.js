@@ -1,11 +1,13 @@
-// Meyve Oyunu (geçici ad). Ekranlar: seviye listesi ve oyun. İlerleme, güçlendiriciler ve ayarlar telefonda saklanır.
+// Meyve Oyunu (geçici ad). Ekranlar: ana ekran, harita, günlük ödül ve oyun. İlerleme, güçlendiriciler ve ayarlar telefonda saklanır.
 import React, { useEffect, useState } from 'react';
 import { AccessibilityInfo, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Oyun from './oyun/Oyun';
-import ListeEkrani from './oyun/ListeEkrani';
+import AnaEkran from './oyun/AnaEkran';
+import HaritaEkrani from './oyun/HaritaEkrani';
+import GunlukEkrani from './oyun/GunlukEkrani';
 import { SEVIYELER } from './oyun/seviyeler';
 import { cal, sesAyari, sesleriHazirla, titresimAyari, titret } from './oyun/ses';
 
@@ -15,7 +17,7 @@ const tikla = (f, ses = 'dugme') => (...a) => {
   return f && f(...a);
 };
 import { st } from './oyun/gorsel';
-import { AyarlarPaneli, GUNLUK_ODUL, GunlukOdulPaneli, odulMetni } from './oyun/Paneller';
+import { AyarlarPaneli, GUNLUK_ODUL } from './oyun/Paneller';
 
 const KAYIT = 'meyve-ilerleme-v1';
 const AYAR_KAYIT = 'meyve-ayar-v1';
@@ -42,12 +44,11 @@ function gucEkle(guc, odul) {
 
 export default function App() {
   const [ilerleme, setIlerleme] = useState(null);
-  const [ekran, setEkran] = useState({ ad: 'liste' });
+  const [ekran, setEkran] = useState({ ad: 'ana' });
   // Bot açık kalırsa sonraki seviyede de oynamaya devam eder
   const [bot, setBot] = useState(false);
   const [ayar, setAyar] = useState({ ses: true, titresim: true });
   const [ayarAcik, setAyarAcik] = useState(false);
-  const [gunluk, setGunluk] = useState(null); // { gun } gösterilecek günlük ödül
 
   useEffect(() => {
     sesleriHazirla();
@@ -75,24 +76,20 @@ export default function App() {
       return yeni;
     });
 
-  // Günlük ödül: listeye dönünce, güçlendiriciler açıldıysa (seviye 5) ve bugün alınmadıysa gösterilir
-  useEffect(() => {
-    if (!ilerleme || ekran.ad !== 'liste' || gunluk) return;
-    if (ilerleme.acik < GUC_SEVIYE) return;
-    const g = ilerleme.gunluk || BOS.gunluk;
-    if (g.son === bugun()) return;
-    const gun = g.son === dun() ? (g.seri % 7) + 1 : 1;
-    setGunluk({ gun });
-  }, [ilerleme, ekran.ad]);
+  // Günlük ödül durumu: bugünün günü (1-7) ve bugün alınabilir mi (güçlendiriciler seviye 5'te açılır)
+  const gunlukDurum = () => {
+    const g = (ilerleme && ilerleme.gunluk) || BOS.gunluk;
+    if (g.son === bugun()) return { gun: g.seri || 1, alinabilir: false };
+    return { gun: g.son === dun() ? (g.seri % 7) + 1 : 1, alinabilir: !!ilerleme && ilerleme.acik >= GUC_SEVIYE };
+  };
 
   const gunlukAl = () => {
-    if (!gunluk) return;
-    const odul = GUNLUK_ODUL[gunluk.gun - 1];
-    kaydet((o) => ({ ...o, guc: gucEkle(o.guc, odul), gunluk: { son: bugun(), seri: gunluk.gun } }));
+    const d = gunlukDurum();
+    if (!d.alinabilir) return;
+    const odul = GUNLUK_ODUL[d.gun - 1];
+    kaydet((o) => ({ ...o, guc: gucEkle(o.guc, odul), gunluk: { son: bugun(), seri: d.gun } }));
     cal('kazandin', 0.8);
     titret('basari');
-    AccessibilityInfo.announceForAccessibility(`${odulMetni(odul)} alındı`);
-    setGunluk(null);
   };
 
   const ayarDegistir = (d) => {
@@ -125,17 +122,29 @@ export default function App() {
 
   const gucHarca = (ad) => kaydet((o) => ({ ...o, guc: { ...o.guc, [ad]: Math.max(0, (o.guc[ad] || 0) - 1) } }));
 
-  const oyna = (no) => setEkran({ ad: 'oyun', no, deneme: Date.now() });
+  // nereden: oyundan geri dönülecek ekran (ana ya da harita)
+  const oyna = (no, nereden) => setEkran((e) => ({ ad: 'oyun', no, deneme: Date.now(), nereden: nereden || e.nereden || 'ana' }));
 
   let icerik = <View style={st.kok} />;
-  if (ilerleme && ekran.ad === 'liste')
+  const ayarlar = ayarAcik && <AyarlarPaneli ayar={ayar} degistir={tikla(ayarDegistir)} kapat={tikla(() => setAyarAcik(false), 'dugme_geri')} />;
+  if (ilerleme && ekran.ad === 'ana')
     icerik = (
       <>
-        <ListeEkrani ilerleme={ilerleme} sec={tikla(oyna)} ayarlarAc={tikla(() => setAyarAcik(true))} />
-        {gunluk && !ayarAcik && <GunlukOdulPaneli gun={gunluk.gun} al={gunlukAl} />}
-        {ayarAcik && <AyarlarPaneli ayar={ayar} degistir={tikla(ayarDegistir)} kapat={tikla(() => setAyarAcik(false), 'dugme_geri')} />}
+        <AnaEkran
+          ilerleme={ilerleme}
+          oyna={tikla((no) => oyna(no, 'ana'))}
+          haritaAc={tikla(() => setEkran({ ad: 'harita' }))}
+          gunlukAc={tikla(() => setEkran({ ad: 'gunluk' }))}
+          ayarlarAc={tikla(() => setAyarAcik(true))}
+          gunlukVar={gunlukDurum().alinabilir}
+        />
+        {ayarlar}
       </>
     );
+  if (ilerleme && ekran.ad === 'harita')
+    icerik = <HaritaEkrani ilerleme={ilerleme} sec={tikla((no) => oyna(no, 'harita'))} geri={tikla(() => setEkran({ ad: 'ana' }), 'dugme_geri')} />;
+  if (ilerleme && ekran.ad === 'gunluk')
+    icerik = <GunlukEkrani durum={gunlukDurum()} guc={ilerleme.guc} siradaki={Math.min(ilerleme.acik, SEVIYELER.length)} al={gunlukAl} geri={tikla(() => setEkran({ ad: 'ana' }), 'dugme_geri')} />;
   if (ilerleme && ekran.ad === 'oyun') {
     const seviye = SEVIYELER.find((s) => s.no === ekran.no);
     icerik = (
@@ -145,7 +154,7 @@ export default function App() {
         enIyi={ilerleme.enIyi[seviye.no] || 0}
         sonrakiVar={seviye.no < SEVIYELER.length}
         bitince={seviyeBitti}
-        geri={tikla(() => setEkran({ ad: 'liste' }), 'dugme_geri')}
+        geri={tikla(() => setEkran({ ad: ekran.nereden || 'ana' }), 'dugme_geri')}
         sonraki={tikla(() => oyna(Math.min(SEVIYELER.length, seviye.no + 1)))}
         tekrar={tikla(() => oyna(seviye.no))}
         bot={bot}
@@ -153,6 +162,7 @@ export default function App() {
         guc={ilerleme.guc}
         gucHarca={gucHarca}
         bolumOdulVar={seviye.no % 10 === 0 && !ilerleme.bolumOdul[seviye.no]}
+        geriAd={ekran.nereden === 'harita' ? 'Harita' : 'Ana ekran'}
       />
     );
   }

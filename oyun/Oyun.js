@@ -218,7 +218,7 @@ function kalanMetni(seviye, toplanan, puan) {
   return l.join(', ');
 }
 
-export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki, tekrar, bot = false, botDegistir, guc = {}, gucHarca, bolumOdulVar = false }) {
+export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki, tekrar, bot = false, botDegistir, guc = {}, gucHarca, bolumOdulVar = false, geriAd = 'Ana ekran' }) {
   const ek = useSafeAreaInsets();
   const { width: EG, height: EY } = useWindowDimensions();
   const TAHTA = Math.floor(Math.min(EG - 20, EY * 0.58, 560));
@@ -1726,8 +1726,8 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
       <Sahne bolum={bolumNo(seviye.no)} EG={EG} EY={EY} />
 
       <View style={yst.ustSatir}>
-        <Pressable accessibilityRole="button" accessibilityLabel="Seviyelere dön" onPress={geri} hitSlop={10} style={({ pressed }) => [yst.geri, pressed && { opacity: 0.6 }]}>
-          <Text style={yst.geriYazi}>‹ Seviyeler</Text>
+        <Pressable accessibilityRole="button" accessibilityLabel={`Geri, ${geriAd.toLocaleLowerCase('tr')}`} onPress={geri} hitSlop={10} style={({ pressed }) => [yst.geri, pressed && { opacity: 0.6 }]}>
+          <Text style={yst.geriYazi}>‹ Geri</Text>
         </Pressable>
         <Text style={[yst.seviyeBaslik, geceMi(bolumNo(seviye.no)) && yst.geceYazi]} accessibilityRole="header" accessibilityLabel={`Seviye ${seviye.no}${seviye.yercekimi ? `, yerçekimi ${M.YON_AD[yon]}` : ''}`}>
           Seviye {seviye.no}
@@ -1928,8 +1928,8 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
               <Pressable accessibilityRole="button" accessibilityLabel={sonuc.basarili ? 'Tekrar oyna' : 'Tekrar dene'} onPress={tekrar} style={({ pressed }) => [yst.ikinciDugme, pressed && { opacity: 0.7 }]}>
                 <Text style={yst.ikinciYazi}>{sonuc.basarili ? 'Tekrar oyna' : 'Tekrar dene'}</Text>
               </Pressable>
-              <Pressable accessibilityRole="button" accessibilityLabel="Seviyeler" onPress={geri} style={({ pressed }) => [yst.ikinciDugme, pressed && { opacity: 0.7 }]}>
-                <Text style={yst.ikinciYazi}>Seviyeler</Text>
+              <Pressable accessibilityRole="button" accessibilityLabel={geriAd} onPress={geri} style={({ pressed }) => [yst.ikinciDugme, pressed && { opacity: 0.7 }]}>
+                <Text style={yst.ikinciYazi}>{geriAd}</Text>
               </Pressable>
             </View>
           </GirisKart>

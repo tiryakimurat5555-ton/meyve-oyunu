@@ -184,7 +184,15 @@ Murat'ın meyve temalı 3'lü eşleştirme oyunu (Kasım 2026). Geçici ad "Meyv
 ## Dosyalar
 - `App.js`: kök; ekran (liste/oyun), ilerleme kaydı (AsyncStorage 'meyve-ilerleme-v1': acik, yildiz, enIyi, guc, gunluk{son,seri},
   bolumOdul), ayarlar, günlük ödül. `oyun/Paneller.js`: GunlukOdulPaneli, AyarlarPaneli, GUNLUK_ODUL.
-- `oyun/ListeEkrani.js`: seviye listesi (Oyna düğmesi, 4 sütun yuvarlak düğmeler, yıldızlar, kilit).
+- EKRANLAR (26 Kasım, Murat onayladı): App ekran.ad = 'ana' | 'harita' | 'gunluk' | 'oyun' (oyun ekran.nereden'e döner; Oyun geriAd).
+  `oyun/AnaEkran.js`: logo (şimdilik zıplayan meyveler + "Meyve Bahçesi"), yıldız + güçlendirici rozetleri, büyük "Oyna · Seviye N",
+  altta üç yuvarlak düğme: Harita, Günlük ödül (ortada, sepet; alınabilirse kırmızı "!" noktası; seviye 5'ten önce kilitli), Ayarlar.
+  Günlük ödül ARTIK KENDİLİĞİNDEN AÇILMAZ (Murat). `oyun/GunlukEkrani.js`: rafta 7 sepet (7. gün sandık), bugünkü zıplar, "Aç" →
+  ödül simgeleri sayaca uçar, "Yarın gel: ..." notu; VO her gün ayrı ("4. gün, bugün, açılmadı, 1 çekiç"). App.gunlukDurum/gunlukAl.
+  `oyun/HaritaEkrani.js`: bölüm bantları (gök renginden geçiş), Tabela, zikzak patika noktaları, taşlar (sıradaki parlar); açılınca
+  sıradakine kayar (kök absolute dolgu şart: web denemesinde ScrollView ancak öyle kayıyor). Eski ListeEkrani silindi.
+  `oyun/bolumler.js`: BOLUMLER (yeni bölüm eklenince BURAYA ekle), bolumBul. `oyun/arayuz.js`: kodla çizilen Sepet, Sandik, Raf,
+  HaritaSimge, YuvarlakZemin, Tabela, GucSimge — PNG gelince yerlerine geçecek.
 - `oyun/Oyun.js`: bir seviye. Parçalar kimlikli nesneler (tur, ozel, poz ValueXY hücre biriminde, olcek, ez, don, zip);
   `izgara` ref'i kimlikleri tutar. Aşamalar: giris (hedef kartı + tanıtım) → oyun (→ teklif: +5 hamle) → senlik → sonuc (yıldızlar).
   Güçlendirici sırası tahtanın altında (GucDugmesi); çekiç kipinde dokunulan hücre cozumle({ek}) ile kırılır.
