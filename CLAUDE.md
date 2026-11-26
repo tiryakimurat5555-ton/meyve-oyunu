@@ -186,7 +186,8 @@ Murat'ın meyve temalı 3'lü eşleştirme oyunu (Kasım 2026). Global ad "Prism
   -f ref=prism -f 'inputs[islem]=yukle' -f 'inputs[paket]=com.murat5561.prismorchard' -f 'inputs[hedef]=<aab adresi>' -f 'inputs[kanal]=alpha'
   -f 'inputs[grup]=galaktik-imparatorluk@googlegroups.com'`; mağaza sayfası islem listeAdres, hedef
   https://raw.githubusercontent.com/tiryakimurat5555-ton/meyve-oyunu/main/magaza/play (liste/*.txt, simge.png, one_cikan.png, ekran/N.jpg).
-  Sürüm kodu 2 kapalı teste TASLAK yüklendi (uygulama henüz yayımlanmamış). Gizlilik: docs/gizlilik.html (GitHub Pages, Murat açacak).
+  Sürüm kodu 2 kapalı teste yüklendi; Murat formları doldurup 26 Kasım 18:26 incelemeye gönderdi (hedef kitle 13+, veri toplanmıyor,
+  oturum açma yok — oturum açmalı sürümde Uygulama erişimi + Veri güvenliği + gizlilik güncellenecek). Katılım: https://play.google.com/apps/testing/com.murat5561.prismorchard Gizlilik: docs/gizlilik.html (GitHub Pages, Murat açacak).
   Mağaza paketinde Bot düğmesi gizli (expo-updates kanalı 'production'). Simge assets/simge.png (kodla, geçici; PNG gelince değişir).
 
 ## Dosyalar
