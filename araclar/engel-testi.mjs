@@ -442,5 +442,20 @@ for (let i = 0; i < 30; i++) {
   dogru(z.sayac.un >= 2, 'çarkta patlayan meyve un olmalı: ' + z.sayac.un);
   M.seviyeKur(null);
 }
-console.log(hata ? `${hata} HATA` : 'ENGEL TESTLERİ GEÇTİ (kar, tohum sarmaşık, fıçı, sis, delik, çiçek, saat, bant, akıntı kapısı, kafes, bukalemun, balon, bal, kurbağa, fener, yerçekimi yönü, kovan, domino, ayna, kartopu, istiridye ve değirmen çarkı dahil)');
+{
+  // Kum ve sandık: kum kar gibi silinir; sandığın bütün kumu gidince bulunur
+  M.seviyeKur({ sandiklar: [[4, 3, 'y']] });
+  const t = [];
+  for (let r = 0; r < 8; r++) t.push(Array.from({ length: 8 }, (_, c) => (r * 3 + c * 2 + (r % 2)) % 6));
+  const oz = t.map((s) => s.map(() => null));
+  const en = t.map((s) => s.map(() => null));
+  const zm = t.map((s) => s.map(() => 0));
+  zm[4][3] = M.KUM; zm[4][4] = M.KUM;
+  dogru(M.sandikKalan(zm) === 1, 'sandık kumun altında olmalı');
+  t[4][2] = 0; t[4][3] = 0; t[4][4] = 0;
+  const z = M.zincirCoz(t, oz, en, zm, { rnd: () => 0.3 });
+  dogru(z.sayac.kum >= 2 && M.sandikKalan(z.zemin) === 0, 'kum temizlenince sandık bulunmalı: ' + JSON.stringify(z.sayac));
+  M.seviyeKur(null);
+}
+console.log(hata ? `${hata} HATA` : 'ENGEL TESTLERİ GEÇTİ (kar, tohum sarmaşık, fıçı, sis, delik, çiçek, saat, bant, akıntı kapısı, kafes, bukalemun, balon, bal, kurbağa, fener, yerçekimi yönü, kovan, domino, ayna, kartopu, istiridye, değirmen çarkı ve kum/sandık dahil)');
 process.exit(hata ? 1 : 0);

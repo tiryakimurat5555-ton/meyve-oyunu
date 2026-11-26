@@ -614,6 +614,15 @@ export const cicekMi = (z) => z >= CICEK && z < CICEK + TUR_SAYISI;
 // Bal (Bal Kovanı): zemin değeri BAL. Üstündeki parça temizlenince (kar gibi) silinir; bir hamlede hiç bal silinmezse yanındaki bir
 // kareye yayılır (balYay). Hedef tahtada kalan bal (toplanan.balKalan). Düzende 'h'.
 export const BAL = 20;
+// Kum (Define Adası): zemin değeri KUM, kar gibi tek katta silinir. seviye.sandiklar = [[r, c, 'y' (yatay) | 'd' (dikey)]] kumun altındaki
+// 2 karelik sandıklar; bir sandığın bütün kumu temizlenince bulunur (hedef.sandik, tahtada kalan: toplanan.sandikKalan). Düzende 'r'.
+export const KUM = 40;
+export const sandikHucreleri = ([r, c, y]) => (y === 'd' ? [[r, c], [r + 1, c]] : [[r, c], [r, c + 1]]);
+export const sandikHucreMi = (r, c) => !!(etkinSeviye && etkinSeviye.sandiklar && etkinSeviye.sandiklar.some((s) => sandikHucreleri(s).some(([a, b]) => a === r && b === c)));
+export function sandikKalan(zemin) {
+  if (!zemin || !etkinSeviye || !etkinSeviye.sandiklar) return 0;
+  return etkinSeviye.sandiklar.filter((s) => sandikHucreleri(s).some(([r, c]) => zemin[r][c] === KUM)).length;
+}
 
 // Bu adımda karı eriyen hücreler: temizlenen parçalar (buz kırılması hariç), oluşan özel parçaların yeri, kırılan kasalar.
 export function karEriyen(adim, engel, zemin, t = null) {
@@ -649,6 +658,10 @@ export function adimUygula(t, oz, engel, adim, rnd = Math.random, zemin = null) 
       if (cicekMi(zemin[r][c])) {
         zemin[r][c] = 0;
         sayac.cicek = (sayac.cicek || 0) + 1;
+      } else if (zemin[r][c] === KUM) {
+        zemin[r][c] = 0;
+        sayac.kum = (sayac.kum || 0) + 1;
+        if (sandikHucreMi(r, c)) sayac.sandik = (sayac.sandik || 0) + 1;
       } else if (zemin[r][c] === BAL) {
         zemin[r][c] = 0;
         sayac.bal = (sayac.bal || 0) + 1;
@@ -805,6 +818,7 @@ export function duzenliTahta(duzen, rnd = Math.random) {
           } else if (h === 's' || h === 'S') zemin[r][c] = h === 'S' ? 2 : 1;
           else if (h >= '1' && h <= '6') zemin[r][c] = CICEK + Number(h) - 1;
           else if (h === 'h') zemin[r][c] = BAL;
+          else if (h === 'r') zemin[r][c] = KUM;
           else if (h === 't') t[r][c] = TOHUM;
           else if (h === 'v') engel[r][c] = 'sarmasik';
           else if (h === 'g') engel[r][c] = 'sis';
@@ -1075,7 +1089,7 @@ export function balonYukselt(t, oz, engel, r, c) {
 
 // Düzendeki bal zemini (başlangıç kalan sayısı için)
 function duzenliZemin(duzen) {
-  return duzen.map((s) => s.split('').map((h) => (h === 'h' ? BAL : 0)));
+  return duzen.map((s) => s.split('').map((h) => (h === 'h' ? BAL : h === 'r' ? KUM : 0)));
 }
 // Bal yayılır: rastgele bir bal karesinin yanındaki balsız, deliksiz bir kareye
 export function balYay(t, zemin, rnd = Math.random) {
@@ -1138,7 +1152,7 @@ export function inenDerinligi(t) {
 export const inenDegeri = (s, d0) => INEN_SAYAC.reduce((a, k) => a + (s.sayac[k] || 0) * 400, 0) + (inenDerinligi(s.t) - d0) * 60;
 
 // Bot: hamle sonucunun hedefe katkısı
-export const HEDEF_AGIRLIK = { buz: 150, kasa: 150, kar: 150, sarmasik: 170, fici: 200, sis: 160, cicek: 180, saat: 220, mantar: 180, kafes: 300, bukalemun: 200, balon: 400, bal: 170, fener: 500, ari: 120, domino: 220, istiridye: 380, un: 140 };
+export const HEDEF_AGIRLIK = { buz: 150, kasa: 150, kar: 150, sarmasik: 170, fici: 200, sis: 160, cicek: 180, saat: 220, mantar: 180, kafes: 300, bukalemun: 200, balon: 400, bal: 170, fener: 500, ari: 120, domino: 220, istiridye: 380, un: 140, sandik: 160 };
 export function hamleDegeri(s, hedef, derin0 = 0) {
   if (hedef.puan) return s.puan;
   let d = s.puan / 100;
@@ -1198,6 +1212,7 @@ export function kalanlariYaz(toplanan, engel, zemin = null) {
     let n = 0;
     for (const s of zemin) for (const z of s) if (z === BAL) n++;
     toplanan.balKalan = n;
+    if (etkinSeviye && etkinSeviye.sandiklar) toplanan.sandikKalan = sandikKalan(zemin);
   }
   for (const k in KALAN_ENGEL) {
     let n = 0;

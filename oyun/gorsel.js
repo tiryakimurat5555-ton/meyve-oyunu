@@ -1080,6 +1080,54 @@ export function UnIkon({ boy = 26 }) {
   );
 }
 
+// ---------- Kum ve gömülü sandık (Define Adası) ----------
+export function KumZemin({ H, r, c }) {
+  const b = H - 3;
+  return (
+    <View pointerEvents="none" style={{ position: 'absolute', left: c * H + 1.5, top: r * H + 1.5, width: b, height: b, borderRadius: H * 0.22, overflow: 'hidden', backgroundColor: '#f2d79a', borderWidth: 2, borderColor: '#d9b46a' }}>
+      <View style={{ position: 'absolute', left: -b * 0.1, bottom: -b * 0.3, width: b * 0.7, height: b * 0.6, borderRadius: b, backgroundColor: '#e8c47c' }} />
+      {[[0.18, 0.2], [0.7, 0.16], [0.42, 0.5], [0.82, 0.62], [0.24, 0.74]].map(([x, y], i) => (
+        <View key={i} style={{ position: 'absolute', left: b * x, top: b * y, width: b * 0.06, height: b * 0.06, borderRadius: b, backgroundColor: '#c49a52' }} />
+      ))}
+    </View>
+  );
+}
+// Kumun meyvenin üstündeki kısmı: alt kenarda kum yığını
+export function KumUst({ H, r, c }) {
+  const b = H - 3;
+  return (
+    <View pointerEvents="none" style={{ position: 'absolute', left: c * H + 1.5, top: r * H + 1.5, width: b, height: b, borderRadius: H * 0.22, overflow: 'hidden', borderWidth: 2, borderColor: 'rgba(205,160,80,0.95)' }}>
+      <View style={{ position: 'absolute', left: -b * 0.08, bottom: -b * 0.14, width: b * 0.62, height: b * 0.38, borderRadius: b, backgroundColor: '#f0cf8a', borderWidth: 1.5, borderColor: '#d2a85c' }} />
+      <View style={{ position: 'absolute', right: -b * 0.1, bottom: -b * 0.18, width: b * 0.6, height: b * 0.4, borderRadius: b, backgroundColor: '#ecc67c', borderWidth: 1.5, borderColor: '#d2a85c' }} />
+    </View>
+  );
+}
+// Gömülü sandık: 2 kare boyunca ahşap sandık (kumun altında çizilir; kum kalkınca görünür). bulundu: kapağı açık, altın parlar
+export function GomuluSandik({ s, H, bulundu }) {
+  const [r, c, y] = s;
+  const w = y === 'd' ? H : H * 2;
+  const h = y === 'd' ? H * 2 : H;
+  return (
+    <View pointerEvents="none" style={{ position: 'absolute', left: c * H + 3, top: r * H + 3, width: w - 6, height: h - 6, borderRadius: H * 0.18, backgroundColor: bulundu ? '#ffd54a' : '#a8692e', borderWidth: 3, borderColor: '#6e3f17', overflow: 'hidden', alignItems: 'center', justifyContent: 'center' }}>
+      <View style={{ position: 'absolute', left: y === 'd' ? 0 : '46%', top: y === 'd' ? '46%' : 0, width: y === 'd' ? '100%' : '8%', height: y === 'd' ? '8%' : '100%', backgroundColor: '#e0b040' }} />
+      {[0.25, 0.75].map((k) => (
+        <View key={k} style={{ position: 'absolute', left: y === 'd' ? '8%' : `${k * 100 - 2}%`, top: y === 'd' ? `${k * 100 - 2}%` : '8%', width: y === 'd' ? '84%' : '4%', height: y === 'd' ? '4%' : '84%', backgroundColor: '#7a4a1e' }} />
+      ))}
+      {bulundu && <Text style={{ fontSize: H * 0.4 }}>✨</Text>}
+    </View>
+  );
+}
+export function SandikIkon({ boy = 26 }) {
+  return (
+    <View style={{ width: boy, height: boy, alignItems: 'center', justifyContent: 'center' }}>
+      <View style={{ width: boy * 0.9, height: boy * 0.62, borderRadius: boy * 0.12, backgroundColor: '#a8692e', borderWidth: 2, borderColor: '#6e3f17', alignItems: 'center' }}>
+        <View style={{ width: '100%', height: '18%', marginTop: '22%', backgroundColor: '#e0b040' }} />
+        <View style={{ position: 'absolute', top: '30%', width: boy * 0.14, height: boy * 0.16, borderRadius: 2, backgroundColor: '#ffd54a', borderWidth: 1, borderColor: '#6e3f17' }} />
+      </View>
+    </View>
+  );
+}
+
 // ---------- Akıntı kapıları (Göl Kıyısı) ----------
 // Giriş: hücrenin alt kenarında su girdabı; çıkış: hücrenin üst kenarında aynı renkte dalga. Her kapı çiftinin kendi rengi ve numarası var.
 const KAPI_RENK = ['#2f9fe0', '#22b39a', '#8a6be0', '#e07a2f'];

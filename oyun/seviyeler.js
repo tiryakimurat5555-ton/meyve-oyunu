@@ -347,9 +347,21 @@ export const SEVIYELER = [
   { no: 308, hamle: 13, tur: 6, hedef: { un: 26, sis: 8 }, yildiz: [3000, 3750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, carklar: [[4, 1], [4, 5]], duzen: ['gggg....', '....gggg', '........', '........', '........', '........', '........', '........'] },
   { no: 309, hamle: 14, tur: 6, hedef: { topla: { 0: 20, 2: 20 } }, yildiz: [3500, 4500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, carklar: [[3, 3]] },
   { no: 310, hamle: 13, tur: 6, hedef: { un: 36, buz: 6, kasa: 4 }, yildiz: [3250, 4250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, carklar: [[1, 1], [1, 5], [4, 3]], duzen: ['........', '........', '........', 'bbb..bbb', '........', '........', '..kkkk..', '........'] },
+  // ---- 32. bölüm: Define Adası (kumun altında 2 karelik sandıklar; sandığın bütün kumu temizlenince bulunur) ----
+  { no: 311, hamle: 20, tur: 6, hedef: { sandik: 1 }, yildiz: [4000, 4250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, sandiklar: [[5, 3, 'y']], duzen: ['........', '........', '........', '........', '..rrrr..', '..rrrr..', '..rrrr..', '........'], yeni: 'sandik' },
+  { no: 312, hamle: 17, tur: 6, hedef: { sandik: 2 }, yildiz: [3500, 4250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, sandiklar: [[3, 1, 'd'], [5, 5, 'y']], duzen: ['........', '........', 'rrr.....', 'rrr.....', 'rrr..rrr', '....rrrr', '....rrrr', '........'] },
+  { no: 313, hamle: 20, tur: 6, hedef: { sandik: 2, buz: 6 }, yildiz: [4500, 5500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, sandiklar: [[6, 1, 'y'], [6, 5, 'y']], duzen: ['........', '........', '.bbbbbb.', '........', '........', 'rrrr.rrr', 'rrrr.rrr', 'rrrr.rrr'] },
+  { no: 314, hamle: 19, tur: 6, hedef: { sandik: 3 }, yildiz: [4000, 5000], ozel: { cizgili: true, bomba: true, gokkusagi: true }, sandiklar: [[1, 1, 'y'], [4, 6, 'd'], [6, 2, 'y']], duzen: ['rrrr....', 'rrrr....', 'rrrr....', '.....rrr', '.....rrr', '.....rrr', 'rrrrr...', 'rrrrr...'] },
+  { no: 315, hamle: 22, tur: 6, hedef: { puan: 5000 }, yildiz: [6500, 8000], ozel: { cizgili: true, bomba: true, gokkusagi: true } },
+  { no: 316, hamle: 20, tur: 6, hedef: { sandik: 2, kasa: 6 }, yildiz: [4000, 5000], ozel: { cizgili: true, bomba: true, gokkusagi: true }, sandiklar: [[2, 2, 'y'], [2, 4, 'd']], duzen: ['........', '.rrrrrr.', '.rrrrrr.', '.rrrrrr.', '.rrrrrr.', '........', '.kkkkkk.', '........'] },
+  { no: 317, hamle: 24, tur: 6, hedef: { sandik: 3, sis: 6 }, yildiz: [4750, 6250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, sandiklar: [[6, 0, 'y'], [6, 3, 'y'], [6, 6, 'y']], duzen: ['ggg..ggg', '........', '........', '........', '........', 'rrrrrrrr', 'rrrrrrrr', 'rrrrrrrr'] },
+  { no: 318, hamle: 24, tur: 6, hedef: { sandik: 2, un: 10 }, yildiz: [5000, 6250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, carklar: [[1, 3]], sandiklar: [[5, 1, 'd'], [5, 6, 'd']], duzen: ['........', '........', '........', '........', 'rrr..rrr', 'rrr..rrr', 'rrr..rrr', 'rrr..rrr'] },
+  { no: 319, hamle: 16, tur: 6, hedef: { topla: { 1: 20, 4: 20 } }, yildiz: [4000, 5000], ozel: { cizgili: true, bomba: true, gokkusagi: true } },
+  { no: 320, hamle: 26, tur: 6, hedef: { sandik: 4, buz: 7 }, yildiz: [5750, 7000], ozel: { cizgili: true, bomba: true, gokkusagi: true }, sandiklar: [[0, 0, 'y'], [0, 6, 'y'], [6, 0, 'y'], [6, 6, 'y']], duzen: ['rrr..rrr', 'rrr..rrr', '..bbbb..', '........', '........', '..bbb...', 'rrr..rrr', 'rrr..rrr'] },
 ];
 
 export const TANITIM = {
+  sandik: { baslik: 'Yeni: Gömülü sandık', metin: 'Kumlu karelerde eşleşme yaptıkça kum temizlenir. Kumun altında iki kare uzunluğunda sandıklar saklı. Bir sandığın üstündeki bütün kum temizlenince sandık bulunur.' },
   cark: { baslik: 'Yeni: Değirmen çarkı', metin: 'Çerçeveli dört kare bir değirmen çarkıdır. Her iki hamlede bir çark saat yönünde döner ve üstündeki meyveleri taşır. Çarkın üstünde patlayan her meyve bir çuval un olur.' },
   kartopu: { baslik: 'Yeni: Kartopu', metin: 'Kartopu tohum gibi aşağı iner. Yanında eşleşme yaptıkça büyür. En alt sıraya inince yuvarlanıp patlar: ne kadar büyükse o kadar geniş bir alanı temizler.' },
   istiridye: { baslik: 'Yeni: İstiridye', metin: 'İstiridyeler yerinden oynamaz ve her hamleden sonra açılıp kapanır. Açıkken yanında eşleşme yaparsan ya da özel meyve değerse inci verir. Kapalıyken hiçbir şey işlemez.' },
@@ -410,4 +422,4 @@ export function hedefTamam(seviye, toplanan, puan) {
   }
   return Object.entries(h.topla || {}).every(([tur, n]) => (toplanan[tur] || 0) >= n);
 }
-export const KALAN_HEDEF = ['sarmasik', 'mantar', 'bal'];
+export const KALAN_HEDEF = ['sarmasik', 'mantar', 'bal', 'sandik'];

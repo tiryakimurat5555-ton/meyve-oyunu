@@ -601,6 +601,24 @@ const RENKLER = [
       { tip: 'kelebek', renk: '#4fc3ff' },
     ],
   },
+  // 31: Define Adası (turkuaz deniz göğü, kum tepeleri, palmiye yeşili, kelebek ve parıltılar)
+  {
+    gok: ['#4fc4e8', '#e6fbff'],
+    gunes: '#ffe14d',
+    gunesKenar: '#ffb82b',
+    tepeArka: ['#f0d08a', '#e2bd70'],
+    tepeArka2: ['#f5dc9c', '#e8c67c'],
+    tepeOn: ['#f8e4ae', '#efd290'],
+    tac: ['#3fae5a', '#2e9448', '#6fcf6a'],
+    nokta: ['#ff6a5a', '#ffd23f', '#ffffff'],
+    cicek: ['#ff6a8a', '#ffd23f', '#ff8a3d'],
+    parca: [
+      { tip: 'parilti', renk: '#ffffff' },
+      { tip: 'parilti', renk: '#fff3b0' },
+      { tip: 'kelebek', renk: '#ff6fb5' },
+      { tip: 'kelebek', renk: '#4fc3ff' },
+    ],
+  },
 ];
 // Bölümün gök renkleri (harita bantları için)
 export const gokRenk = (bolum) => (RENKLER[bolum] || RENKLER[0]).gok;

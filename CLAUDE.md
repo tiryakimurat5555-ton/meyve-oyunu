@@ -36,7 +36,7 @@ Murat'ın meyve temalı 3'lü eşleştirme oyunu (Kasım 2026). Global ad "Prism
   24 Fener Bahçesi (231-240, %66-93), 25 Uzay Bahçesi (241-250, %77-100),
   26 Kovan Arıları (251-260, %79-99), 27 İnci Koyu (261-270, 26 Kasım Yaz Dönüşü'nden çevrildi; sahne 26 kumsal),
   28 Domino Bahçesi (271-280, %72-100), 29 Ayna Gölü (281-290, %69-100), 30 Büyük Hasat (291-300, karışık şenlik, %75-97; sahne 29 altın hasat) YAPILDI (26 Kasım). YAPILACAK (26 Kasım Murat ekletti): 31 Değirmen Tepesi (301-310, %67-100) YAPILDI (26 Kasım),
-  32 Define Adası (kum altında 2 karelik sandık; üstündeki kumun hepsi temizlenince bulunur), 33 Dev Meyve Bahçesi (2x2 dev meyve,
+  32 Define Adası (311-320, %75-100) YAPILDI (26 Kasım), 33 Dev Meyve Bahçesi (2x2 dev meyve,
   yanında eşleşme = çatlar, 4 vuruşta kırılır, o rengin hepsini patlatır), 34 İkiz Bahçe (kurdeleli meyve çifti: biri eşleşince öbürü
   de patlar), 35 Renkli Kristaller (renkli kapak yalnız kendi rengindeki eşleşmeyle kırılır; VO "Kırmızı kristalli elma"),
   36 Çan Kulesi (yardımcı: yanında eşleşme = satır+sütun temizler), 37 Yağmur Bulutu (bulutun altındaki sütunda eşleşme = yağar, kuru toprağı sular; hedef kuru toprak),
@@ -133,6 +133,11 @@ Murat'ın meyve temalı 3'lü eşleştirme oyunu (Kasım 2026). Global ad "Prism
   patlayan renkli meyve = 1 çuval un (sayac.un, hedef.un; mantik carkHucreMi seviyeKur'da kurulur; Oyun unSay). Oyun carkDondur + carkSayac.
   CarkCerceve (altta ahşap çerçeve + göbek), UnIkon. VO hücreye ", değirmen çarkı"; "Çarklar döndü" / "Çarklar bir hamle sonra dönecek".
   Sahne 30: buğday tepeleri + iki dönen yel değirmeni (Degirmen). Tanıtım 'cark' (301).
+- KUM / SANDIK (311-320, Define Adası): zemin değeri M.KUM=40 (düzen 'r'), kar gibi tek kat silinir (sayac.kum). seviye.sandiklar =
+  [[r, c, 'y'|'d']] kumun altındaki 2 karelik sandık; hücreleri kumlu olmalı (seviye-testi denetler). Bütün kumu gidince bulunur: hedef.sandik
+  KALAN_HEDEF (toplanan.sandikKalan = M.sandikKalan(zemin), etkinSeviye'den). sayac.sandik = sandık hücresinde kalkan kum (bot ağırlığı).
+  Oyun: eriyen döngüsünde KUM dalı, sandikBulunan → 'Sandık bulundu!' (yildiz_3), sarmasikGuncelle hedef.sandik için de çalışır.
+  Çizim: GomuluSandik (kumun ALTINDA; bulununca altın), KumZemin/KumUst, SandikIkon. VO "Kumlu elma", açılan sandık hücresi ", sandık". Sahne 31 kumsal ada.
 - 26 Kasım Murat onayı ("Yap"): 19 Balon, 20 Hasat Pazarı (sırayla sipariş), 21 Bal Kovanı (bal lekesi yayılır), 22 Kış Dönüşü (karışık),
   23 Kurbağa Gölü, 24 Fener Bahçesi (yalnız özel parça yakar), 25 Uzay Bahçesi (yerçekimi yönü), 26 Kovan Arıları (yardımcı arılar),
   27 Yaz Dönüşü (karışık), 28 Domino, 29 Ayna Gölü (hamle aynalanır), 30 Büyük Hasat (karışık, 300. seviye).

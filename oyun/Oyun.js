@@ -38,6 +38,10 @@ import {
   MantarIkon,
   BantSerit,
   CarkCerceve,
+  KumZemin,
+  KumUst,
+  GomuluSandik,
+  SandikIkon,
   UnIkon,
   SaatIkon,
   KarZemin,
@@ -120,6 +124,7 @@ function bantYaziKur(seviye) {
 function karliAd(kat, ad) {
   if (!kat) return ad;
   if (kat === M.BAL) return 'Ballı ' + ad.charAt(0).toLocaleLowerCase('tr') + ad.slice(1);
+  if (kat === M.KUM) return 'Kumlu ' + ad.charAt(0).toLocaleLowerCase('tr') + ad.slice(1);
   if (M.cicekMi(kat)) return `${MEYVELER[kat - M.CICEK].isim} çiçeğinde ${ad.charAt(0).toLocaleLowerCase('tr') + ad.slice(1)}`;
   return (kat >= 2 ? 'İki kat karlı ' : 'Karlı ') + ad.charAt(0).toLocaleLowerCase('tr') + ad.slice(1);
 }
@@ -138,6 +143,7 @@ function SiparisSimge({ s, boy }) {
 // Yeni bölümlerin hedefleri tek tabloda: hedef anlatımı, kalan, olay duyurusu ve simge
 // kalanAnahtar: yayılabilen engeller için tahtada kalan sayısı (toplanan[k + 'Kalan'])
 const EK_HEDEF = [
+  { k: 'sandik', kalanAnahtar: true, hedef: (n) => `kumun altındaki ${n} sandığı bul (kumlu karelerde eşleşme yap)`, ad: 'sandık', olay: (n) => (n > 1 ? `${n} sandık bulundu!` : 'Sandık bulundu!'), Ikon: SandikIkon },
   { k: 'un', hedef: (n) => `${n} çuval un topla (değirmen çarkının üstündeki meyveleri patlat)`, ad: 'çuval un', olay: (n) => `${n} çuval un`, Ikon: UnIkon },
   { k: 'istiridye', hedef: (n) => `${n} istiridyeden inci al (açıkken yanında eşleşme yap)`, ad: 'istiridye', olay: (n) => (n > 1 ? `${n} inci alındı` : 'İnci alındı'), Ikon: IstiridyeIkon },
   { k: 'kartopu', hedef: (n) => `${n} kartopunu en alta yuvarla`, ad: 'kartopu', olay: (n) => (n > 1 ? `${n} kartopu patladı` : 'Kartopu patladı'), Ikon: KartopuIkon },
@@ -513,7 +519,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
   };
   // Sarmaşık yayılabildiği için hedefte tahtada kalan sayısı tutulur
   const sarmasikGuncelle = () => {
-    if (!(seviye.hedef.sarmasik || seviye.hedef.mantar || seviye.hedef.bal) || !izgara.current) return;
+    if (!(seviye.hedef.sarmasik || seviye.hedef.mantar || seviye.hedef.bal || seviye.hedef.sandik) || !izgara.current) return;
     toplananRef.current = M.kalanlariYaz({ ...toplananRef.current }, engelIzgarasi(), zemin.current);
     setToplanan(toplananRef.current);
   };
@@ -713,7 +719,15 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
       let karSay = 0;
       let cicekSay = 0;
       let balSay = 0;
+      let kumSay = 0;
+      const sandikOnce = M.sandikKalan(zemin.current);
       for (const [r, c] of eriyen) {
+        if (zemin.current[r][c] === M.KUM) {
+          zemin.current[r][c] = 0;
+          kumSay++;
+          efektEkle({ tip: 'kirilma', tur: 'bal', r, c, az: true });
+          continue;
+        }
         if (zemin.current[r][c] === M.BAL) {
           zemin.current[r][c] = 0;
           balSay++;
@@ -734,6 +748,11 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
       if (karSay) cal('buz', 0.55);
       if (cicekSay) cal('cicek');
       if (balSay) cal('sarmasik_kes', 0.6);
+      const sandikBulunan = sandikOnce - M.sandikKalan(zemin.current);
+      if (sandikBulunan) {
+        cal('yildiz_3');
+        titret('basari');
+      } else if (kumSay) cal('sarmasik_kes', 0.5);
       // Alt sıraya inen tohumlar toplanır: çiçek açar (civcivler yuvaya uçar)
       let civcivSay = 0;
       let anahtarSay = 0;
@@ -974,7 +993,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
       const saatSay = silinen.filter((x) => x.p.saat).length;
       const bukSay = silinen.filter((x) => x.p.buk).length;
       const unSay = seviye.carklar ? silinen.filter((x) => !x.kasa && !x.tohum && x.p.tur >= 0 && x.p.tur < 6 && M.carkHucreMi(x.r, x.c)).length : 0;
-      topla({ ...adimSayaci(silinen), buz: buzKirilan.length - sarmasikKesilen - sisDagilan - mantarKesilen, sis: sisDagilan, mantar: mantarKesilen, kasa: kasaKirilan, fici: ficiKirilan, kar: karSay, cicek: cicekSay, saat: saatSay, tohum: tohumSay, civciv: civcivSay, anahtar: anahtarSay, kafes: kafesAcilan, bukalemun: bukSay, balon: balonUcan, bal: balSay, fener: fenerSay, domino: dominoSay, kartopu: kartopuSay, istiridye: istSay, un: unSay });
+      topla({ ...adimSayaci(silinen), buz: buzKirilan.length - sarmasikKesilen - sisDagilan - mantarKesilen, sis: sisDagilan, mantar: mantarKesilen, kasa: kasaKirilan, fici: ficiKirilan, kar: karSay, cicek: cicekSay, saat: saatSay, tohum: tohumSay, civciv: civcivSay, anahtar: anahtarSay, kafes: kafesAcilan, bukalemun: bukSay, balon: balonUcan, bal: balSay, fener: fenerSay, domino: dominoSay, kartopu: kartopuSay, istiridye: istSay, un: unSay, sandik: sandikBulunan });
       sarmasikGuncelle();
       sayacToplam.sarmasik += sarmasikKesilen;
       sayacToplam.buz += buzKirilan.length - sarmasikKesilen - sisDagilan - mantarKesilen;
@@ -1811,7 +1830,10 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
             {(seviye.bant || []).map(({ satir: r, yon }) => (
               <BantSerit key={`b${r}`} r={r} yon={yon} H={H} />
             ))}
-            {zemin.current.map((satir, r) => satir.map((k, c) => (k > 0 ? (k === M.BAL ? <BalZemin key={`k${r}-${c}`} H={H} r={r} c={c} /> : M.cicekMi(k) ? <CicekZemin key={`k${r}-${c}`} H={H} tur={k - M.CICEK} r={r} c={c} /> : <KarZemin key={`k${r}-${c}`} H={H} kat={k} r={r} c={c} />) : null)))}
+            {(seviye.sandiklar || []).map((sd, i) => (
+              <GomuluSandik key={`sd${i}`} s={sd} H={H} bulundu={M.sandikHucreleri(sd).every(([a, b]) => zemin.current[a][b] !== M.KUM)} />
+            ))}
+            {zemin.current.map((satir, r) => satir.map((k, c) => (k > 0 ? (k === M.KUM ? <KumZemin key={`k${r}-${c}`} H={H} r={r} c={c} /> : k === M.BAL ? <BalZemin key={`k${r}-${c}`} H={H} r={r} c={c} /> : M.cicekMi(k) ? <CicekZemin key={`k${r}-${c}`} H={H} tur={k - M.CICEK} r={r} c={c} /> : <KarZemin key={`k${r}-${c}`} H={H} kat={k} r={r} c={c} />) : null)))}
           </View>
           {secili && <SeciliHalka r={secili[0]} c={secili[1]} H={H} />}
           <View style={TAM} pointerEvents="none" importantForAccessibility="no-hide-descendants" accessibilityElementsHidden>
@@ -1823,7 +1845,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
             {(seviye.kapilar || []).map((k, i) => (
               <KapiIsareti key={`kp${i}`} k={k} i={i} H={H} />
             ))}
-            {zemin.current.map((satir, r) => satir.map((k, c) => (k > 0 ? (k === M.BAL ? <BalUst key={`u${r}-${c}`} H={H} r={r} c={c} /> : M.cicekMi(k) ? <CicekUst key={`u${r}-${c}`} H={H} tur={k - M.CICEK} r={r} c={c} /> : <KarUst key={`u${r}-${c}`} H={H} kat={k} r={r} c={c} />) : null)))}
+            {zemin.current.map((satir, r) => satir.map((k, c) => (k > 0 ? (k === M.KUM ? <KumUst key={`u${r}-${c}`} H={H} r={r} c={c} /> : k === M.BAL ? <BalUst key={`u${r}-${c}`} H={H} r={r} c={c} /> : M.cicekMi(k) ? <CicekUst key={`u${r}-${c}`} H={H} tur={k - M.CICEK} r={r} c={c} /> : <KarUst key={`u${r}-${c}`} H={H} kat={k} r={r} c={c} />) : null)))}
           </View>
           <View style={TAM} pointerEvents="none" importantForAccessibility="no-hide-descendants" accessibilityElementsHidden>
             {efektler.map((e) => {
@@ -1852,7 +1874,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
                     key={`h${r}-${c}`}
                     accessible
                     accessibilityRole="button"
-                    accessibilityLabel={`${karliAd(zemin.current[r][c], parcaAdi(p))}${sec ? ' seçili' : ''}, ${r + 1}. satır ${c + 1}. sütun${bantYazi(r, c)}`}
+                    accessibilityLabel={`${karliAd(zemin.current[r][c], parcaAdi(p))}${sec ? ' seçili' : ''}, ${r + 1}. satır ${c + 1}. sütun${bantYazi(r, c)}${zemin.current[r][c] !== M.KUM && M.sandikHucreMi(r, c) ? ', sandık' : ''}`}
                     onPress={() => hucreDokun([r, c])}
                     style={{ position: 'absolute', left: c * H, top: r * H, width: H, height: H }}
                   />

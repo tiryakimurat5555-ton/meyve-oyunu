@@ -55,6 +55,11 @@ for (const sv of DENENECEK) {
       }
     }
   }
+  // Sandık: hücreleri kumlu olmalı, sayısı hedefle aynı
+  if (sv.sandiklar) {
+    for (const sd of sv.sandiklar) for (const [r, c] of M.sandikHucreleri(sd)) if (!sv.duzen || sv.duzen[r][c] !== 'r') { hata++; console.log(`HATA: seviye ${sv.no} sandık hücresi kumsuz (${r},${c})`); }
+    if ((sv.hedef.sandik || 0) !== sv.sandiklar.length) { hata++; console.log(`HATA: seviye ${sv.no} ${sv.sandiklar.length} sandık, hedef ${sv.hedef.sandik}`); }
+  }
   // Anahtarın sütununda altında kafes olmamalı (kafesli meyve temizlenmez, anahtar takılı kalır)
   if (sv.duzen)
     for (let c = 0; c < 8; c++)
