@@ -185,7 +185,7 @@ Murat'ın meyve temalı 3'lü eşleştirme oyunu (Kasım 2026). Global ad "Prism
 - `App.js`: kök; ekran (liste/oyun), ilerleme kaydı (AsyncStorage 'meyve-ilerleme-v1': acik, yildiz, enIyi, guc, gunluk{son,seri},
   bolumOdul), ayarlar, günlük ödül. `oyun/Paneller.js`: GunlukOdulPaneli, AyarlarPaneli, GUNLUK_ODUL.
 - EKRANLAR (26 Kasım, Murat onayladı): App ekran.ad = 'ana' | 'harita' | 'gunluk' | 'oyun' (oyun ekran.nereden'e döner; Oyun geriAd).
-  `oyun/AnaEkran.js`: logo (şimdilik zıplayan meyveler + "Meyve Bahçesi"), yıldız + güçlendirici rozetleri, büyük "Oyna · Seviye N",
+  `oyun/AnaEkran.js`: logo (şimdilik zıplayan meyveler + "Prism Orchard"), yıldız + güçlendirici rozetleri, büyük "Oyna · Seviye N",
   altta üç yuvarlak düğme: Harita, Günlük ödül (ortada, sepet; alınabilirse kırmızı "!" noktası; seviye 5'ten önce kilitli), Ayarlar.
   Günlük ödül ARTIK KENDİLİĞİNDEN AÇILMAZ (Murat). `oyun/GunlukEkrani.js`: rafta 7 sepet (7. gün sandık), bugünkü zıplar, "Aç" →
   ödül simgeleri sayaca uçar, "Yarın gel: ..." notu; VO her gün ayrı ("4. gün, bugün, açılmadı, 1 çekiç"). App.gunlukDurum/gunlukAl.

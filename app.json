@@ -11,7 +11,11 @@
       "bundleIdentifier": "com.murat5561.prismorchard"
     },
     "android": {
-      "package": "com.murat5561.prismorchard"
+      "package": "com.murat5561.prismorchard",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/simge-on.png",
+        "backgroundColor": "#bfe6ff"
+      }
     },
     "runtimeVersion": {
       "policy": "appVersion"
@@ -23,6 +27,7 @@
     },
     "updates": {
       "url": "https://u.expo.dev/ca9c080d-eb2a-46f0-a46d-dde0454c4ab4"
-    }
+    },
+    "icon": "./assets/simge.png"
   }
 }

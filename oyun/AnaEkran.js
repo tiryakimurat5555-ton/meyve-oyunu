@@ -107,7 +107,7 @@ export default function AnaEkran({ ilerleme, oyna, haritaAc, gunlukAc, ayarlarAc
           ))}
         </View>
         <Text style={[ast.logo, gece && { color: '#ffffff', textShadowColor: '#1c2559' }]} accessibilityRole="header">
-          Meyve Bahçesi
+          Prism Orchard
         </Text>
         <Text style={[ast.bolum, yaziRengi]}>{bolumBul(siradaki).ad}</Text>
 
