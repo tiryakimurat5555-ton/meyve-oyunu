@@ -157,6 +157,11 @@ Murat'ın meyve temalı 3'lü eşleştirme oyunu (Kasım 2026). Geçici ad "Meyv
   Bot ve ipucu sisin altını görmez: M.gorunurTahta (sisli hücre = benzersiz 100+ değer) ile karar verir (enIyiHamle ve seviye-testi).
   Ses 'sis' (ElevenLabs, ham sis_2). Sahne 8 gece: RENKLER.gece, Ay (uykulu yüz), Yildizlar, AtesBocegi; geceMi(bolum) ile başlık ve
   güçlendirici yazıları beyaz (koyu gökte okunsun).
+- PNG PLANI (26 Kasım, Murat): Higgsfield kredisi gelince (1000 kredi, Seedream 5.5: taş 2,5 / arka plan 3,5 kredi) promptları ben yazar,
+  üretir, tutarlılığı kontrol ederim (ortak tarz metni + mevcut meyveler referans). PNG: meyve/engel taşları (256, şeffaf), 30 arka plan
+  (9:16 2K, önemli şeyler ortada; tablette kesilir), simge/açılış ekranı, arayüz süs/simgeleri (güçlendirici simgeleri emoji yerine, yıldız,
+  kilit, dişli, düğme zemini, kutu çerçevesi, seviye düğmesi, günlük ödül sepetleri). Yazı/sayı/efekt kodla. Kod çizimleri yedek kalır.
+  Liste: Murat'a verilen higgsfield-png-listesi.txt. Sıra: arka planlar → buz/kasa/kar/fıçı/sis → diğer taşlar → simge/açılış.
 - Zincir övgü yazıları İngilizce (Nice!, Great!, Amazing!, Fantastic!), şenlik yazısı 'Garden Party!' — Murat: global oyun. Ödüllü reklam sonraki aşama.
 - Ekranda VoiceOver'a özel uyarı yazıları olmasın.
 - 25 Kasım ONAYLANDI (güçlendiriciler/günlük ödül): Çekiç (tek parça/buz/kasa kırar), Karıştır, +3 Hamle; hamle harcamazlar;
