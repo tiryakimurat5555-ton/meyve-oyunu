@@ -180,6 +180,14 @@ Murat'ın meyve temalı 3'lü eşleştirme oyunu (Kasım 2026). Global ad "Prism
 - app.json'da proje kimliği yoksa iş akışı `eas init` ile bağlar, app.json'u kendisi gönderir (önce `git pull` yap).
 - Sonuç ve Expo Go bağlantısı `yayin-kaydi` dalındaki yayin-kaydi.txt'de: `git fetch origin +yayin-kaydi:refs/remotes/origin/yayin-kaydi && git show origin/yayin-kaydi:yayin-kaydi.txt` (dal her seferinde baştan yazılır; + şart). Çalışma listesi: `gh api repos/tiryakimurat5555-ton/meyve-oyunu/actions/runs`.
 - Expo derlemesi (build) Murat'a sormadan başlatılmaz.
+- PLAY (26 Kasım): Android paketi `.github/workflows/android-derle.yml` ile GitHub'da derlenir (eas build --local, imza anahtarı Expo'da;
+  sonuç GitHub sürümü android-<n>/prism-orchard.aab). Play işlemleri Deneme deposunun `prism` DALINDAKİ play-islem.yml ile (anahtarlar
+  orada kalır, buraya ASLA kopyalanmaz): `gh api -X POST repos/tiryakimurat5555-ton/Deneme/actions/workflows/play-islem.yml/dispatches
+  -f ref=prism -f 'inputs[islem]=yukle' -f 'inputs[paket]=com.murat5561.prismorchard' -f 'inputs[hedef]=<aab adresi>' -f 'inputs[kanal]=alpha'
+  -f 'inputs[grup]=galaktik-imparatorluk@googlegroups.com'`; mağaza sayfası islem listeAdres, hedef
+  https://raw.githubusercontent.com/tiryakimurat5555-ton/meyve-oyunu/main/magaza/play (liste/*.txt, simge.png, one_cikan.png, ekran/N.jpg).
+  Sürüm kodu 2 kapalı teste TASLAK yüklendi (uygulama henüz yayımlanmamış). Gizlilik: docs/gizlilik.html (GitHub Pages, Murat açacak).
+  Mağaza paketinde Bot düğmesi gizli (expo-updates kanalı 'production'). Simge assets/simge.png (kodla, geçici; PNG gelince değişir).
 
 ## Dosyalar
 - `App.js`: kök; ekran (liste/oyun), ilerleme kaydı (AsyncStorage 'meyve-ilerleme-v1': acik, yildiz, enIyi, guc, gunluk{son,seri},
