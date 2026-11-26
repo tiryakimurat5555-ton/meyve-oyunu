@@ -30,6 +30,7 @@ export const BOLUMLER = [
   { ad: 'Domino Bahçesi', ilk: 271, son: 280, renk: '#24384a' },
   { ad: 'Ayna Gölü', ilk: 281, son: 290, renk: '#7ab0e0' },
   { ad: 'Büyük Hasat', ilk: 291, son: 300, renk: '#e08a2e' },
+  { ad: 'Değirmen Tepesi', ilk: 301, son: 310, renk: '#c9a446' },
 ];
 
 export const bolumBul = (no) => BOLUMLER.find((b) => no >= b.ilk && no <= b.son) || BOLUMLER[BOLUMLER.length - 1];

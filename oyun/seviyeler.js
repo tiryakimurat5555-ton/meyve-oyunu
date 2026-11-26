@@ -336,9 +336,21 @@ export const SEVIYELER = [
   { no: 298, hamle: 21, tur: 6, hedef: { saat: 3, bal: 4 }, yildiz: [4500, 5500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, saat: 14, duzen: ['........', '........', '.z..z..z', '........', '...hh...', '...hh...', '........', '........'] },
   { no: 299, hamle: 17, tur: 6, hedef: { topla: { 1: 20, 4: 20 } }, yildiz: [4250, 5250], ozel: { cizgili: true, bomba: true, gokkusagi: true } },
   { no: 300, hamle: 32, tur: 6, hedef: { siparis: 3, balon: 2, domino: 4, kurbaga: 1 }, yildiz: [7250, 8500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, siparisler: [{ tur: 2, n: 12 }, { ozel: 'bomba', n: 1 }, { tur: 5, n: 12 }], duzen: ['........', '..q.....', '........', '........', '..dddd..', '........', '.o....o.', '........'] },
+  // ---- 31. bölüm: Değirmen Tepesi (2x2 değirmen çarkı her 2 hamlede saat yönünde döner; çarkta patlayan meyve un olur) ----
+  { no: 301, hamle: 18, tur: 6, hedef: { un: 12 }, yildiz: [3750, 4500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, carklar: [[3, 3]], yeni: 'cark' },
+  { no: 302, hamle: 12, tur: 6, hedef: { un: 30 }, yildiz: [2750, 3750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, carklar: [[2, 1], [4, 5]] },
+  { no: 303, hamle: 13, tur: 6, hedef: { un: 22, buz: 8 }, yildiz: [3000, 4000], ozel: { cizgili: true, bomba: true, gokkusagi: true }, carklar: [[3, 1], [3, 5]], duzen: ['........', '.bbbbbb.', '.b....b.', '........', '........', '........', '........', '........'] },
+  { no: 304, hamle: 13, tur: 6, hedef: { un: 36 }, yildiz: [3250, 4000], ozel: { cizgili: true, bomba: true, gokkusagi: true }, carklar: [[1, 1], [1, 5], [5, 3]] },
+  { no: 305, hamle: 22, tur: 6, hedef: { puan: 5500 }, yildiz: [7000, 8000], ozel: { cizgili: true, bomba: true, gokkusagi: true }, carklar: [[3, 3]] },
+  { no: 306, hamle: 26, tur: 6, hedef: { un: 14, kasa: 8 }, yildiz: [5750, 6750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, carklar: [[2, 1], [2, 5]], duzen: ['........', '........', '........', '........', '........', '........', '.kkkkkk.', '.k....k.'] },
+  { no: 307, hamle: 25, tur: 6, hedef: { un: 16, kar: 12 }, yildiz: [6000, 7250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, carklar: [[2, 2], [2, 4]], duzen: ['........', '........', '..ssss..', '..ssss..', '........', 'ss....ss', '........', '........'] },
+  { no: 308, hamle: 13, tur: 6, hedef: { un: 26, sis: 8 }, yildiz: [3000, 3750], ozel: { cizgili: true, bomba: true, gokkusagi: true }, carklar: [[4, 1], [4, 5]], duzen: ['gggg....', '....gggg', '........', '........', '........', '........', '........', '........'] },
+  { no: 309, hamle: 14, tur: 6, hedef: { topla: { 0: 20, 2: 20 } }, yildiz: [3500, 4500], ozel: { cizgili: true, bomba: true, gokkusagi: true }, carklar: [[3, 3]] },
+  { no: 310, hamle: 13, tur: 6, hedef: { un: 36, buz: 6, kasa: 4 }, yildiz: [3250, 4250], ozel: { cizgili: true, bomba: true, gokkusagi: true }, carklar: [[1, 1], [1, 5], [4, 3]], duzen: ['........', '........', '........', 'bbb..bbb', '........', '........', '..kkkk..', '........'] },
 ];
 
 export const TANITIM = {
+  cark: { baslik: 'Yeni: Değirmen çarkı', metin: 'Çerçeveli dört kare bir değirmen çarkıdır. Her iki hamlede bir çark saat yönünde döner ve üstündeki meyveleri taşır. Çarkın üstünde patlayan her meyve bir çuval un olur.' },
   kartopu: { baslik: 'Yeni: Kartopu', metin: 'Kartopu tohum gibi aşağı iner. Yanında eşleşme yaptıkça büyür. En alt sıraya inince yuvarlanıp patlar: ne kadar büyükse o kadar geniş bir alanı temizler.' },
   istiridye: { baslik: 'Yeni: İstiridye', metin: 'İstiridyeler yerinden oynamaz ve her hamleden sonra açılıp kapanır. Açıkken yanında eşleşme yaparsan ya da özel meyve değerse inci verir. Kapalıyken hiçbir şey işlemez.' },
   ayna: { baslik: 'Yeni: Ayna Gölü', metin: 'Tahtanın ortasında bir ayna çizgisi var. Bir hamle yaptığında, aynası tahtanın öbür yarısında eşleşme oluşturuyorsa o da kendiliğinden yapılır: bir hamleye iki hamle!' },

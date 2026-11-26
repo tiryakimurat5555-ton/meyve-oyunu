@@ -709,7 +709,10 @@ export function adimUygula(t, oz, engel, adim, rnd = Math.random, zemin = null) 
       engel[r][c] = null;
       sayac.bukalemun = (sayac.bukalemun || 0) + 1;
     }
-    if (renkli(t[r][c])) sayac.topla[t[r][c]] = (sayac.topla[t[r][c]] || 0) + 1;
+    if (renkli(t[r][c])) {
+      sayac.topla[t[r][c]] = (sayac.topla[t[r][c]] || 0) + 1;
+      if (carkHucreMi(r, c)) sayac.un = (sayac.un || 0) + 1;
+    }
     t[r][c] = -1;
     oz[r][c] = null;
   }
@@ -1135,7 +1138,7 @@ export function inenDerinligi(t) {
 export const inenDegeri = (s, d0) => INEN_SAYAC.reduce((a, k) => a + (s.sayac[k] || 0) * 400, 0) + (inenDerinligi(s.t) - d0) * 60;
 
 // Bot: hamle sonucunun hedefe katkısı
-export const HEDEF_AGIRLIK = { buz: 150, kasa: 150, kar: 150, sarmasik: 170, fici: 200, sis: 160, cicek: 180, saat: 220, mantar: 180, kafes: 300, bukalemun: 200, balon: 400, bal: 170, fener: 500, ari: 120, domino: 220, istiridye: 380 };
+export const HEDEF_AGIRLIK = { buz: 150, kasa: 150, kar: 150, sarmasik: 170, fici: 200, sis: 160, cicek: 180, saat: 220, mantar: 180, kafes: 300, bukalemun: 200, balon: 400, bal: 170, fener: 500, ari: 120, domino: 220, istiridye: 380, un: 140 };
 export function hamleDegeri(s, hedef, derin0 = 0) {
   if (hedef.puan) return s.puan;
   let d = s.puan / 100;
@@ -1220,8 +1223,36 @@ export const serbestMi = (e) => e == null || saatMi(e) || e === 'buk' || kurbMi(
 let etkinSeviye = null;
 // Akıntı kapıları (Göl Kıyısı): seviye.kapilar = [{ giris: [r, c], cikis: [r, c] }]
 let kapilar = [];
+// ---------------- Değirmen çarkları (Değirmen Tepesi) ----------------
+// seviye.carklar = [[r, c], ...] her biri 2x2 çarkın sol üst hücresi. Her CARK_ARALIK çekiçsiz hamlede çarkların üstündeki
+// parçalar (engeli ve özel haliyle) saat yönünde bir kare döner; zemin yerinde kalır. Çark hücresinde patlayan her meyve 1 çuval un (hedef.un).
+export const CARK_ARALIK = 2;
+let carkHucre = new Set();
+export const carkHucreMi = (r, c) => carkHucre.has(r * 100 + c);
+// Saat yönünde: sol üst → sağ üst → sağ alt → sol alt → sol üst
+export const carkSirasi = (r, c) => [[r, c], [r, c + 1], [r + 1, c + 1], [r + 1, c]];
+export function carkDondur(t, oz, engel, carklar) {
+  t = kopya(t);
+  oz = kopya(oz);
+  engel = kopya(engel);
+  const tasimalar = [];
+  for (const [r0, c0] of carklar) {
+    const h = carkSirasi(r0, c0);
+    if (h.some(([r, c]) => t[r][c] === DELIK)) continue;
+    const eski = h.map(([r, c]) => [t[r][c], oz[r][c], engel[r][c]]);
+    h.forEach(([r, c], i) => {
+      const [y0, y1] = h[(i + 1) % 4];
+      [t[y0][y1], oz[y0][y1], engel[y0][y1]] = eski[i];
+      tasimalar.push({ eski: [r, c], yeni: [y0, y1] });
+    });
+  }
+  return { t, oz, engel, tasimalar };
+}
+
 export function seviyeKur(seviye) {
   etkinSeviye = seviye;
+  carkHucre = new Set();
+  for (const [r, c] of (seviye && seviye.carklar) || []) for (const [a, b] of carkSirasi(r, c)) carkHucre.add(a * 100 + b);
   yonAyarla(seviye && seviye.yercekimi ? seviye.yercekimi.yonler[0] : 'asagi');
   siparisSifirla(seviye);
   kapilar = (seviye && seviye.kapilar) || [];
@@ -1306,6 +1337,15 @@ export function hamleSonrasiKurallar(durum, seviye, ctx, rnd = Math.random) {
     puan += z.puan;
     sayacBirlestir(sayac, z.sayac);
     olaylar.push({ tip: 'bant' });
+  }
+  // Değirmen çarkları: her CARK_ARALIK hamlede saat yönünde döner, oluşan eşleşmeler çözülür
+  if (seviye.carklar && seviye.carklar.length && ctx.yapilan % CARK_ARALIK === 0) {
+    const d = carkDondur(t, oz, engel, seviye.carklar);
+    const z = zincirCoz(d.t, d.oz, d.engel, zemin, { izinli: seviye.ozel, rnd });
+    ({ t, oz, engel, zemin } = z);
+    puan += z.puan;
+    sayacBirlestir(sayac, z.sayac);
+    olaylar.push({ tip: 'cark' });
   }
   // İstiridyeler açılır / kapanır
   if (h.istiridye && engel.some((s) => s.some(istMi))) {

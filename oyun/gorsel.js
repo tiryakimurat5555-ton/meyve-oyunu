@@ -1050,6 +1050,36 @@ export function BantSerit({ r, yon, H }) {
   );
 }
 
+// ---------- Değirmen çarkı (Değirmen Tepesi) ----------
+// 2x2 karenin altında ahşap çerçeve + ortada dört kanatlı küçük çark göbeği (meyvelerin arasında görünür)
+export function CarkCerceve({ r, c, H }) {
+  const g = H * 0.34;
+  return (
+    <View pointerEvents="none" style={{ position: 'absolute', left: c * H, top: r * H, width: H * 2, height: H * 2 }}>
+      <View style={{ position: 'absolute', left: 1, top: 1, right: 1, bottom: 1, borderRadius: H * 0.3, backgroundColor: 'rgba(240,200,120,0.45)', borderWidth: 3, borderColor: '#b07a3a' }} />
+      <View style={{ position: 'absolute', left: H - g / 2, top: H - g / 2, width: g, height: g, alignItems: 'center', justifyContent: 'center' }}>
+        {[0, 90].map((a) => (
+          <View key={a} style={{ position: 'absolute', width: g, height: g * 0.24, borderRadius: g * 0.1, backgroundColor: '#f6e7c8', borderWidth: 1.5, borderColor: '#8a5a24', transform: [{ rotate: `${a + 45}deg` }] }} />
+        ))}
+        <View style={{ width: g * 0.34, height: g * 0.34, borderRadius: g, backgroundColor: '#8a5a24' }} />
+      </View>
+    </View>
+  );
+}
+
+// Un çuvalı simgesi
+export function UnIkon({ boy = 26 }) {
+  return (
+    <View style={{ width: boy, height: boy, alignItems: 'center', justifyContent: 'flex-end' }}>
+      <View style={{ width: boy * 0.42, height: boy * 0.16, borderTopLeftRadius: boy * 0.1, borderTopRightRadius: boy * 0.1, backgroundColor: '#e8d6b0', borderWidth: 1.5, borderColor: '#9a7a4a', marginBottom: -2 }} />
+      <View style={{ width: boy * 0.32, height: boy * 0.07, backgroundColor: '#b07a3a' }} />
+      <View style={{ width: boy * 0.84, height: boy * 0.62, borderRadius: boy * 0.24, backgroundColor: '#f4e6c8', borderWidth: 1.5, borderColor: '#9a7a4a', alignItems: 'center', justifyContent: 'center' }}>
+        <Text style={{ fontSize: boy * 0.26, lineHeight: boy * 0.3, color: '#b07a3a', fontWeight: '900' }}>✿</Text>
+      </View>
+    </View>
+  );
+}
+
 // ---------- Akıntı kapıları (Göl Kıyısı) ----------
 // Giriş: hücrenin alt kenarında su girdabı; çıkış: hücrenin üst kenarında aynı renkte dalga. Her kapı çiftinin kendi rengi ve numarası var.
 const KAPI_RENK = ['#2f9fe0', '#22b39a', '#8a6be0', '#e07a2f'];

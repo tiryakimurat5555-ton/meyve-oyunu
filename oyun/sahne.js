@@ -582,6 +582,25 @@ const RENKLER = [
       { tip: 'kelebek', renk: '#ff8a5c' },
     ],
   },
+  // 30: Değirmen Tepesi (rüzgârlı buğday tepeleri, dönen yel değirmenleri, uçuşan buğday başakları)
+  {
+    gok: ['#8fd0f5', '#fff4d6'],
+    gunes: '#ffe14d',
+    gunesKenar: '#ffc02b',
+    tepeArka: ['#d9b85a', '#c9a446'],
+    tepeArka2: ['#e6c66a', '#d4b052'],
+    tepeOn: ['#b8d66a', '#a0c254'],
+    tac: ['#6fbf4f', '#58a43f', '#9ad66a'],
+    nokta: ['#ff6a5a', '#ffd23f', '#ffffff'],
+    cicek: ['#ff6a5a', '#ffd23f', '#a06bff'],
+    degirmen: true,
+    parca: [
+      { tip: 'yaprak', renk: '#e8c45a' },
+      { tip: 'yaprak', renk: '#d9a83a' },
+      { tip: 'kelebek', renk: '#ff8a3d' },
+      { tip: 'kelebek', renk: '#4fc3ff' },
+    ],
+  },
 ];
 // Bölümün gök renkleri (harita bantları için)
 export const gokRenk = (bolum) => (RENKLER[bolum] || RENKLER[0]).gok;
@@ -610,6 +629,28 @@ function useDongu(sure, hareket) {
     return () => a.stop();
   }, [hareket, sure]);
   return v;
+}
+
+// ---------- yel değirmeni (Değirmen Tepesi) ----------
+function Degirmen({ x, y, s, hareket, sure }) {
+  const don = useDongu(sure, hareket);
+  const donus = don.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '360deg'] });
+  const k = 34 * s;
+  return (
+    <View style={{ position: 'absolute', left: x - k, top: y - k * 2.6, width: k * 2, height: k * 2.6, alignItems: 'center' }}>
+      {/* gövde */}
+      <View style={{ position: 'absolute', bottom: 0, width: 0, height: 0, borderLeftWidth: k * 0.55, borderRightWidth: k * 0.55, borderBottomWidth: k * 1.7, borderLeftColor: 'transparent', borderRightColor: 'transparent', borderBottomColor: '#f2e2c4' }} />
+      <View style={{ position: 'absolute', bottom: k * 1.55, width: k * 0.72, height: k * 0.42, borderTopLeftRadius: k * 0.4, borderTopRightRadius: k * 0.4, backgroundColor: '#b0563a' }} />
+      <View style={{ position: 'absolute', bottom: 0, width: k * 0.3, height: k * 0.5, borderTopLeftRadius: k * 0.15, borderTopRightRadius: k * 0.15, backgroundColor: '#8a5a24' }} />
+      {/* kanatlar */}
+      <Animated.View style={{ position: 'absolute', top: k * 0.05, width: k * 2, height: k * 2, alignItems: 'center', justifyContent: 'center', transform: [{ rotate: donus }] }}>
+        {[0, 90].map((a) => (
+          <View key={a} style={{ position: 'absolute', width: k * 0.26, height: k * 1.9, borderRadius: k * 0.06, backgroundColor: 'rgba(255,255,255,0.92)', borderWidth: 1.5, borderColor: '#8a5a24', transform: [{ rotate: `${a}deg` }] }} />
+        ))}
+        <View style={{ width: k * 0.22, height: k * 0.22, borderRadius: k, backgroundColor: '#8a5a24' }} />
+      </Animated.View>
+    </View>
+  );
 }
 
 // ---------- gökyüzü ----------
@@ -941,13 +982,15 @@ function Sahne({ bolum = 0, EG, EY, gunesX, gunesY, gunesBoy = 58 }) {
         {agaclar.map(([t, x, s], i) => (
           <Agac key={i} x={EG * x} y={tepeY(t.cx, t.ust, t.cap, EG * x)} s={s * Math.min(1.4, EG / 390)} renk={renk} />
         ))}
+        {renk.degirmen && <Degirmen x={EG * 0.16} y={tepeY(t1.cx, t1.ust, t1.cap, EG * 0.16) + 8} s={Math.min(1.4, EG / 390)} hareket={hareket} sure={9000} />}
+        {renk.degirmen && <Degirmen x={EG * 0.86} y={tepeY(t2.cx, t2.ust, t2.cap, EG * 0.86) + 8} s={0.75 * Math.min(1.4, EG / 390)} hareket={hareket} sure={7000} />}
         <Tepe {...t3} renk={renk.tepeOn} />
         {cicekler.map((x, i) => (
           <Cicek key={i} x={EG * x} y={tepeY(t3.cx, t3.ust, t3.cap, EG * x) + 14 + (i % 3) * 9} renk={renk.cicek[i % 3]} s={1 + (i % 2) * 0.25} />
         ))}
       </>
     );
-  }, [bolum, EG, EY]);
+  }, [bolum, EG, EY, hareket]);
 
   return (
     <View style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, overflow: 'hidden' }} {...GIZLI}>

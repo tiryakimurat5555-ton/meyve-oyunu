@@ -425,5 +425,22 @@ for (let i = 0; i < 30; i++) {
   const e2 = M.istiridyeDegistir(z.engel);
   dogru(e2.flat().includes('ist1'), 'istiridye açılmalı');
 }
-console.log(hata ? `${hata} HATA` : 'ENGEL TESTLERİ GEÇTİ (kar, tohum sarmaşık, fıçı, sis, delik, çiçek, saat, bant, akıntı kapısı, kafes, bukalemun, balon, bal, kurbağa, fener, yerçekimi yönü, kovan, domino, ayna, kartopu ve istiridye dahil)');
+{
+  // Değirmen çarkı: saat yönünde döner; çark hücresinde patlayan meyve un sayılır
+  const t = [];
+  for (let r = 0; r < 8; r++) t.push(Array.from({ length: 8 }, (_, c) => (r * 3 + c * 2 + (r % 2)) % 6));
+  const oz = t.map((s) => s.map(() => null));
+  const en = t.map((s) => s.map(() => null));
+  t[2][2] = 10; t[2][3] = 11; t[3][3] = 12; t[3][2] = 13;
+  const d = M.carkDondur(t, oz, en, [[2, 2]]);
+  dogru(d.t[2][3] === 10 && d.t[3][3] === 11 && d.t[3][2] === 12 && d.t[2][2] === 13, 'çark saat yönünde dönmeli: ' + JSON.stringify([d.t[2].slice(2, 4), d.t[3].slice(2, 4)]));
+  M.seviyeKur({ carklar: [[4, 4]] });
+  dogru(M.carkHucreMi(5, 5) && !M.carkHucreMi(3, 4), 'çark hücreleri doğru olmalı');
+  const t2 = t.map((s) => s.slice());
+  t2[4][3] = 0; t2[4][4] = 0; t2[4][5] = 0;
+  const z = M.zincirCoz(t2, oz, en, null, { rnd: () => 0.3 });
+  dogru(z.sayac.un >= 2, 'çarkta patlayan meyve un olmalı: ' + z.sayac.un);
+  M.seviyeKur(null);
+}
+console.log(hata ? `${hata} HATA` : 'ENGEL TESTLERİ GEÇTİ (kar, tohum sarmaşık, fıçı, sis, delik, çiçek, saat, bant, akıntı kapısı, kafes, bukalemun, balon, bal, kurbağa, fener, yerçekimi yönü, kovan, domino, ayna, kartopu, istiridye ve değirmen çarkı dahil)');
 process.exit(hata ? 1 : 0);

@@ -35,7 +35,7 @@ Murat'ın meyve temalı 3'lü eşleştirme oyunu (Kasım 2026). Global ad "Prism
   22 Kartopu Tepesi (211-220, 26 Kasım Kış Dönüşü'nden çevrildi; sahne 21 kış), 23 Kurbağa Gölü (221-230, %72-100),
   24 Fener Bahçesi (231-240, %66-93), 25 Uzay Bahçesi (241-250, %77-100),
   26 Kovan Arıları (251-260, %79-99), 27 İnci Koyu (261-270, 26 Kasım Yaz Dönüşü'nden çevrildi; sahne 26 kumsal),
-  28 Domino Bahçesi (271-280, %72-100), 29 Ayna Gölü (281-290, %69-100), 30 Büyük Hasat (291-300, karışık şenlik, %75-97; sahne 29 altın hasat) YAPILDI (26 Kasım). YAPILACAK (26 Kasım Murat ekletti): 31 Değirmen Tepesi (301-310, 2x2 çark her 2 hamlede saat yönünde döner; hedef çark tozu),
+  28 Domino Bahçesi (271-280, %72-100), 29 Ayna Gölü (281-290, %69-100), 30 Büyük Hasat (291-300, karışık şenlik, %75-97; sahne 29 altın hasat) YAPILDI (26 Kasım). YAPILACAK (26 Kasım Murat ekletti): 31 Değirmen Tepesi (301-310, %67-100) YAPILDI (26 Kasım),
   32 Define Adası (kum altında 2 karelik sandık; üstündeki kumun hepsi temizlenince bulunur), 33 Dev Meyve Bahçesi (2x2 dev meyve,
   yanında eşleşme = çatlar, 4 vuruşta kırılır, o rengin hepsini patlatır), 34 İkiz Bahçe (kurdeleli meyve çifti: biri eşleşince öbürü
   de patlar), 35 Renkli Kristaller (renkli kapak yalnız kendi rengindeki eşleşmeyle kırılır; VO "Kırmızı kristalli elma"),
@@ -128,6 +128,11 @@ Murat'ın meyve temalı 3'lü eşleştirme oyunu (Kasım 2026). Global ad "Prism
 - İSTİRİDYE (261-270, İnci Koyu): M.ISTIRIDYE=34, engel 'ist0' kapalı / 'ist1' açık; gecilmez (yerçekimi atlar, takas yok). Her çekiçsiz
   hamleden sonra hepsi açılır/kapanır (istiridyeDegistir; Oyun hamleSonrasi). Açıkken komşu eşleşme ya da özel parça alanı → inci verir,
   gider (cozumAdimi.istiridyeler, hedef.istiridye). Düzen 'i' / 'I'. Istiridye çizimi. VO "Açık/Kapalı istiridye", "İstiridyeler döndü, 2 tanesi açık".
+- DEĞİRMEN (301-310, Değirmen Tepesi): seviye.carklar = [[r, c]] (2x2 çarkın sol üst hücresi). Her M.CARK_ARALIK (2) çekiçsiz hamlede
+  çarktaki parçalar (engel/özel haliyle) saat yönünde döner (mantik.carkDondur, carkSirasi; zemin kalır), sonra zincirCoz. Çark hücresinde
+  patlayan renkli meyve = 1 çuval un (sayac.un, hedef.un; mantik carkHucreMi seviyeKur'da kurulur; Oyun unSay). Oyun carkDondur + carkSayac.
+  CarkCerceve (altta ahşap çerçeve + göbek), UnIkon. VO hücreye ", değirmen çarkı"; "Çarklar döndü" / "Çarklar bir hamle sonra dönecek".
+  Sahne 30: buğday tepeleri + iki dönen yel değirmeni (Degirmen). Tanıtım 'cark' (301).
 - 26 Kasım Murat onayı ("Yap"): 19 Balon, 20 Hasat Pazarı (sırayla sipariş), 21 Bal Kovanı (bal lekesi yayılır), 22 Kış Dönüşü (karışık),
   23 Kurbağa Gölü, 24 Fener Bahçesi (yalnız özel parça yakar), 25 Uzay Bahçesi (yerçekimi yönü), 26 Kovan Arıları (yardımcı arılar),
   27 Yaz Dönüşü (karışık), 28 Domino, 29 Ayna Gölü (hamle aynalanır), 30 Büyük Hasat (karışık, 300. seviye).
