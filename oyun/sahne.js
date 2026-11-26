@@ -620,6 +620,29 @@ const RENKLER = [
     ],
   },
 ];
+// 33-50. bölümler: var olan sahnelerden türetilir (gök rengi ve uçuşanlar bölüme göre)
+const tret = (i, ek) => ({ ...RENKLER[i], ...ek });
+RENKLER.push(
+  tret(1, { gok: ['#6fc3ff', '#fff0c8'] }), // 33 Dev Meyve Bahçesi
+  tret(6, { gok: ['#f7a8d0', '#fff0f6'] }), // 34 İkiz Bahçe
+  tret(9, { gok: ['#9fb8ff', '#f0f4ff'] }), // 35 Renkli Kristaller
+  tret(11, { gok: ['#f0a070', '#ffe8c8'] }), // 36 Çan Kulesi
+  tret(16, { gok: ['#8aa4bd', '#dfe9f2'], parca: [{ tip: 'kar', buyuk: false }, { tip: 'kar' }, { tip: 'kelebek', renk: '#4fc3ff' }] }), // 37 Yağmur Bulutu
+  tret(4, { gok: ['#7fd6a0', '#effff2'] }), // 38 Salyangoz Yarışı
+  tret(8, { gok: ['#2b1d55', '#6a4fb0'] }), // 39 Sihirli Kazan
+  tret(3, {}), // 40 Kış Masalı
+  tret(2, { gok: ['#9cc8e8', '#ffe2b8'] }), // 41 Tren İstasyonu
+  tret(7, { gok: ['#d9502a', '#ffc27a'] }), // 42 Lav Adası
+  tret(8, { gok: ['#1c1838', '#4a3c7a'] }), // 43 Hayalet Bahçesi
+  tret(18, { gok: ['#ff9ad5', '#fff6a8'] }), // 44 Boya Atölyesi
+  tret(18, { gok: ['#ffb84d', '#fff2c4'] }), // 45 Panayır Çarkı
+  tret(26, { gok: ['#3a6fa8', '#ffd59a'] }), // 46 Işık Kulesi
+  tret(13, { gok: ['#d9a86a', '#fff1d6'] }), // 47 Sincap Ormanı
+  tret(19, { gok: ['#f2c46a', '#fff8e4'] }), // 48 Terazi Pazarı
+  tret(24, {}), // 49 Kuyruklu Yıldız Gecesi
+  tret(29, { gok: ['#ffb05a', '#fff3d0'] }) // 50 Yarı Yol Şenliği
+);
+
 // Bölümün gök renkleri (harita bantları için)
 export const gokRenk = (bolum) => (RENKLER[bolum] || RENKLER[0]).gok;
 export const geceMi = (bolum) => !!(RENKLER[bolum] && RENKLER[bolum].gece);

@@ -36,7 +36,7 @@ Murat'ın meyve temalı 3'lü eşleştirme oyunu (Kasım 2026). Global ad "Prism
   24 Fener Bahçesi (231-240, %66-93), 25 Uzay Bahçesi (241-250, %77-100),
   26 Kovan Arıları (251-260, %79-99), 27 İnci Koyu (261-270, 26 Kasım Yaz Dönüşü'nden çevrildi; sahne 26 kumsal),
   28 Domino Bahçesi (271-280, %72-100), 29 Ayna Gölü (281-290, %69-100), 30 Büyük Hasat (291-300, karışık şenlik, %75-97; sahne 29 altın hasat) YAPILDI (26 Kasım). YAPILACAK (26 Kasım Murat ekletti): 31 Değirmen Tepesi (301-310, %67-100) YAPILDI (26 Kasım),
-  32 Define Adası (311-320, %75-100) YAPILDI (26 Kasım), 33 Dev Meyve Bahçesi (2x2 dev meyve,
+  32 Define Adası (311-320, %75-100) YAPILDI (26 Kasım), 33-50 YAPILDI (26 Kasım; aşağıda 33-50. BÖLÜMLER). 33 Dev Meyve Bahçesi (2x2 dev meyve,
   yanında eşleşme = çatlar, 4 vuruşta kırılır, o rengin hepsini patlatır), 34 İkiz Bahçe (kurdeleli meyve çifti: biri eşleşince öbürü
   de patlar), 35 Renkli Kristaller (renkli kapak yalnız kendi rengindeki eşleşmeyle kırılır; VO "Kırmızı kristalli elma"),
   36 Çan Kulesi (yardımcı: yanında eşleşme = satır+sütun temizler), 37 Yağmur Bulutu (bulutun altındaki sütunda eşleşme = yağar, kuru toprağı sular; hedef kuru toprak),
@@ -138,6 +138,19 @@ Murat'ın meyve temalı 3'lü eşleştirme oyunu (Kasım 2026). Global ad "Prism
   KALAN_HEDEF (toplanan.sandikKalan = M.sandikKalan(zemin), etkinSeviye'den). sayac.sandik = sandık hücresinde kalkan kum (bot ağırlığı).
   Oyun: eriyen döngüsünde KUM dalı, sandikBulunan → 'Sandık bulundu!' (yildiz_3), sarmasikGuncelle hedef.sandik için de çalışır.
   Çizim: GomuluSandik (kumun ALTINDA; bulununca altın), KumZemin/KumUst, SandikIkon. VO "Kumlu elma", açılan sandık hücresi ", sandık". Sahne 31 kumsal ada.
+- 33-50. BÖLÜMLER (321-500; 26 Kasım, Murat "bana sormadan planladığımız tüm bölümleri eksiksiz yap"): ortak altyapı mantik.js sonunda
+  ("33-49. bölümlerin nesneleri"): t türleri DEV 35, CAN 36, SALYANGOZ 37, KAZAN 38, VAGON 39, BOYA 41, AYNA_T 42, SINCAP 43, FINDIK 44 (INEN),
+  HAYALET 45; zemin KURU 50, TOZ 51. Nesneler (NESNE) gecilmez + kilitli; vuruluş yeniCozum → adim.nesneler. Adımın yeni kısmı ekAdim
+  (adımdan ÖNCEKİ ızgaralarla; kalan/degis/zemin/sayac/alan/etiket/efekt) hem adimUygula'da hem Oyun cozumle'de çağrılır (Oyun hucreEsitle ile
+  uygular). Hamle sonrası yeni kurallar ekKurallar (hayalet, lav yayılması, sincap, tren, panayır, kuyruklu yıldız, ışık kulesi) hem
+  hamleSonrasiKurallar'da hem Oyun hamleSonrasi'nda (ekSayac; tasimalar animasyonu, sonra hucreEsitle + cozumle). Oyun'da yeni engeller
+  parçada ham olarak p.ek (M.yeniEngelMi); engelIzgarasi önce p.ek döner. Çizimler oyun/gorsel2.js (YeniParca, EkKatman, DevMeyve, KuruZemin,
+  TozZemin, BulutSerit, IsikHatti, Ray, TeraziCizgi, emoji simgeler; PNG gelince değişecek). VO adları Oyun yeniAd/ekOn, duyurular ekOlayMetni.
+  Düzen harfleri: C çan, L salyangoz, Q kazan, V vagon, R lav, H/G görünür/görünmez hayalet, B boya (renk seviye.boyalar), M/N ayna, J sincap,
+  p yıldız tozu, T kuru toprak. Listeler: devler [[r,c,tür]], ikizler [[[r,c],[r,c]]], kristaller [[r,c,tür]], boyalar, bulutlar [sütun],
+  ray (satır), isik (satır), terazi/panayir/kuyruklu: true. Hedefler: dev, kurdele, kristal, can, toprak (KALAN), salyangoz, kazan, vagon,
+  lav (KALAN: lav+taş), hayalet, boya, findik, toz, sol/sag. Sahne 32-49 var olanlardan türetildi (sahne.js tret). Seviyeler /tmp/sv/uret.py
+  ile üretildi, /tmp/sv/ayar.py ile bot ayarlandı (hamle ±, sonra eşik). Telefonda denenmedi.
 - 26 Kasım Murat onayı ("Yap"): 19 Balon, 20 Hasat Pazarı (sırayla sipariş), 21 Bal Kovanı (bal lekesi yayılır), 22 Kış Dönüşü (karışık),
   23 Kurbağa Gölü, 24 Fener Bahçesi (yalnız özel parça yakar), 25 Uzay Bahçesi (yerçekimi yönü), 26 Kovan Arıları (yardımcı arılar),
   27 Yaz Dönüşü (karışık), 28 Domino, 29 Ayna Gölü (hamle aynalanır), 30 Büyük Hasat (karışık, 300. seviye).
