@@ -436,7 +436,8 @@ const AccessibilityInfo = {
 };
 
 function useWindowDimensions() {
-  return { width: 390, height: 844 };
+  // Telefon denemesinde sayfa 390 genişliğe sabit (meta viewport); tablet denemesi için gerçek pencere ölçüsü
+  return { width: window.innerWidth || 390, height: window.innerHeight || 844 };
 }
 
 
