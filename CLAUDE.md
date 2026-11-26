@@ -1,6 +1,6 @@
 # meyve-oyunu — çalışma notları
 
-Murat'ın meyve temalı 3'lü eşleştirme oyunu (Kasım 2026). Geçici ad "Meyve Oyunu"; global mağaza adı en son seçilecek
+Murat'ın meyve temalı 3'lü eşleştirme oyunu (Kasım 2026). Global ad "Prism Orchard" (26 Kasım, Murat). Paket adı com.murat5561.prismorchard (Android + iOS; imza com.murat5561 kalsın, Murat). Expo slug meyve-oyunu kalır
 (adaylar: Prism Orchard, Glimmer Grove, Glintberry; "Crystal …" adları dolu).
 
 ## Kararlar (Murat'ın)

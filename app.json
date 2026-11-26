@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Meyve Oyunu",
+    "name": "Prism Orchard",
     "slug": "meyve-oyunu",
     "owner": "murat5561",
     "version": "1.0.0",
@@ -8,10 +8,10 @@
     "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.murat5561.meyveoyunu"
+      "bundleIdentifier": "com.murat5561.prismorchard"
     },
     "android": {
-      "package": "com.murat5561.meyveoyunu"
+      "package": "com.murat5561.prismorchard"
     },
     "runtimeVersion": {
       "policy": "appVersion"
