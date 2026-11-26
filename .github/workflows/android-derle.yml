@@ -1,0 +1,58 @@
+# Play Store için Android paketini (AAB) GitHub'da derler (Expo derleme hakkı harcanmaz).
+# İmza anahtarı Expo'da durur (eas build --local onu indirir; yoksa Expo'da yenisini üretir).
+# Sonuç: "android-<çalışma no>" adlı GitHub sürümüne prism-orchard.aab olarak eklenir.
+name: Android derlemesi
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  derle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: EAS kurulumu
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Derle
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          CI: '1'
+          GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx6g -Dorg.gradle.workers.max=2
+        run: |
+          set -o pipefail
+          npm install --no-audit --no-fund
+          eas build --local --platform android --profile production --non-interactive --output prism-orchard.aab 2>&1 | tee derleme-kaydi.txt
+          ls -la prism-orchard.aab
+
+      - name: Surume ekle
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "android-${GITHUB_RUN_NUMBER}" prism-orchard.aab --title "Android ${GITHUB_RUN_NUMBER}" --notes "Commit ${GITHUB_SHA}" --target "${GITHUB_SHA}"
+          echo "AAB=https://github.com/${GITHUB_REPOSITORY}/releases/download/android-${GITHUB_RUN_NUMBER}/prism-orchard.aab" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Kaydi sakla
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: derleme-kaydi
+          path: derleme-kaydi.txt
+          if-no-files-found: ignore

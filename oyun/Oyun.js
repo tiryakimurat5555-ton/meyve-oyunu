@@ -3,6 +3,9 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { AccessibilityInfo, Animated, Easing, Image, PanResponder, Pressable, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as M from './mantik';
+
+// Bot düğmesi yalnız Expo Go'da görünür; mağaza paketinde (production kanalı) gizli.
+const BOT_GORUNUR = (() => { try { return require('expo-updates').channel !== 'production'; } catch (e) { return true; } })();
 import Sahne, { bolumNo, geceMi } from './sahne';
 import { TANITIM, hedefTamam, yildizHesapla } from './seviyeler';
 import { cal, meyveSesi, titret } from './ses';
@@ -1842,7 +1845,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
       </View>
 
       {/* Bot (otomatik oyun) düğmesi: tahtanın altında (sağ üst köşede Expo Go'nun dişli düğmesi duruyor) */}
-      <Pressable
+      {BOT_GORUNUR && (<Pressable
         accessibilityRole="switch"
         accessibilityLabel="Otomatik oyun"
         accessibilityState={{ checked: !!bot }}
@@ -1851,7 +1854,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
         style={({ pressed }) => [yst.geri, yst.bot, bot && yst.botAcik, { marginTop: 2, paddingVertical: 5 }, pressed && { opacity: 0.6 }]}
       >
         <Text style={[yst.geriYazi, bot && { color: '#ffffff' }]}>{bot ? 'Bot: Açık' : 'Bot: Kapalı'}</Text>
-      </Pressable>
+      </Pressable>)}
 
       {asama === 'giris' && (
         <View style={st.perde} accessibilityViewIsModal>
