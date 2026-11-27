@@ -64,3 +64,16 @@ böylece müzikal olarak uyumlu yükselen bir dizi duyulur.
 | cark | Small wooden windmill wheel turning with a soft creak and a light wooden clunk, short |
 | sandik | Small treasure chest lid creaking open revealing coins and a bright magical sparkle chime, short |
 | kum | Short soft brush sweeping dry sand with a light grainy swish, close-mic |
+
+## 51-59. bölüm sesleri (27 Kasım 2026)
+
+| Ad | Prompt |
+|---|---|
+| su_yuksel | Water level rising with a gentle gurgling bubble swell and a soft glass droplet plink, cute, not scary, short |
+| pompa | Small hand water pump squeaking and draining water with a quick whoosh and splash, cheerful, short |
+| kelebek | Cute butterfly emerging from a cocoon and fluttering away, soft paper wing flutter with a bright sparkly glass chime, short |
+| gizli_kapi | Hidden garden stone door sliding open with a soft rumble, ending with a bright magical reveal chime, short |
+| miknatis | Cute magnet snapping a small glass fruit to it, quick magnetic zip and a light metallic click with a tiny chime, short |
+| simsek | Short lightning crack with a soft distant thunder rumble and a bright electric sparkle, not too loud, game sound |
+| ayi_uyan | Cute sleepy cartoon bear waking up with a grumpy yawn grumble, then wooden baskets tumbling over, playful, not scary, short |
+

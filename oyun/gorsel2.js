@@ -5,7 +5,8 @@ import { Image, Text, View } from 'react-native';
 
 const TAM2 = { position: 'absolute', left: 0, top: 0, right: 0, bottom: 0 };
 // mantik.js ile aynı sayılar
-export const YENI_TUR = { DEV: 35, CAN: 36, SALYANGOZ: 37, KAZAN: 38, VAGON: 39, BOYA: 41, AYNA_T: 42, SINCAP: 43, FINDIK: 44, HAYALET: 45 };
+export const YENI_TUR = { DEV: 35, CAN: 36, SALYANGOZ: 37, KAZAN: 38, VAGON: 39, BOYA: 41, AYNA_T: 42, SINCAP: 43, FINDIK: 44, HAYALET: 45, KAVANOZ: 46, KAPALI: 47, BASINC: 48, POMPA: 49, TIRTIL: 52, MIKNATIS: 53, KARINCA: 54, KOMUR: 55, PARATONER: 56, AYI: 57 };
+export const yeniParcaMi = (v) => (v >= 35 && v <= 49) || (v >= 52 && v <= 57);
 export const RENK = ['#e8323c', '#f5c400', '#8b3fc8', '#ff8a1f', '#5cbf2a', '#2d3f9e'];
 export const KURU_Z = 50;
 export const TOZ_Z = 51;
@@ -29,6 +30,47 @@ export function YeniParca({ p, H }) {
   if (p.tur === T.FINDIK) return <Emoji H={H} e="🌰" boy={0.66} />;
   if (p.tur === T.VAGON) return <Emoji H={H} e="🚃" zemin="#dbe8ff" kenar="#3a63b8" />;
   if (p.tur === T.HAYALET) return <Emoji H={H} e="👻" boy={0.5} zemin="rgba(255,255,255,0.35)" />;
+  if (p.tur === T.KAVANOZ) return <Emoji H={H} e="🍯" boy={0.66} />;
+  if (p.tur === T.KAPALI)
+    return (
+      <View style={{ width: H, height: H, backgroundColor: '#3f7a32', borderWidth: 2, borderColor: '#2a5622', alignItems: 'center', justifyContent: 'center' }}>
+        <Text style={{ fontSize: H * 0.34, opacity: 0.8 }}>🌿</Text>
+      </View>
+    );
+  if (p.tur === T.BASINC) return <Emoji H={H} e="🔘" zemin="#d8d2c4" kenar="#7a7060" />;
+  if (p.tur === T.POMPA) return <Emoji H={H} e="🚰" zemin="#d6ecff" kenar="#3a7ac8" />;
+  if (p.tur === T.TIRTIL) return e === 'tr1' ? <Emoji H={H} e="🥚" boy={0.5} zemin="#f2ead2" kenar="#b89a5a" /> : <Emoji H={H} e="🐛" zemin="#e2f5d0" kenar="#6aa83a" />;
+  if (p.tur === T.KARINCA) return <Emoji H={H} e="🐜" zemin="#f3e4cc" kenar="#8a5a2a" />;
+  if (p.tur === T.KOMUR)
+    return (
+      <View style={{ width: H * 0.86, height: H * 0.86, borderRadius: H * 0.2, backgroundColor: '#2e2e34', borderWidth: 2.5, borderColor: '#111', alignItems: 'center', justifyContent: 'center' }}>
+        <View style={{ position: 'absolute', left: H * 0.15, top: H * 0.2, width: H * 0.2, height: H * 0.12, borderRadius: H, backgroundColor: '#55555f' }} />
+        {p.kat < 2 ? <View style={{ position: 'absolute', left: H * 0.2, top: H * 0.45, width: H * 0.45, height: 3, backgroundColor: '#ff8a3d', transform: [{ rotate: '-25deg' }] }} /> : null}
+        <Text style={{ position: 'absolute', right: 3, bottom: 1, color: '#fff', fontWeight: '900', fontSize: H * 0.24 }}>{p.kat}</Text>
+      </View>
+    );
+  if (p.tur === T.PARATONER) {
+    const n = Number(e.slice(2)) || 0;
+    return (
+      <View style={{ width: H * 0.86, height: H * 0.86, borderRadius: H * 0.2, backgroundColor: n ? '#fff3a8' : '#e2e6ee', borderWidth: 2.5, borderColor: '#7a8aa8', alignItems: 'center', justifyContent: 'center' }}>
+        <Text style={{ fontSize: H * 0.48 }}>⚡</Text>
+        <Text style={{ position: 'absolute', right: 3, bottom: 1, fontWeight: '900', fontSize: H * 0.22, color: '#3a4a6a' }}>{n}/3</Text>
+      </View>
+    );
+  }
+  if (p.tur === T.AYI) return <Emoji H={H} e="🐻" zemin="#f0dcc0" kenar="#8a5a2a" />;
+  if (p.tur === T.MIKNATIS) {
+    const tur = Number(e.slice(2, e.indexOf('_'))) || 0;
+    const n = Number(e.slice(e.indexOf('_') + 1)) || 0;
+    return (
+      <View style={{ width: H * 0.88, height: H * 0.88, borderRadius: H * 0.22, backgroundColor: '#f4f4f6', borderWidth: 3, borderColor: RENK[tur], alignItems: 'center', justifyContent: 'center' }}>
+        <Text style={{ fontSize: H * 0.48 }}>🧲</Text>
+        <View style={{ position: 'absolute', bottom: 2, minWidth: H * 0.4, paddingHorizontal: 3, borderRadius: H, backgroundColor: RENK[tur] }}>
+          <Text style={{ color: '#fff', fontWeight: '900', fontSize: H * 0.2, textAlign: 'center' }}>{n}/5</Text>
+        </View>
+      </View>
+    );
+  }
   if (p.tur === T.KAZAN) {
     const n = Number(e.slice(2)) || 0;
     return (
@@ -96,6 +138,12 @@ export function EkKatman({ p, H }) {
       <View pointerEvents="none" style={{ ...TAM2, borderRadius: H * 0.22, backgroundColor: 'rgba(90,90,100,0.72)', borderWidth: 3, borderColor: '#3c3c44' }}>
         <View style={{ position: 'absolute', left: H * 0.2, top: H * 0.3, width: H * 0.4, height: 2, backgroundColor: '#222', transform: [{ rotate: '30deg' }] }} />
         <View style={{ position: 'absolute', left: H * 0.4, top: H * 0.55, width: H * 0.3, height: 2, backgroundColor: '#222', transform: [{ rotate: '-20deg' }] }} />
+      </View>
+    );
+  if (e === 'su')
+    return (
+      <View pointerEvents="none" style={{ ...TAM2, borderRadius: H * 0.12, backgroundColor: 'rgba(60,140,230,0.48)', borderTopWidth: 3, borderColor: 'rgba(200,235,255,0.95)' }}>
+        <Text style={{ position: 'absolute', right: 2, top: 0, fontSize: H * 0.22 }}>💧</Text>
       </View>
     );
   if (e === 'hy1')
@@ -185,6 +233,47 @@ export function TeraziCizgi({ H }) {
   return <View pointerEvents="none" style={{ position: 'absolute', left: H * 4 - 2, top: 0, width: 4, height: H * 8, backgroundColor: 'rgba(200,150,40,0.6)', borderRadius: 2 }} />;
 }
 
+// Şelale taşı (zemin, 1-2 kat) ve mozaik karo (zemin, renkli)
+export function KayaZemin({ H, r, c, kat }) {
+  const b = H - 3;
+  return (
+    <View pointerEvents="none" style={{ position: 'absolute', left: c * H + 1.5, top: r * H + 1.5, width: b, height: b, borderRadius: H * 0.18, backgroundColor: kat >= 2 ? '#7c7f88' : '#a3a7b0', borderWidth: 2, borderColor: '#4c4f58' }}>
+      <View style={{ position: 'absolute', left: b * 0.15, top: b * 0.55, width: b * 0.4, height: 2, backgroundColor: '#3a3c44', transform: [{ rotate: '20deg' }] }} />
+      {kat >= 2 ? <View style={{ position: 'absolute', left: b * 0.5, top: b * 0.25, width: b * 0.35, height: 2, backgroundColor: '#3a3c44', transform: [{ rotate: '-30deg' }] }} /> : null}
+    </View>
+  );
+}
+export function MozaikZemin({ H, r, c, tur }) {
+  const b = H - 3;
+  return (
+    <View pointerEvents="none" style={{ position: 'absolute', left: c * H + 1.5, top: r * H + 1.5, width: b, height: b, borderRadius: H * 0.1, backgroundColor: '#f4efe4', borderWidth: 4, borderColor: RENK[tur] }}>
+      <View style={{ position: 'absolute', left: b * 0.38, top: b * 0.38, width: b * 0.16, height: b * 0.16, backgroundColor: RENK[tur], transform: [{ rotate: '45deg' }] }} />
+    </View>
+  );
+}
+// Karınca yolu (hücre listesi; son hücre yuva) ve şelale sütunları
+export function KarincaYolu({ yol, H }) {
+  return (
+    <>
+      {yol.map(([r, c], i) => (
+        <View key={i} pointerEvents="none" style={{ position: 'absolute', left: c * H + 1.5, top: r * H + 1.5, width: H - 3, height: H - 3, borderRadius: H * 0.2, backgroundColor: 'rgba(170,120,60,0.42)', borderWidth: 2, borderColor: 'rgba(120,80,30,0.6)' }} />
+      ))}
+      {yol.length ? <Text style={{ position: 'absolute', left: yol[yol.length - 1][1] * H + H * 0.5, top: yol[yol.length - 1][0] * H - H * 0.15, fontSize: H * 0.36 }}>🏠</Text> : null}
+    </>
+  );
+}
+export function SelaleSerit({ selale, H }) {
+  return (
+    <>
+      {selale.map(([c, tur]) => (
+        <View key={c} pointerEvents="none" style={{ position: 'absolute', left: c * H + 3, top: 0, width: H - 6, height: H * 8, borderRadius: H * 0.2, backgroundColor: 'rgba(120,200,255,0.32)', borderLeftWidth: 3, borderRightWidth: 3, borderColor: RENK[tur] }}>
+          <Text style={{ position: 'absolute', top: -H * 0.1, left: H * 0.22, fontSize: H * 0.36 }}>💦</Text>
+        </View>
+      ))}
+    </>
+  );
+}
+
 // Hedef simgeleri
 const ik = (e) =>
   function Ikon({ boy = 26 }) {
@@ -205,3 +294,12 @@ export const FindikIkon = ik('🌰');
 export const TozIkon = ik('✨');
 export const SolIkon = ik('⬅️');
 export const SagIkon = ik('➡️');
+export const PompaIkon = ik('🚰');
+export const KelebekIkon = ik('🦋');
+export const KapiIkon = ik('🚪');
+export const MozaikIkon = ik('🟥');
+export const MiknatisIkon = ik('🧲');
+export const KayaIkon = ik('🪨');
+export const KarincaIkon = ik('🐜');
+export const KomurIkon = ik('⚫');
+export const KavanozIkon = ik('🍯');

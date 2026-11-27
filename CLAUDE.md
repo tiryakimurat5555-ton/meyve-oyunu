@@ -151,6 +151,18 @@ Murat'ın meyve temalı 3'lü eşleştirme oyunu (Kasım 2026). Global ad "Prism
   ray (satır), isik (satır), terazi/panayir/kuyruklu: true. Hedefler: dev, kurdele, kristal, can, toprak (KALAN), salyangoz, kazan, vagon,
   lav (KALAN: lav+taş), hayalet, boya, findik, toz, sol/sag. Sahne 32-49 var olanlardan türetildi (sahne.js tret). Seviyeler /tmp/sv/uret.py
   ile üretildi, /tmp/sv/ayar.py ile bot ayarlandı (hamle ±, sonra eşik). Telefonda denenmedi.
+- 51-60. BÖLÜMLER (501-600; 27 Kasım 2026, Murat "Yayınla"): 51 Su Basan Bahçe, 52 Tırtıl Yolu, 53 Gizli Kapılar, 54 Mozaik Bahçe, 55 Mıknatıs Tepesi,
+  56 Şelale, 57 Karınca Kervanı, 58 Fırtınalı Gece, 59 Uykucu Ayı, 60 Altmış Çiçek Bayramı (karışık). mantik.js "51-59. bölümler" sabitleri: t KAVANOZ 46 (INEN),
+  KAPALI 47 (gecilmez), BASINC 48, POMPA 49, TIRTIL 52, MIKNATIS 53, KARINCA 54, KOMUR 55 (kasaMi, 2 kat), PARATONER 56, AYI 57 (hepsi NESNE); zemin KAYA1/KAYA2 52/53
+  (şelale taşı), MOZAIK 60+tür (karEriyen bunları atlar; ekAdim aşındırır/boyar). Engeller: 'su' (ortuMu), 'pmp', 'tr0'/'tr1', 'bs', 'mk<tür>_<n>', 'krn', 'pt<n>', 'ayi'.
+  Düzen: W su, P pompa, U tırtıl, X kapalı, Y basınç taşı, Z mıknatıs (seviye.miknatislar [[r,c,tür]]), O 2 kat taş, A karınca (seviye.yol [[r,c]...], son hücre yuva),
+  7 kömür, 8 paratoner, e kavanoz, j ayı; seviye.mozaik (8 satır '1'-'6'), seviye.su, seviye.selale [[sütun, tür]] (yercekimi SELALE_SANS 0,45), seviye.firtina.
+  Kurallar ekAdim (su/taş/mozaik, pompa satır+sütun suyu boşaltır, tırtıl→koza→kelebek, basınç taşı kapalı bölgeyi açar, mıknatıs/paratoner dolar,
+  bomba/gökkuşağı ayıyı uyandırır → 3 kasa) ve ekKurallar (su SU_ARALIK 3'te yükselir, SU_SINIR satırına varırsa kaybet; tırtıl 2 hamlede iner, altta ceza 1 hamle;
+  mıknatıs çeker/yutar, 5'te patlar; karınca yolda ilerler; şimşek SIMSEK_ARALIK 4: dolu paratoner sütunu temizler, yoksa meyve kömür). ekKurallar dönüşü ceza/kaybet;
+  hamleSonrasiKurallar ceza döner, seviye-testi hamleden düşer; Oyun hamleRef'ten düşer, ekKayip 'su' → "Su tahtayı bastı". Hedefler pompa, kelebek, kapi, mozaik,
+  miknatis, kaya, karinca, komur, kavanoz (EK_HEDEF). Çizimler gorsel2 (yeniParcaMi, KayaZemin, MozaikZemin, KarincaYolu, SelaleSerit). Yeni sesler (ElevenLabs, ben seçtim):
+  su_yuksel, pompa, kelebek, gizli_kapi, miknatis, simsek, ayi_uyan. Seviyeler /tmp/sv/uret51.py, bot ayar.py (%69-100). Telefonda denenmedi.
 - 26 Kasım Murat onayı ("Yap"): 19 Balon, 20 Hasat Pazarı (sırayla sipariş), 21 Bal Kovanı (bal lekesi yayılır), 22 Kış Dönüşü (karışık),
   23 Kurbağa Gölü, 24 Fener Bahçesi (yalnız özel parça yakar), 25 Uzay Bahçesi (yerçekimi yönü), 26 Kovan Arıları (yardımcı arılar),
   27 Yaz Dönüşü (karışık), 28 Domino, 29 Ayna Gölü (hamle aynalanır), 30 Büyük Hasat (karışık, 300. seviye).

@@ -196,6 +196,14 @@ DIGER = {
     'cark': ('cark_4', 0.8, -18),
     'sandik': ('sandik_4', 1.4, -15),
     'kum': ('kum_4', 0.5, -19),
+    # 51-59. bölümler (27 Kasım 2026)
+    'su_yuksel': ('su_yuksel_1', 1.3, -17),
+    'pompa': ('pompa_2', 1.6, -16),
+    'kelebek': ('kelebek_2', 1.5, -16),
+    'gizli_kapi': ('gizli_kapi_2', 2.0, -15),
+    'miknatis': ('miknatis_1', 1.0, -16),
+    'simsek': ('simsek_2', 2.0, -15),
+    'ayi_uyan': ('ayi_uyan_2', 2.5, -15),
 }
 for ad, (dosya, uzun, db) in DIGER.items():
     kaydet(ad, esitle(kirp(oku(dosya), uzun, 0.08), db))

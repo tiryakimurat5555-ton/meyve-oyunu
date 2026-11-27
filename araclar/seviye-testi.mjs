@@ -73,7 +73,7 @@ for (const sv of DENENECEK) {
     const d = M.duzenliTahta(sv.duzen, rnd);
     const zs = M.akisZincirleri(d.t);
     const say = zs.reduce((a, z) => a + z.length, 0);
-    const delik = d.t.flat().filter((v) => v === M.DELIK || v === M.BALON || v === M.ISTIRIDYE || M.nesneMi(v) || v === M.VAGON).length;
+    const delik = d.t.flat().filter((v) => M.gecilmezMi(v)).length;
     if (say !== 64 - delik) {
       hata++;
       console.log(`HATA: seviye ${sv.no} akış zincirleri ${say} hücre, olması gereken ${64 - delik} (kapı döngüsü?)`);
@@ -148,6 +148,7 @@ for (const sv of DENENECEK) {
       puan += k.puan;
       M.sayacEkle(top, k.sayac);
       M.kalanlariYaz(top, engel, zemin);
+      hamle -= k.ceza || 0;
       if (k.kaybetti) {
         kaybetti = true;
         kayipNeden.saat = (kayipNeden.saat || 0) + 1;

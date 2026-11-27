@@ -640,7 +640,17 @@ RENKLER.push(
   tret(13, { gok: ['#d9a86a', '#fff1d6'] }), // 47 Sincap Ormanı
   tret(19, { gok: ['#f2c46a', '#fff8e4'] }), // 48 Terazi Pazarı
   tret(24, {}), // 49 Kuyruklu Yıldız Gecesi
-  tret(29, { gok: ['#ffb05a', '#fff3d0'] }) // 50 Yarı Yol Şenliği
+  tret(29, { gok: ['#ffb05a', '#fff3d0'] }), // 50 Yarı Yol Şenliği
+  tret(16, { gok: ['#6aa0d0', '#d8ecff'] }), // 51 Su Basan Bahçe
+  tret(4, { gok: ['#9ad870', '#f4ffe0'] }), // 52 Tırtıl Yolu
+  tret(13, { gok: ['#6a8a5a', '#e8f0d8'] }), // 53 Gizli Kapılar
+  tret(18, { gok: ['#f0a0b8', '#fff2e0'] }), // 54 Mozaik Bahçe
+  tret(11, { gok: ['#c87a6a', '#ffe8d8'] }), // 55 Mıknatıs Tepesi
+  tret(26, { gok: ['#4ab0d8', '#e0f8ff'] }), // 56 Şelale
+  tret(2, { gok: ['#d8b070', '#fff4dc'] }), // 57 Karınca Kervanı
+  tret(8, { gok: ['#141a2c', '#3a4a6a'] }), // 58 Fırtınalı Gece
+  tret(13, { gok: ['#c8a050', '#fff0c8'] }), // 59 Uykucu Ayı
+  tret(29, { gok: ['#ff9ad5', '#fff6c4'] }) // 60 Altmış Çiçek Bayramı
 );
 
 // Bölümün gök renkleri (harita bantları için)

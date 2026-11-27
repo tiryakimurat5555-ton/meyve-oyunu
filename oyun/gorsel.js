@@ -1,7 +1,7 @@
 // Görsel parçalar: meyveler, özel parça görünümleri, efektler, kutular, kartlar.
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Image, StyleSheet, Text, View } from 'react-native';
-import { EkKatman, YeniParca } from './gorsel2';
+import { EkKatman, YeniParca, yeniParcaMi } from './gorsel2';
 
 export const TOHUM_TUR = 21; // mantik.js TOHUM ile aynı
 export const YUMURTA_TUR = 24; // mantik.js YUMURTA
@@ -1340,6 +1340,8 @@ export function Parca({ p, H }) {
           <Yumurta H={H} kat={p.kat} />
         ) : p.tur === FICI_TUR || p.tur === FICI_ODUL_TUR ? (
           <Fici H={H} kat={p.kat} odul={p.tur === FICI_ODUL_TUR} />
+        ) : p.tur >= 35 ? (
+          <YeniParca p={p} H={H} />
         ) : (
           <Kasa H={H} kat={p.kat} />
         )
@@ -1363,7 +1365,7 @@ export function Parca({ p, H }) {
         <Kartopu H={H} boy={p.kt || 1} />
       ) : p.tur === ISTIRIDYE_TUR ? (
         <Istiridye H={H} acik={!!p.ist} />
-      ) : p.tur >= 35 && p.tur <= 45 ? (
+      ) : yeniParcaMi(p.tur) && !p.kat ? (
         <YeniParca p={p} H={H} />
       ) : p.kat ? null : p.ozel === 'gokkusagi' || !MEYVELER[p.tur] ? (
         <GokkusagiKure H={H} />
@@ -1383,7 +1385,7 @@ export function Parca({ p, H }) {
       {p.buk && <BukalemunHale H={H} />}
       {p.sis && <SisKatman H={H} />}
       {p.saat ? <SaatRozet H={H} n={p.saat} /> : null}
-      {p.ek && !(p.tur >= 35 && p.tur <= 45) ? <EkKatman p={p} H={H} /> : null}
+      {p.ek && !yeniParcaMi(p.tur) ? <EkKatman p={p} H={H} /> : null}
     </Animated.View>
   );
 }
