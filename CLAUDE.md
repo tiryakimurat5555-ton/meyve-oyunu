@@ -252,6 +252,9 @@ Murat'ın meyve temalı 3'lü eşleştirme oyunu (Kasım 2026). Global ad "Prism
   notalarını (pling'den) üretir, sesListesi.js'i yazar. ElevenLabs akışı: OBjuJE2oZVloNRL2PvNY. Bu ortam ElevenLabs depolamasına
   erişemez: adaylar Murat'ın onayıyla `ses-istek` dalındaki ses-indir.yml iş akışıyla indirildi (adaylar/).
   araclar/sesleri-uret.py eski sentez sesler (artık kullanılmıyor).
+- TOK MEYVE SESLERİ (27 Kasım, Murat: "daha tok, kulağı tırmalamayan"): erik marimba Sol3 (tok_erik_1), portakal vibrafon Do4 (tok_portakal_1),
+  elma kalimba Mi4 (tok_elma_4), limon eski cam bardak Do5'e indirildi, çilek eski çan Sol5'e, üzüm tahta boncuk (tok_uzum_4, tanh sıkıştırma);
+  hepsi Butterworth alçak geçiren (3-4,5 kHz, yumusat) + 4 ms yumuşak başlangıç, -17 dB. Eski (tiz) sesler git geçmişinde.
 - ÖVGÜ SESLENDİRMESİ (25 Kasım, Murat istedi): ElevenLabs eleven_v4, kütüphane sesi "Miranda" (PoHUWWWMHFrA8z7Q88pu, tatlı/neşeli),
   akış csKqxNdVJHGnAhNOObTv. ovgu_nice/great/amazing/fantastic (coşku zincirle artar), ovgu_garden (şenlik), ovgu_level (kazanınca,
   kazandin'dan 250 ms sonra). Zincir sesi hamlenin bütün zinciri bitince en yüksek aşama için bir kez (hamleSonrasi); hedef tamamsa

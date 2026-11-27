@@ -87,24 +87,40 @@ def kaydet(ad, x, sol=1.0, sag=1.0):
 
 
 # ---------- meyveler: her biri kendi çalgısı ve kendi notası (görme engelli oyuncu sesinden tanısın) ----------
-# hedef temel frekanslar: erik Sol4, portakal Do5, elma Do6, limon Mi6, çilek Mi7; üzüm cam boncuk şıngırtısı (perdesiz)
+# 27 Kasım 2026 (Murat: "daha tok, kulağı tırmalamayan"): sıcak çalgılar ve alçak notalar, tizler yumuşatıldı.
+# erik marimba Sol3, portakal vibrafon Do4, elma kalimba Mi4, limon cam bardak Do5, çilek küçük çan Sol5, üzüm tahta boncuk (perdesiz).
+# (dosya, hedef frekans, alçak geçiren kesim Hz)
 MEYVE = {
-    'erik': ('meyve_erik_1', 392.0),
-    'portakal': ('meyve_portakal_1', 523.3),
-    'elma': ('meyve_elma_2', 1046.5),
-    'limon': ('meyve_limon_1', 1318.5),
-    'cilek': ('meyve_cilek_3', 2637.0),
-    'uzum': ('meyve_uzum_1', None),
+    'erik': ('tok_erik_1', 196.0, 3000),
+    'portakal': ('tok_portakal_1', 261.6, 3500),
+    'elma': ('tok_elma_4', 329.6, 3500),
+    'limon': ('meyve_limon_1', 523.3, 3000),
+    'cilek': ('meyve_cilek_3', 784.0, 3500),
+    'uzum': ('tok_uzum_4', None, 4500),
 }
-for ad, (dosya, hedef_f) in MEYVE.items():
+
+
+def yumusat(x, kesim):
+    """Tizleri yumuşatır (4. dereceden Butterworth alçak geçiren) ve başını 4 ms'de açar (tık sesi olmasın)."""
+    from scipy.signal import butter, sosfiltfilt
+    y = sosfiltfilt(butter(4, kesim, 'low', fs=SR, output='sos'), x)
+    g = min(len(y), int(SR * 0.004))
+    y[:g] *= np.linspace(0, 1, g)
+    return y
+
+
+for ad, (dosya, hedef_f, kesim) in MEYVE.items():
     x = oku(dosya)
     x = kirp(x, 0.9)
     if hedef_f:
         f0 = temel_frekans(x)
         x = perde(x, hedef_f / f0)
         print(f'{ad}: {f0:.0f} Hz -> {hedef_f:.0f} Hz')
-    x = kirp(x, 0.6, sondur=0.08)
-    x = esitle(x, -16)
+    x = yumusat(x, kesim)
+    if ad == 'uzum':
+        x = np.tanh(4 * x / np.abs(x).max())  # boncuk tıkırtıları birbirine yakın yükseklikte duyulsun
+    x = kirp(x, 0.6, sondur=0.1)
+    x = esitle(x, -13 if ad == 'uzum' else -17)  # boncuk şıngırtısı seyrek: biraz daha yüksek
     # sütuna göre: sol / orta / sağ (eşit güçlü yönlendirme)
     kaydet(f'meyve_{ad}_sol', x, 1.0, 0.3)
     kaydet(f'meyve_{ad}_orta', x * 0.85, 1.0, 1.0)
