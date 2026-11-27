@@ -244,7 +244,8 @@ Murat'ın meyve temalı 3'lü eşleştirme oyunu (Kasım 2026). Global ad "Prism
 - `oyun/ses.js`: expo-audio havuzu + expo-haptics. Meyve sesi sütuna göre sol/orta/sağ. YALNIZ iPhone'da (Platform.OS==='ios';
   Android eski davranışta kalır, bozulmasın diye): setIsAudioActiveAsync, keepAudioSessionActive, sessiz.wav sürekli döngü
   (AppState active'de yeniden), basaSarVeCal (seekTo sözü bitince çal, en geç 120 ms), havuz 3 (Android 2) yalnız SIK seslere
-  (meyve, zincir, takas...), diğerlerine 1 çalar (25 Kasım: 160 çalar iPhone açılışını ağırlaştırıyordu; şimdi ~120).
+  (meyve, zincir, takas...), diğerlerine 1 çalar (25 Kasım: 160 çalar iPhone açılışını ağırlaştırıyordu). 27 Kasım (Murat: 27 yeni sesten
+  sonra açılışta hiçbir düğme basılmıyordu, ~147 çalar): çalarlar açılıştan 300 ms sonra 60 ms'de 3'er kurulur (havuzKur), kurulmamış ses istenirse o an kurulur.
 - SESLER (25 Kasım): ElevenLabs Sound Effects v3 ile "Kristal Bahçe" teması (araclar/ses-tema.md: promptlar). Her meyve ayrı
   çalgı + ayrı nota (erik Sol4, portakal Do5, elma Do6, limon Mi6, çilek Mi7, üzüm şıngırtı). Seçilen ham adaylar
   araclar/ham-sesler/*.mp3; `python3 araclar/sesleri-isle.py` kırpar, perde kaydırır, eşitler, sol/orta/sağ + zincir/yıldız
