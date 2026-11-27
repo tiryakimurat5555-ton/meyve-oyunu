@@ -172,6 +172,15 @@ Murat'ın meyve temalı 3'lü eşleştirme oyunu (Kasım 2026). Global ad "Prism
   ekKurallar: örümcek AG_ARALIK 3'te ağ örer, köstebek her hamle başka yuvaya, ağaç AGAC_ARALIK 3'te yanına özel meyve, fırıldak döner, gündüz/gece GUN_ARALIK 4
   (mantik modül durumu gunduz; seviyeKur sıfırlar), ejderha dolaşır, hazine ipucu (ctx.sonHamle; Oyun sonTakas ref) soğuk/ılık/sıcak/çok sıcak.
   Oyun: sarmasikGuncelle hedef.ag için de; ZeminRozet (♪n, ☀/☾) meyvenin üstünde; başlıkta ☀️/🌙. Seviyeler /tmp/sv/uret61.py, bot %70-100. Telefonda denenmedi.
+- 71-80. BÖLÜMLER (701-800; 27 Kasım 2026, Murat "Onaylıyorum"; yeni ses yok): 71 Hafıza Kartları, 72 Çiftlik Hayvanları, 73 Reçel Mutfağı, 74 Havai Fişek Gecesi,
+  75 Balık Tutma, 76 Bowling Pisti, 77 Buz Pisti, 78 Ateşböcekleri, 79 Yankı Mağarası, 80 Seksen Fener Şenliği. mantik.js: t KART 64 ('hk<resim>_<0|1|2>'; açık kart 2 hamle
+  açık kalır, aynı resimli iki açık kart toplanır, KART_RESIM), HAYVAN 65 ('cf<tür>_<n>', yalnız sevdiği renkteki komşu eşleşmeyle doyar, HAYVAN_DOY 2), FISEK 66 (sütun +
+  tepede 3x3), LABUT 67, TOP 68 (sağa yuvarlanır, sırayı temizler); engeller 'blk' (balık, örtü; yalnız seviye.oltalar sütununda yakalanır, her hamle sola yüzer),
+  'ab' (ateşböceği, serbest; seviye.karanlik iken karanlikMi; gorunurTahta karanlığı sis gibi gizler; seviye.atesbocegi sayısı korunur); zemin RECEL 84 (seviye.recel,
+  KALAN hedef recel = reçelsiz kare; reçele değen eşleşme kendine ve komşularına yayar), YANKI1/2 86/87 (seviye.yanki: her grup ortasına yankı, 2 hamle sonra artı patlar).
+  Buz pisti: düzende '_' (seviyeKur → pistHucre); pistHareket/pistTakasla: itilen meyve pistte kayar (hamleSonucu, tumHamleler iki yön, Oyun hamleYap animasyonlu).
+  Düzen: '?' kart (resimler çift çift karışık), '^' hayvan (seviye.hayvanlar [[r,c,tür]]), '%' fişek, '!' labut, '$' top, '~' balık, '+' ateşböceği, '=' reçel.
+  Oyun: ekDuyuru ref (açılan kart duyurusu), karanlıkta VO "Karanlık", KaranlikKatman, PistZemin, OltaSerit. Seviyeler /tmp/sv/uret71.py, bot %72-100. Telefonda denenmedi.
 - 26 Kasım Murat onayı ("Yap"): 19 Balon, 20 Hasat Pazarı (sırayla sipariş), 21 Bal Kovanı (bal lekesi yayılır), 22 Kış Dönüşü (karışık),
   23 Kurbağa Gölü, 24 Fener Bahçesi (yalnız özel parça yakar), 25 Uzay Bahçesi (yerçekimi yönü), 26 Kovan Arıları (yardımcı arılar),
   27 Yaz Dönüşü (karışık), 28 Domino, 29 Ayna Gölü (hamle aynalanır), 30 Büyük Hasat (karışık, 300. seviye).

@@ -5,8 +5,10 @@ import { Image, Text, View } from 'react-native';
 
 const TAM2 = { position: 'absolute', left: 0, top: 0, right: 0, bottom: 0 };
 // mantik.js ile aynı sayılar
-export const YENI_TUR = { DEV: 35, CAN: 36, SALYANGOZ: 37, KAZAN: 38, VAGON: 39, BOYA: 41, AYNA_T: 42, SINCAP: 43, FINDIK: 44, HAYALET: 45, KAVANOZ: 46, KAPALI: 47, BASINC: 48, POMPA: 49, TIRTIL: 52, MIKNATIS: 53, KARINCA: 54, KOMUR: 55, PARATONER: 56, AYI: 57, ORUMCEK: 58, BORU: 59, FIDAN: 61, FIRILDAK: 62, EJDERHA: 63 };
-export const yeniParcaMi = (v) => (v >= 35 && v <= 49) || (v >= 52 && v <= 59) || (v >= 61 && v <= 63);
+export const YENI_TUR = { DEV: 35, CAN: 36, SALYANGOZ: 37, KAZAN: 38, VAGON: 39, BOYA: 41, AYNA_T: 42, SINCAP: 43, FINDIK: 44, HAYALET: 45, KAVANOZ: 46, KAPALI: 47, BASINC: 48, POMPA: 49, TIRTIL: 52, MIKNATIS: 53, KARINCA: 54, KOMUR: 55, PARATONER: 56, AYI: 57, ORUMCEK: 58, BORU: 59, FIDAN: 61, FIRILDAK: 62, EJDERHA: 63, KART: 64, HAYVAN: 65, FISEK: 66, LABUT: 67, TOP: 68 };
+export const yeniParcaMi = (v) => (v >= 35 && v <= 49) || (v >= 52 && v <= 59) || (v >= 61 && v <= 68);
+const KART_E = ['⭐', '❤️', '🌙', '☀️', '🌸', '🍀'];
+const HAYVAN_E = ['🦔', '🐒', '🦊', '🐰', '🐴', '🐻'];
 export const RENK = ['#e8323c', '#f5c400', '#8b3fc8', '#ff8a1f', '#5cbf2a', '#2d3f9e'];
 export const KURU_Z = 50;
 export const TOZ_Z = 51;
@@ -59,6 +61,29 @@ export function YeniParca({ p, H }) {
     );
   }
   if (p.tur === T.AYI) return <Emoji H={H} e="🐻" zemin="#f0dcc0" kenar="#8a5a2a" />;
+  if (p.tur === T.KART) {
+    const resim = Number(e.slice(2, e.indexOf('_'))) || 0;
+    const acik = Number(e.slice(e.indexOf('_') + 1)) || 0;
+    return acik ? <Emoji H={H} e={KART_E[resim]} boy={0.52} zemin="#ffffff" kenar="#e0a02e" /> : (
+      <View style={{ width: H * 0.82, height: H * 0.86, borderRadius: H * 0.14, backgroundColor: '#4a6ad8', borderWidth: 3, borderColor: '#ffffff', alignItems: 'center', justifyContent: 'center' }}>
+        <Text style={{ fontSize: H * 0.36, color: '#ffffff', fontWeight: '900' }}>?</Text>
+      </View>
+    );
+  }
+  if (p.tur === T.HAYVAN) {
+    const tur = Number(e.slice(2, e.indexOf('_'))) || 0;
+    const n = Number(e.slice(e.indexOf('_') + 1)) || 0;
+    return (
+      <View style={{ width: H * 0.88, height: H * 0.88, borderRadius: H * 0.22, backgroundColor: '#fff6e0', borderWidth: 3, borderColor: RENK[tur], alignItems: 'center', justifyContent: 'center' }}>
+        <Text style={{ fontSize: H * 0.5 }}>{HAYVAN_E[tur]}</Text>
+        <View style={{ position: 'absolute', bottom: 1, right: 1, width: H * 0.26, height: H * 0.26, borderRadius: H, backgroundColor: RENK[tur] }} />
+        <Text style={{ position: 'absolute', top: 0, left: 3, fontSize: H * 0.2, fontWeight: '900', color: '#5a3a1a' }}>{n}/2</Text>
+      </View>
+    );
+  }
+  if (p.tur === T.FISEK) return <Emoji H={H} e="🎆" zemin="#2a2450" kenar="#ffd84a" />;
+  if (p.tur === T.LABUT) return <Emoji H={H} e="🎳" boy={0.56} zemin="#ffffff" kenar="#c8401a" />;
+  if (p.tur === T.TOP) return <Emoji H={H} e="🎱" zemin="#e8eef8" kenar="#2a3a6a" />;
   if (p.tur === T.ORUMCEK) return <Emoji H={H} e="🕷️" zemin="#e8e4f0" kenar="#5a4a7a" />;
   if (p.tur === T.EJDERHA) return <Emoji H={H} e="🐉" zemin="#fbe0d0" kenar="#d0502a" />;
   if (p.tur === T.FIDAN) {
@@ -174,6 +199,18 @@ export function EkKatman({ p, H }) {
     return (
       <View pointerEvents="none" style={{ ...TAM2, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.35)', borderRadius: H * 0.2 }}>
         <Text style={{ fontSize: H * 0.7, opacity: 0.85 }}>🕸️</Text>
+      </View>
+    );
+  if (e === 'blk')
+    return (
+      <View pointerEvents="none" style={{ ...TAM2, alignItems: 'flex-end', justifyContent: 'flex-end' }}>
+        <Text style={{ fontSize: H * 0.42, marginRight: -2, marginBottom: -4 }}>🐟</Text>
+      </View>
+    );
+  if (e === 'ab')
+    return (
+      <View pointerEvents="none" style={{ ...TAM2, alignItems: 'flex-start' }}>
+        <Text style={{ fontSize: H * 0.3, textShadowColor: '#fff36a', textShadowRadius: 8 }}>✨</Text>
       </View>
     );
   if (e === 'kos')
@@ -343,6 +380,37 @@ export function ZeminRozet({ H, r, c, yazi, renk, soluk }) {
   );
 }
 
+// Reçel ve yankı (zemin), buz pisti, olta sütunu, karanlık örtü
+export function RecelZemin({ H, r, c }) {
+  const b = H - 3;
+  return <View pointerEvents="none" style={{ position: 'absolute', left: c * H + 1.5, top: r * H + 1.5, width: b, height: b, borderRadius: H * 0.24, backgroundColor: 'rgba(214,40,90,0.5)', borderWidth: 2, borderColor: '#b01850' }} />;
+}
+export function YankiZemin({ H, r, c, n }) {
+  return (
+    <View pointerEvents="none" style={{ position: 'absolute', left: c * H + H * 0.06, top: r * H + H * 0.06, width: H * 0.88, height: H * 0.88, borderRadius: H, borderWidth: n >= 2 ? 2 : 4, borderColor: 'rgba(120,80,220,0.85)', alignItems: 'center', justifyContent: 'center' }}>
+      <Text style={{ position: 'absolute', right: 0, top: -2, fontSize: H * 0.2, fontWeight: '900', color: '#5a3ab8' }}>{n}</Text>
+    </View>
+  );
+}
+export function PistZemin({ H, r, c }) {
+  const b = H - 1;
+  return <View pointerEvents="none" style={{ position: 'absolute', left: c * H + 0.5, top: r * H + 0.5, width: b, height: b, backgroundColor: 'rgba(190,235,255,0.7)', borderWidth: 1, borderColor: 'rgba(120,190,230,0.9)' }} />;
+}
+export function OltaSerit({ sutunlar, H }) {
+  return (
+    <>
+      {sutunlar.map((c) => (
+        <View key={c} pointerEvents="none" style={{ position: 'absolute', left: c * H + H * 0.45, top: 0, width: 2, height: H * 8, backgroundColor: 'rgba(60,60,60,0.35)' }}>
+          <Text style={{ position: 'absolute', top: -H * 0.1, left: -H * 0.18, fontSize: H * 0.34 }}>🎣</Text>
+        </View>
+      ))}
+    </>
+  );
+}
+export function KaranlikKatman({ H, r, c }) {
+  return <View pointerEvents="none" style={{ position: 'absolute', left: c * H, top: r * H, width: H, height: H, backgroundColor: 'rgba(8,10,30,0.95)' }} />;
+}
+
 // Hedef simgeleri
 const ik = (e) =>
   function Ikon({ boy = 26 }) {
@@ -382,3 +450,9 @@ export const AgacIkon = ik('🌳');
 export const FirildakIkon = ik('🌀');
 export const GunesIkon = ik('☀️');
 export const AyIkon = ik('🌙');
+export const KartIkon = ik('🃏');
+export const HayvanIkon = ik('🐰');
+export const RecelIkon = ik('🍓');
+export const FisekIkon = ik('🎆');
+export const BalikIkon = ik('🐟');
+export const LabutIkon = ik('🎳');

@@ -660,7 +660,17 @@ RENKLER.push(
   tret(12, { gok: ['#9cc8f0', '#ffffff'] }), // 67 Rüzgâr Fırıldağı
   tret(11, { gok: ['#f0b070', '#3a4a8a'] }), // 68 Gece ve Gündüz
   tret(7, { gok: ['#e06a3a', '#ffd8a0'] }), // 69 Ejderha Yavrusu
-  tret(29, { gok: ['#ffd84a', '#fff8d8'] }) // 70 Yetmiş Yıldız Şenliği
+  tret(29, { gok: ['#ffd84a', '#fff8d8'] }), // 70 Yetmiş Yıldız Şenliği
+  tret(9, { gok: ['#8a9ae8', '#f0f2ff'] }), // 71 Hafıza Kartları
+  tret(4, { gok: ['#a8d8f0', '#fff8e0'] }), // 72 Çiftlik Hayvanları
+  tret(18, { gok: ['#f08aa8', '#fff0f4'] }), // 73 Reçel Mutfağı
+  tret(8, { gok: ['#141030', '#4a2a7a'] }), // 74 Havai Fişek Gecesi
+  tret(16, { gok: ['#5ab0d8', '#e8f8ff'] }), // 75 Balık Tutma
+  tret(19, { gok: ['#e0b070', '#fff4e0'] }), // 76 Bowling Pisti
+  tret(3, { gok: ['#a8d8f0', '#f4fbff'] }), // 77 Buz Pisti
+  tret(8, { gok: ['#0c1424', '#2a3a4a'] }), // 78 Ateşböcekleri
+  tret(13, { gok: ['#5a4a6a', '#c8b8d8'] }), // 79 Yankı Mağarası
+  tret(29, { gok: ['#ffb84d', '#fff2c4'] }) // 80 Seksen Fener Şenliği
 );
 
 // Bölümün gök renkleri (harita bantları için)
