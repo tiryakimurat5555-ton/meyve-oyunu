@@ -7,7 +7,7 @@ import Sahne, { bolumNo, geceMi } from './sahne';
 import { GUNLUK_ODUL, odulMetni } from './Paneller';
 import { GucSimge, Raf, Sandik, Sepet } from './arayuz';
 
-const AD = { cekic: 'çekiç', karistir: 'karıştır', hamle3: 'artı 3 hamle' };
+const AD = { cekic: 'çekiç', karistir: 'karıştır', hamle3: 'artı 3 hamle', can: 'can' };
 
 // durum: { gun: bugünün (ya da bugün alınan) günü 1-7, alinabilir: bugün henüz alınmadıysa true }
 export default function GunlukEkrani({ durum, guc, siradaki, al, geri }) {
@@ -46,13 +46,16 @@ export default function GunlukEkrani({ durum, guc, siradaki, al, geri }) {
     const l = [];
     let k = 0;
     for (const [ad, n] of Object.entries(odul))
-      for (let i = 0; i < n; i++) l.push({ id: `${ad}${i}`, ad, a: new Animated.Value(0), gecikme: k++ * 120, x: (k % 3) - 1 });
+      for (let i = 0; i < (ad === 'sinirsiz' ? 1 : n); i++) l.push({ id: `${ad}${i}`, ad, a: new Animated.Value(0), gecikme: k++ * 120, x: (k % 3) - 1 });
     setUcanlar(l);
     Animated.parallel(l.map((u) => Animated.sequence([Animated.delay(u.gecikme), Animated.timing(u.a, { toValue: 1, duration: 900, easing: Easing.inOut(Easing.quad), useNativeDriver: true })]))).start(() =>
       setUcanlar([])
     );
     al();
-    const sonra = Object.entries(odul).map(([ad, n]) => `${(guc[ad] || 0) + n} ${AD[ad]}`).join(', ');
+    const sonra = Object.entries(odul)
+      .filter(([ad]) => ad !== 'can' && ad !== 'sinirsiz')
+      .map(([ad, n]) => `${(guc[ad] || 0) + n} ${AD[ad]}`)
+      .join(', ');
     setTimeout(() => AccessibilityInfo.announceForAccessibility(`Sepet açıldı, ${odulMetni(odul)} kazandın. Artık ${sonra} var. ${yarinMetni}`), 400);
   };
 
@@ -77,7 +80,7 @@ export default function GunlukEkrani({ durum, guc, siradaki, al, geri }) {
           {Object.entries(o).map(([ad, n]) => (
             <View key={ad} style={{ flexDirection: 'row', alignItems: 'center', marginHorizontal: 2 }}>
               <GucSimge ad={ad} boy={18} />
-              {n > 1 && <Text style={gst.carpi}>×{n}</Text>}
+              {ad === 'sinirsiz' ? <Text style={gst.carpi}>{n >= 60 ? `${n / 60} sa` : `${n} dk`}</Text> : n > 1 && <Text style={gst.carpi}>×{n}</Text>}
             </View>
           ))}
           {d === 'alindi' && <Text style={gst.tik}>✓</Text>}

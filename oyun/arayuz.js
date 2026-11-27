@@ -5,6 +5,14 @@ import { Text, View } from 'react-native';
 
 // ---------- Güçlendirici simgeleri (PNG gelene kadar emoji / yazı) ----------
 export function GucSimge({ ad, boy = 24 }) {
+  if (ad === 'can') return <Text style={{ fontSize: boy * 0.82, lineHeight: boy * 1.05, textAlign: 'center', minWidth: boy }}>❤️</Text>;
+  if (ad === 'sinirsiz')
+    return (
+      <View style={{ width: boy, height: boy, alignItems: 'center', justifyContent: 'center' }}>
+        <Text style={{ fontSize: boy * 0.82, lineHeight: boy * 1.05 }}>❤️</Text>
+        <Text style={{ position: 'absolute', fontSize: boy * 0.42, fontWeight: '900', color: '#ffffff' }}>∞</Text>
+      </View>
+    );
   if (ad === 'hamle3')
     return <Text style={{ fontSize: boy * 0.78, lineHeight: boy, fontWeight: '900', color: '#2fae4f', textAlign: 'center', minWidth: boy }}>+3</Text>;
   return <Text style={{ fontSize: boy * 0.82, lineHeight: boy * 1.05, textAlign: 'center', minWidth: boy }}>{ad === 'cekic' ? '🔨' : '🔄'}</Text>;

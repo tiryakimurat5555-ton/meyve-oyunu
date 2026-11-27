@@ -299,7 +299,7 @@ function kalanMetni(seviye, toplanan, puan) {
   return l.join(', ');
 }
 
-export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki, tekrar, bot = false, botDegistir, guc = {}, gucHarca, bolumOdulVar = false, geriAd = 'Ana ekran' }) {
+export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki, tekrar, bot = false, botDegistir, guc = {}, gucHarca, bolumOdulVar = false, geriAd = 'Ana ekran', basladi }) {
   const ek = useSafeAreaInsets();
   const { width: EG, height: EY } = useWindowDimensions();
   const TAHTA = Math.floor(Math.min(EG - 20, EY * 0.58, 560));
@@ -558,6 +558,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
   }, [asama, bot, sonuc]);
 
   const basla = () => {
+    if (basladi) basladi();
     setAsama('oyun');
     cal('karistir', 0.6);
     const sozler = [];
@@ -1260,7 +1261,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
       cal('kazandin');
       setTimeout(() => cal('ovgu_level'), 250);
       titret('basari');
-      duyur(`Seviye ${seviye.no} tamam! ${yildiz} yıldız. Puanın ${p}.${rekor ? ' Yeni rekor!' : ''}${bolumOdulu ? ' Bölüm tamamlandı! Her güçlendiriciden 1 tane kazandın.' : ''}`);
+      duyur(`Seviye ${seviye.no} tamam! ${yildiz} yıldız. Puanın ${p}.${rekor ? ' Yeni rekor!' : ''}${bolumOdulu ? ' Bölüm tamamlandı! Her güçlendiriciden 1 tane ve 1 can kazandın.' : ''}`);
     } else {
       cal('kaybettin');
       titret('hata');
@@ -2189,7 +2190,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
             {sonuc.bolumOdulu && (
               <View style={yst.tanitim}>
                 <Text style={yst.tanitimBaslik}>Bölüm tamamlandı!</Text>
-                <Text style={yst.tanitimMetin}>Ödül: 🔨 1   🔄 1   +3 hamle 1</Text>
+                <Text style={yst.tanitimMetin}>Ödül: 🔨 1   🔄 1   +3 hamle 1   ❤️ 1</Text>
               </View>
             )}
             {sonuc.basarili && sonrakiVar ? (

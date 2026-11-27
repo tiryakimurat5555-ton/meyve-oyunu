@@ -8,6 +8,7 @@ import { Yildiz, st } from './gorsel';
 import { geceMi, gokRenk } from './sahne';
 import { BOLUMLER } from './bolumler';
 import { Tabela } from './arayuz';
+import { CanGostergesi } from './Paneller';
 
 const SATIR = 108;
 // İki renk arasında karışım (bant renk geçişi)
@@ -78,6 +79,7 @@ export default function HaritaEkrani({ ilerleme, sec, geri }) {
         <Text style={hst.baslik} accessibilityRole="header">
           Harita
         </Text>
+        {ilerleme.acik > 20 && <CanGostergesi can={ilerleme.can} stil={{ paddingHorizontal: 6, marginRight: 4 }} />}
         <View style={hst.yildiz} accessible accessibilityLabel={`Toplam ${toplamYildiz} yıldız`}>
           <Yildiz dolu boy={18} />
           <Text style={hst.yildizYazi}>{toplamYildiz}</Text>

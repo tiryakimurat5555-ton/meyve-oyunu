@@ -14,7 +14,7 @@ Murat'ın meyve temalı 3'lü eşleştirme oyunu (Kasım 2026). Global ad "Prism
   5 düz = gökkuşağı), birleşimler (çizgili+çizgili artı, çizgili+bomba 3 satır+3 sütun, bomba+bomba 5x5,
   gökkuşağı+meyve o rengin hepsi, gökkuşağı+özel o renk özel parçaya dönüşüp patlar, gökkuşağı+gökkuşağı tahta),
   puan 30/60/100 × zincir + özel parçanın temizlediği meyve başına 20 × zincir, seviye sonu şenliği (kalan hamleler
-  çizgiliye dönüşüp patlar, en çok 15; fazlası 100 puan), can sistemi yok, ilk 3 seviye 5 tür meyve,
+  çizgiliye dönüşüp patlar, en çok 15; fazlası 100 puan), can sistemi (27 Kasım'dan beri var, aşağıda CAN SİSTEMİ), ilk 3 seviye 5 tür meyve,
   ilk 10 seviye oyun/seviyeler.js'teki gibi. Özel parçalar seviye 4 (çizgili), 6 (bomba), 9 (gökkuşağı) itibarıyla açılır.
   25 Kasım: 7. seviye 20 hamle, 9. seviye 22 hamle/3500 puan (yıldız 4500/6000), 10. seviye 28 hamle (onaylandı).
   İLKE (Murat): uzun soluklu oyun; ilk seviyelerde oyuncu zorlanmaz, zorluk çok yavaş artar, arada kolay seviyeler.
@@ -192,6 +192,11 @@ Murat'ın meyve temalı 3'lü eşleştirme oyunu (Kasım 2026). Global ad "Prism
   her birinden 2; gün kaçarsa 1. güne döner; seviye 5 açılınca listede gösterilir. Bölüm sonu (10/20/30 ilk geçiş) 1'er.
   Kaybedince +5 hamle teklifi her denemede 1 kez, şimdilik ücretsiz (sonra ödüllü reklam). İpucu 5 sn + İpucu düğmesi
   (VoiceOver'a hamleyi söyler). Ayarlar (sol üst dişli): ses efektleri, titreşim ('meyve-ayar-v1'). Müzik henüz yok.
+- CAN SİSTEMİ (27 Kasım, Murat onayladı): oyun/can.js (saf; test araclar/can-testi.mjs). En çok 5 can, her 30 dk'da 1 dolar (2,5 sa'te dolu), ödülle 5 üstü olabilir
+  (sayaç yalnız 5 altında). ilk 20 seviye can harcamaz (canGerekli). Can seviye BAŞLARKEN düşülür (Oyun basla → prop basladi → App seviyeBasladi),
+  kazanınca geri verilir (harcanan ref) → kaybedince ya da ortada çıkınca gider. Can yoksa App oyna() yerine CanYokPaneli (Paneller.js; can dolunca Oyna düğmesi).
+  Kayıt ilerleme.can {n, zaman, sinirsiz}. CanGostergesi (kalp+sayı+süre, VO canSoz) ana ekran ve harita üstünde, yalnız acik>20. Günlük ödül her gün +1 can,
+  7. gün 60 dk sınırsız can (GUNLUK_ODUL 'can'/'sinirsiz', App odulVer); bölüm sonu ödülüne +1 can. Saat telefondan (hile mümkün; sunucu gelince). Reklamla can sonra.
 - BOT düğmesi (25 Kasım, Murat istedi): oyun ekranında tahtanın altında "Bot: Kapalı/Açık"; açıkken M.enIyiHamle ile
   1,1 sn arayla kendi oynar (ekran görüntüsü/video için). Tam otomatik: giriş kartında 1,8 sn sonra Başla'ya basar, sonuç
   kartından 4,5 sn sonra sonraki seviyeye geçer (kaybederse tekrar dener). Bot düğmesi Başla'dan sonra açılır (kart üstünü kapatır). Sağ üstte Expo Go dişlisi

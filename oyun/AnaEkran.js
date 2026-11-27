@@ -7,6 +7,7 @@ import { MEYVELER, Yildiz, st } from './gorsel';
 import Sahne, { bolumNo, geceMi } from './sahne';
 import { bolumBul } from './bolumler';
 import { GucSimge, HaritaSimge, Sepet, YuvarlakZemin } from './arayuz';
+import { CanGostergesi } from './Paneller';
 
 const GUC_SEVIYE = 5;
 
@@ -77,6 +78,7 @@ export default function AnaEkran({ ilerleme, oyna, haritaAc, gunlukAc, ayarlarAc
 
       {/* Üst bilgi: yıldız ve güçlendiriciler */}
       <View style={{ marginTop: ek.top + 14, flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center' }}>
+        {ilerleme.acik > 20 && <CanGostergesi can={ilerleme.can} />}
         <View style={ast.rozet} accessible accessibilityLabel={`Toplam ${toplamYildiz} yıldız`}>
           <Yildiz dolu boy={22} />
           <Text style={ast.rozetYazi}>
