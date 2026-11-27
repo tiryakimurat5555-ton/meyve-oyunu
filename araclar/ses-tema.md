@@ -32,3 +32,35 @@ böylece müzikal olarak uyumlu yükselen bir dizi duyulur.
 | cekic | Çekiç güçlendiricisi | 0.7 | Small hammer striking glass, crisp clink with a tiny shatter |
 | kazandin | Seviye kazanıldı | 2.5 | Short cheerful victory jingle on glass bells and celesta, bright and magical |
 | kaybettin | Hamleler bitti | 1.5 | Gentle descending glass chimes, soft and slightly sad, short |
+
+## 31-50. bölüm sesleri (27 Kasım 2026; her biri 4 denemeden ölçümle seçildi)
+
+| Ad | Prompt |
+|---|---|
+| can_cal | Single bright brass handbell ring with a sparkling crystal shimmer tail, cheerful, clean attack, short |
+| dev_catla | Large glass fruit cracking, crisp crystalline crack with a tiny tinkle, close-mic, short |
+| dev_kir | Big crystal orb shattering into sparkles, magical glass burst with bright chimes and a soft low thump, no harsh noise |
+| kurdele | Two quick sparkly glass pops in a row joined by a soft ribbon swish, playful, short |
+| kristal_kir | Colored crystal gem cracking open, bright glass shatter with a sweet chime, short |
+| yagmur | Short gentle rain shower falling on soft soil with a few glass droplet plinks, cozy, short |
+| salyangoz_adim | Tiny soft squishy slide of a cute snail, gentle wet glide with a small glass tick, short |
+| salyangoz_bitis | Short cheerful three note glass bell fanfare, finish line ding, bright and cute |
+| kazan_dol | Single magic potion bubble plop into a cauldron with a small sparkly glass chime, short |
+| kazan_tasma | Magic cauldron bubbling over and bursting into sparkles, rising glass chimes swell, short |
+| tren_ilerle | Cute toy train short chug chug on tracks with a light metallic clack, short |
+| tren_vardi | Short cheerful toy train whistle toot with a small bell ding, arriving at station |
+| lav_yay | Thick lava bubbling and oozing forward, warm low gloopy bubbles, soft, not scary, short |
+| lav_sogu | Short steam hiss of hot lava cooling into stone with a small rocky crackle |
+| tas_kir | Small stone cracking and crumbling, crisp rocky crack with tiny pebbles falling, short |
+| hayalet | Soft playful ghostly whoosh with a shimmering glass sparkle, cute and friendly, not scary, short |
+| boya | Cheerful wet paint splash with a bright sparkly glass twinkle, short |
+| panayir | Carnival prize wheel spinning with fast clicking ticks slowing down, ending with a bright ding |
+| isik | Warm magical light beam humming on with a soft glass shimmer and gentle ice melting drip, short |
+| ayna_don | Small mirror swiveling with a soft squeak and a bright glint glass chime, short |
+| sincap | Cute squirrel quick chirpy chatter, short and playful |
+| findik | Small acorn nut dropping and bouncing on wood, light hollow plinks, short |
+| yildiz_dus | Shooting star falling with a bright sparkly whoosh and a soft magical impact chime |
+| toz | Tiny sparkling stardust twinkle, delicate glass glitter chime, very short |
+| cark | Small wooden windmill wheel turning with a soft creak and a light wooden clunk, short |
+| sandik | Small treasure chest lid creaking open revealing coins and a bright magical sparkle chime, short |
+| kum | Short soft brush sweeping dry sand with a light grainy swish, close-mic |

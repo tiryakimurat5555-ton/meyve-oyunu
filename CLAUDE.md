@@ -255,6 +255,9 @@ Murat'ın meyve temalı 3'lü eşleştirme oyunu (Kasım 2026). Global ad "Prism
   akış csKqxNdVJHGnAhNOObTv. ovgu_nice/great/amazing/fantastic (coşku zincirle artar), ovgu_garden (şenlik), ovgu_level (kazanınca,
   kazandin'dan 250 ms sonra). Zincir sesi hamlenin bütün zinciri bitince en yüksek aşama için bir kez (hamleSonrasi); hedef tamamsa
   yalnız Garden Party. Hafif kristal yankı sesleri-isle.py'de. VoiceOver için ayrı ayar YOK (Murat: doğrudan çalsın).
+- 31-50. BÖLÜM SESLERİ (27 Kasım, Murat istedi; ben seçtim): 27 ses (can_cal, dev_catla, dev_kir, kurdele, kristal_kir, yagmur, salyangoz_adim/_bitis,
+  kazan_dol/_tasma, tren_ilerle/_vardi, lav_yay, lav_sogu, tas_kir, hayalet, boya, panayir (atempo 2 ile hızlandırıldı), isik, ayna_don, sincap, findik,
+  yildiz_dus, toz, cark, sandik, kum). Promptlar ses-tema.md sonunda. Oyun.js: ekA efektleri EK_SES listesiyle (adımda en çok 2 ses), ekKurallar olayları OLAY_SES.
 - MENÜ TIK SESLERİ (25 Kasım, Murat istedi): 'dugme' (kristal tık; ham dugme_3) ileri giden düğmeler, 'dugme_geri' (dugme_1'in
   kalın kopyası) geri/kapat/vazgeç. App.js'te tikla(f, ses) sarmalayıcısı; Başla ve Vazgeç Oyun.js'te. Oyun içi güçlendirici
   düğmelerinin kendi sesleri var (ipucu pling, çekiç secim, karıştır, +3 ozel_olustu).

@@ -849,9 +849,9 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
       if (balSay) cal('sarmasik_kes', 0.6);
       const sandikBulunan = sandikOnce - M.sandikKalan(zemin.current);
       if (sandikBulunan) {
-        cal('yildiz_3');
+        cal('sandik');
         titret('basari');
-      } else if (kumSay) cal('sarmasik_kes', 0.5);
+      } else if (kumSay) cal('kum');
       // Alt sıraya inen tohumlar toplanır: çiçek açar (civcivler yuvaya uçar)
       let civcivSay = 0;
       let anahtarSay = 0;
@@ -1096,7 +1096,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
       if (findikSay) {
         topla({ findik: findikSay });
         sayacToplam.findik = (sayacToplam.findik || 0) + findikSay;
-        cal('civciv', 0.8);
+        cal('findik');
       }
       const saatSay = silinen.filter((x) => x.p.saat).length;
       const bukSay = silinen.filter((x) => x.p.buk).length;
@@ -1126,7 +1126,10 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
       puanEkle(kazanc);
 
       // Yeni mekanikler (dev meyve, çan, kazan, boya, salyangoz, sincap, kristal, lav, kurdele, bulut...)
-      if (tozSay) topla({ toz: tozSay });
+      if (tozSay) {
+        topla({ toz: tozSay });
+        cal('toz');
+      }
       sayacToplam.toz = (sayacToplam.toz || 0) + tozSay;
       if (ekA.degis.length || ekA.zemin.length || Object.keys(ekA.sayac).length) {
         for (const d of ekA.degis) hucreEsitle(d.r, d.c, d.tur, d.oz, d.engel);
@@ -1140,11 +1143,15 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
           else efektEkle({ tip: 'donusum', r: e.r, c: e.c });
         }
         const ef = new Set(ekA.efekt.map((e) => e.tip));
-        if (ef.has('can')) cal('yildiz_3');
-        else if (ef.has('dev') || ef.has('kazan') || ef.has('salyangoz')) cal('ozel_olustu');
-        else if (ef.has('kristal') || ef.has('tas')) cal('buz', 0.7);
-        else if (ef.has('boya') || ef.has('yagmur')) cal('sarmasik_kes', 0.6);
-        else if (ef.size) cal('secim', 0.6);
+        if (ekA.sayac.kazanDol && !ef.has('kazan')) ef.add('kazanDol');
+        if (ekA.sayac.slyAdim && !ef.has('salyangoz')) ef.add('slyAdim');
+        // Her olay türünün kendi sesi; aynı adımda en çok iki ses (önemli olan önce)
+        const EK_SES = [['dev', 'dev_kir'], ['can', 'can_cal'], ['kazan', 'kazan_tasma'], ['salyangoz', 'salyangoz_bitis'], ['devCatla', 'dev_catla'], ['kristal', 'kristal_kir'], ['boya', 'boya'], ['yagmur', 'yagmur'], ['lav', 'lav_sogu'], ['tas', 'tas_kir'], ['ayna', 'ayna_don'], ['findik', 'sincap'], ['kazanDol', 'kazan_dol'], ['slyAdim', 'salyangoz_adim']];
+        let sesN = 0;
+        for (const [tip, ad] of EK_SES) if (ef.has(tip) && sesN < 2) {
+          cal(ad);
+          sesN++;
+        }
         if (ef.has('dev') || ef.has('can') || ef.has('kazan')) titret('basari');
         topla(ekA.sayac);
         for (const [k, v] of Object.entries(ekA.sayac)) sayacToplam[k] = (sayacToplam[k] || 0) + v;
@@ -1154,7 +1161,10 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
       // Düşür ve yenilerini getir
       await dusurDoldur();
       if (ekA.alan.length) ekler = [...ekler, ...ekA.alan];
-      if (ekA.etiket.length) ekler = [...ekler, ...M.ikizAlan(engelIzgarasi(), ekA.etiket)];
+      if (ekA.etiket.length) {
+        ekler = [...ekler, ...M.ikizAlan(engelIzgarasi(), ekA.etiket)];
+        cal('kurdele');
+      }
       // Kartopu patlaması: alanı bir sonraki adımda temizlenir
       if (kartopuAlan.length) ekler = [...ekler, ...kartopuAlan];
       // Kovandan çıkan arılar rastgele engellere vurur (bir sonraki adımda)
@@ -1450,7 +1460,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
 
   // Değirmen çarkları saat yönünde bir kare döner (üstündeki parçalar taşınır), sonra oluşan eşleşmeler çözülür
   const carkDondur = async () => {
-    cal('ruzgar', 0.7);
+    cal('cark');
     const yeni = izgara.current.map((s) => s.slice());
     const animler = [];
     for (const [r0, c0] of seviye.carklar) {
@@ -1609,7 +1619,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
             const p = parcalar.current.get(id);
             if (p) animler.push(tasi(p, h[0], h[1], 240, Easing.inOut(Easing.quad)));
           }
-          cal('kapi', 0.6);
+          cal(y.olaylar.some((o) => o.tip === 'vagon' || o.tip === 'vagonVardi') ? 'tren_ilerle' : 'kapi', 0.7);
           await oynat(Animated.parallel(animler));
           izgara.current = yeni;
         }
@@ -1628,11 +1638,9 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
         if (Object.keys(y.sayac).length) topla(y.sayac);
         for (const o of y.olaylar) {
           if (o.tip === 'yildiz') efektEkle({ tip: 'isin', r: 0, c: o.c, yon: 'sutun', renk: '#fff3a0' });
-          if (o.tip === 'panayir' || o.tip === 'vagonVardi') cal('yildiz_2');
-          if (o.tip === 'lavYay') cal('sarmasik_yay', 0.8);
-          if (o.tip === 'hayalet' || o.tip === 'sincap') cal('secim', 0.6);
-          if (o.tip === 'isik') cal('buz', 0.6);
         }
+        const OLAY_SES = { yildiz: 'yildiz_dus', panayir: 'panayir', vagonVardi: 'tren_vardi', lavYay: 'lav_yay', hayalet: 'hayalet', sincap: 'sincap', isik: 'isik' };
+        for (const t of new Set(y.olaylar.map((o) => o.tip))) if (OLAY_SES[t]) cal(OLAY_SES[t]);
         sarmasikGuncelle();
         yenile();
         if (kalkan) await dusurDoldur();
