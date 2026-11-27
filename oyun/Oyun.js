@@ -759,6 +759,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
       // Kasalar: vurulan kasanın katı azalır, sıfırlanınca kırılıp silinir
       let kasaKirilan = 0;
       let ficiKirilan = 0;
+      let ficiOdul = 0;
       let ficiVurulan = 0;
       let yumurtaVurulan = 0;
       let ariSay = 0;
@@ -792,6 +793,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
           if (fici) ficiKirilan++;
           else kasaKirilan++;
           if (p.tur === M.FICI_ODUL) {
+            ficiOdul++;
             // Ödüllü fıçıdan özel meyve çıkar (yerinde kalır)
             const tur = Math.floor(Math.random() * seviye.tur);
             const ozel = ['satir', 'sutun', 'bomba'][Math.floor(Math.random() * 3)];
@@ -844,9 +846,9 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
         karSay++;
         efektEkle({ tip: 'kirilma', tur: 'kar', r, c, az: zemin.current[r][c] > 0 });
       }
-      if (karSay) cal('buz', 0.55);
+      if (karSay) cal('kar_eri');
       if (cicekSay) cal('cicek');
-      if (balSay) cal('sarmasik_kes', 0.6);
+      if (balSay) cal('bal_temizle');
       const sandikBulunan = sandikOnce - M.sandikKalan(zemin.current);
       if (sandikBulunan) {
         cal('sandik');
@@ -889,7 +891,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
         Animated.timing(p.don, { toValue: p.dom === 'domd' ? 1.2 : -1.2, duration: 160, useNativeDriver: true }).start();
       }
       if (dominoSay) {
-        cal('kasa_vur');
+        cal('domino');
         titret('orta');
       }
       // Özel parçanın değdiği fenerler yanar ve gider
@@ -902,7 +904,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
         efektEkle({ tip: 'fener', r, c });
       }
       if (fenerSay) {
-        cal('yildiz_3', 0.8);
+        cal('fener_yan');
         titret('basari');
       }
       // Anahtar en alta indi: bütün kafesler açılır
@@ -920,7 +922,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
         titret('basari');
       }
       if (kartopuSay) {
-        cal('bomba');
+        cal('kartopu_patla');
         titret('guclu');
         sars(4 + kartopuSay * 2);
       }
@@ -937,7 +939,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
         ]).start();
       }
       if (buyuyenSay) {
-        cal('buz', 0.5);
+        cal('kartopu_buyu');
         yenile();
       }
       // Açık istiridyeler inci verir
@@ -950,18 +952,19 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
         efektEkle({ tip: 'donusum', r, c });
       }
       if (istSay) {
-        cal('yildiz_3', 0.8);
+        cal('inci');
         titret('basari');
       }
       if ((adim.tohumlar || []).length > civcivSay + anahtarSay + kartopuSay) {
-        cal('ozel_olustu');
+        cal('tohum_cicek');
         titret('basari');
       }
       if (civcivSay) {
         cal('civciv');
         titret('basari');
       }
-      if (kasaKirilan || ficiKirilan) cal('kasa_kir');
+      if (ficiOdul) cal('fici_odul');
+      else if (kasaKirilan || ficiKirilan) cal('kasa_kir');
       else if (adim.kasaVurus.length > yumurtaVurulan + ariSay) cal('kasa_vur');
       if (yumurtaVurulan) {
         cal('yumurta');
@@ -1087,7 +1090,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
         if (q) balonAnim.push(tasi(q, r, c, 200, Easing.in(Easing.quad)));
       }
       if (balonAnim.length || balonUcan) {
-        cal(balonUcan ? 'ozel_olustu' : 'secim', 0.8);
+        cal(balonUcan ? 'balon_uc' : 'balon_yuksel');
         if (balonUcan) titret('basari');
         yenile();
         await oynat(Animated.parallel(balonAnim));
@@ -1122,6 +1125,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
       sayacToplam.kartopu = (sayacToplam.kartopu || 0) + kartopuSay;
       sayacToplam.istiridye = (sayacToplam.istiridye || 0) + istSay;
       sayacToplam.un = (sayacToplam.un || 0) + unSay;
+      if (unSay) cal('un');
       sayacToplam.tohum += tohumSay;
       puanEkle(kazanc);
 
@@ -1153,8 +1157,10 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
           sesN++;
         }
         if (ef.has('dev') || ef.has('can') || ef.has('kazan')) titret('basari');
+        const teraziOnce = seviye.terazi ? ['sol', 'sag'].filter((k) => (toplananRef.current[k] || 0) < (seviye.hedef[k] || 0)) : [];
         topla(ekA.sayac);
         for (const [k, v] of Object.entries(ekA.sayac)) sayacToplam[k] = (sayacToplam[k] || 0) + v;
+        if (teraziOnce.some((k) => (toplananRef.current[k] || 0) >= seviye.hedef[k])) cal('terazi');
         sarmasikGuncelle();
         yenile();
       }
@@ -1173,7 +1179,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
         if (h.length) {
           ekler = [...ekler, ...h];
           for (const [r, c] of h) efektEkle({ tip: 'ari', r, c });
-          cal('cicek', 0.8);
+          cal('ari_kovan');
           await bekle(450);
         }
       }
@@ -1386,7 +1392,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
     const p = parcaAt(h[0], h[1]);
     if (!p || p.tur === M.DELIK) return;
     if (p.kafes) {
-      cal('gecersiz');
+      cal('kafes');
       titret('hata');
       duyur('Kafes çekiçle kırılmaz, anahtarı en alta indir');
       salla(p).start();
@@ -1524,14 +1530,14 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
       izgara.current[h[0]][h[1]] = k.id;
       izgara.current[r][c] = null;
       k.kurb = (k.kurb || 0) + 1;
-      cal('mantar', 0.7);
+      cal('kurbaga_ye');
       if (k.kurb >= M.KURBAGA_DOY) {
         doyan++;
         patlamalar.push(h);
         parcalar.current.delete(k.id);
         izgara.current[h[0]][h[1]] = null;
-        efektEkle({ tip: 'dalga', r: h[0], c: h[1] });
-        cal('bomba');
+        efektEkle({ tip: 'dalga', r: h[0], c: h[1], yaricap: 1, renk: '#7ad06a' });
+        cal('kurbaga_patla');
         titret('guclu');
         sars(5);
       }
@@ -1554,7 +1560,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
       sonHamle.current = null;
       if (m) {
         await bekle(200);
-        cal('kapi', 0.8);
+        cal('ayna_hamle');
         efektEkle({ tip: 'donusum', r: m[0][0], c: m[0][1] });
         const z = await hamleYap(m[0], m[1], true);
         if (z) {
@@ -1572,7 +1578,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
         M.yonAyarla(l[(l.indexOf(M.yercekimiYonu()) + 1) % l.length]);
         yonDegisti = M.yercekimiYonu();
         setYon(yonDegisti);
-        cal('ruzgar');
+        cal('yercekimi');
         titret('orta');
       }
     }
@@ -1664,7 +1670,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
         }
       if (n) {
         istiridyeAcik = acik;
-        cal('secim', 0.6);
+        cal('istiridye_don');
         yenile();
       }
     }
@@ -1681,7 +1687,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
       setToplanan(toplananRef.current);
       if ((toplananRef.current.siparis || 0) > once) {
         siparisBitti = seviye.siparisler[toplananRef.current.siparis] || 'son';
-        cal('yildiz_2');
+        cal('siparis');
         titret('basari');
       }
     }
@@ -1746,7 +1752,7 @@ export default function Oyun({ seviye, enIyi, sonrakiVar, bitince, geri, sonraki
       if (y) {
         zemin.current = y.zemin;
         efektEkle({ tip: 'kirilma', tur: 'bal', r: y.hucre[0], c: y.hucre[1], az: true });
-        cal('sarmasik_yay', 0.8);
+        cal('bal_yay');
         sarmasikGuncelle();
         yenile();
         duyur(`Bal yayıldı, ${y.hucre[0] + 1}. satır ${y.hucre[1] + 1}. sütun`);

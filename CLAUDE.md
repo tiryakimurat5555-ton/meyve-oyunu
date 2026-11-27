@@ -255,6 +255,10 @@ Murat'ın meyve temalı 3'lü eşleştirme oyunu (Kasım 2026). Global ad "Prism
 - TOK MEYVE SESLERİ (27 Kasım, Murat: "daha tok, kulağı tırmalamayan"): erik marimba Sol3 (tok_erik_1), portakal vibrafon Do4 (tok_portakal_1),
   elma kalimba Mi4 (tok_elma_4), limon eski cam bardak Do5'e indirildi, çilek eski çan Sol5'e, üzüm tahta boncuk (tok_uzum_4, tanh sıkıştırma);
   hepsi Butterworth alçak geçiren (3-4,5 kHz, yumusat) + 4 ms yumuşak başlangıç, -17 dB. Eski (tiz) sesler git geçmişinde.
+- DIŞARIDAN SESLER (27 Kasım, Murat başka bir yapay zekaya ürettirdi, sesler.zip, 94 WAV 48 kHz mono): araclar/disaridan/*.wav; sesleri-isle.py en sonda
+  bunları işler (esitle -17, kazandin/kaybettin -14; meyve_* sol/orta/sağ) ve aynı adlı eski sesin YERİNE GEÇER (tok meyve sesleri de dahil; ovgu_* ve sessiz
+  dışarıdan gelmedi, eskisi kaldı). Yeni adlar Oyun.js'e bağlandı: kar_eri, tohum_cicek, fici_odul, yercekimi, ayna_hamle, kafes, balon_yuksel/_uc, siparis,
+  bal_temizle/_yay, kartopu_buyu/_patla, kurbaga_ye/_patla, fener_yan, ari_kovan, istiridye_don, inci, domino, un, terazi. Bilgi belgesi: /tmp/prism-orchard-ses-bilgisi.txt (Murat'ta).
 - ÖVGÜ SESLENDİRMESİ (25 Kasım, Murat istedi): ElevenLabs eleven_v4, kütüphane sesi "Miranda" (PoHUWWWMHFrA8z7Q88pu, tatlı/neşeli),
   akış csKqxNdVJHGnAhNOObTv. ovgu_nice/great/amazing/fantastic (coşku zincirle artar), ovgu_garden (şenlik), ovgu_level (kazanınca,
   kazandin'dan 250 ms sonra). Zincir sesi hamlenin bütün zinciri bitince en yüksek aşama için bir kez (hamleSonrasi); hedef tamamsa

@@ -226,6 +226,23 @@ for ad, (dosya, db) in OVGU_SES.items():
 kaydet('dugme', esitle(kirp(oku('dugme_3'), 0.18, 0.05), -20))
 kaydet('dugme_geri', esitle(kirp(perde(kirp(oku('dugme_1'), 0.3, 0.05), 0.72), 0.25, 0.06), -20))
 
+# ---------- dışarıdan gelen sesler (27 Kasım 2026, Murat: başka bir yapay zekaya ürettirdi; araclar/disaridan/*.wav) ----------
+# Aynı adlı sesin yerine geçer; yeni adlar (kar_eri, kurbaga_ye...) oyuna eklenir. Meyveler sol/orta/sağ kopyalanır.
+DIS = os.path.join(KOK, 'araclar', 'disaridan')
+for dosya in sorted(os.listdir(DIS)):
+    if not dosya.endswith('.wav'):
+        continue
+    ad = dosya[:-4]
+    b = subprocess.run(['ffmpeg', '-v', 'error', '-i', os.path.join(DIS, dosya), '-ac', '1', '-ar', str(SR), '-f', 'f32le', '-'], capture_output=True, check=True).stdout
+    x = np.frombuffer(b, dtype=np.float32).astype(np.float64)
+    x = esitle(x, -14 if ad in ('kazandin', 'kaybettin') else -17)
+    if ad.startswith('meyve_'):
+        kaydet(ad + '_sol', x, 1.0, 0.3)
+        kaydet(ad + '_orta', x * 0.85, 1.0, 1.0)
+        kaydet(ad + '_sag', x, 0.3, 1.0)
+    else:
+        kaydet(ad, x)
+
 # ---------- sessiz döngü (yalnız iPhone çalar: ses kanalını açık tutar; bkz. oyun/ses.js) ----------
 with wave.open(os.path.join(HEDEF, 'sessiz.wav'), 'wb') as w:
     w.setnchannels(1)
