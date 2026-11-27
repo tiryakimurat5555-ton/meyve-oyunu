@@ -650,7 +650,17 @@ RENKLER.push(
   tret(2, { gok: ['#d8b070', '#fff4dc'] }), // 57 Karınca Kervanı
   tret(8, { gok: ['#141a2c', '#3a4a6a'] }), // 58 Fırtınalı Gece
   tret(13, { gok: ['#c8a050', '#fff0c8'] }), // 59 Uykucu Ayı
-  tret(29, { gok: ['#ff9ad5', '#fff6c4'] }) // 60 Altmış Çiçek Bayramı
+  tret(29, { gok: ['#ff9ad5', '#fff6c4'] }), // 60 Altmış Çiçek Bayramı
+  tret(13, { gok: ['#7a7a9a', '#e8e4f0'] }), // 61 Örümcek Ağı
+  tret(8, { gok: ['#3a2a6a', '#8a6ad8'] }), // 62 Müzik Kutusu
+  tret(31, { gok: ['#f2c46a', '#fff4d8'] }), // 63 Hazine Haritası
+  tret(4, { gok: ['#a8d870', '#f4ffe0'] }), // 64 Köstebek Avı
+  tret(16, { gok: ['#7ab8e0', '#e8f6ff'] }), // 65 Su Boruları
+  tret(0, { gok: ['#8ad880', '#f0ffe8'] }), // 66 Filiz ve Ağaç
+  tret(12, { gok: ['#9cc8f0', '#ffffff'] }), // 67 Rüzgâr Fırıldağı
+  tret(11, { gok: ['#f0b070', '#3a4a8a'] }), // 68 Gece ve Gündüz
+  tret(7, { gok: ['#e06a3a', '#ffd8a0'] }), // 69 Ejderha Yavrusu
+  tret(29, { gok: ['#ffd84a', '#fff8d8'] }) // 70 Yetmiş Yıldız Şenliği
 );
 
 // Bölümün gök renkleri (harita bantları için)

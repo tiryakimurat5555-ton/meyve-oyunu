@@ -163,6 +163,15 @@ Murat'ın meyve temalı 3'lü eşleştirme oyunu (Kasım 2026). Global ad "Prism
   hamleSonrasiKurallar ceza döner, seviye-testi hamleden düşer; Oyun hamleRef'ten düşer, ekKayip 'su' → "Su tahtayı bastı". Hedefler pompa, kelebek, kapi, mozaik,
   miknatis, kaya, karinca, komur, kavanoz (EK_HEDEF). Çizimler gorsel2 (yeniParcaMi, KayaZemin, MozaikZemin, KarincaYolu, SelaleSerit). Yeni sesler (ElevenLabs, ben seçtim):
   su_yuksel, pompa, kelebek, gizli_kapi, miknatis, simsek, ayi_uyan. Seviyeler /tmp/sv/uret51.py, bot ayar.py (%69-100). Telefonda denenmedi.
+- 61-70. BÖLÜMLER (601-700; 27 Kasım 2026, Murat "Onayladım"; YENİ SES ÜRETİLMEDİ, Murat: "ses üretme, olanları kullan, en son hepsini birden üreteceğiz"):
+  61 Örümcek Ağı, 62 Müzik Kutusu, 63 Hazine Haritası, 64 Köstebek Avı, 65 Su Boruları, 66 Filiz ve Ağaç, 67 Rüzgâr Fırıldağı, 68 Gece ve Gündüz, 69 Ejderha Yavrusu,
+  70 Yetmiş Yıldız Şenliği (karışık). mantik.js: t ORUMCEK 58 ('org'), BORU 59 ('bry'/'brd'), FIDAN 61 ('fd0'-'fd3', 3 = ağaç), FIRILDAK 62 ('fr0'-'fr3' yön), EJDERHA 63 ('ejd'),
+  hepsi NESNE; engeller 'ag' (örtü, KALAN hedef ag), 'kos' (köstebek, örtü); zemin NOTA 70-73, HAZINE 80 (çizilmez, VO söylemez), YUVA 81, GUNES 82, AY 83.
+  Düzen: '@' örümcek, '#' ağ, '-'/'|' boru, '9' filiz, '*' fırıldak, '&' ejderha, '0' köstebek yuvası; listeler notalar [[r,c,k]], hazineler, gunesler, aylar;
+  seviye.gunduzGece. Nota yalnız sıradaki (tahtadaki en küçük) numarada sayılır. Boru: bir sıradaki bitişik boruların hepsi 'bry' olunca sıra temizlenir.
+  ekKurallar: örümcek AG_ARALIK 3'te ağ örer, köstebek her hamle başka yuvaya, ağaç AGAC_ARALIK 3'te yanına özel meyve, fırıldak döner, gündüz/gece GUN_ARALIK 4
+  (mantik modül durumu gunduz; seviyeKur sıfırlar), ejderha dolaşır, hazine ipucu (ctx.sonHamle; Oyun sonTakas ref) soğuk/ılık/sıcak/çok sıcak.
+  Oyun: sarmasikGuncelle hedef.ag için de; ZeminRozet (♪n, ☀/☾) meyvenin üstünde; başlıkta ☀️/🌙. Seviyeler /tmp/sv/uret61.py, bot %70-100. Telefonda denenmedi.
 - 26 Kasım Murat onayı ("Yap"): 19 Balon, 20 Hasat Pazarı (sırayla sipariş), 21 Bal Kovanı (bal lekesi yayılır), 22 Kış Dönüşü (karışık),
   23 Kurbağa Gölü, 24 Fener Bahçesi (yalnız özel parça yakar), 25 Uzay Bahçesi (yerçekimi yönü), 26 Kovan Arıları (yardımcı arılar),
   27 Yaz Dönüşü (karışık), 28 Domino, 29 Ayna Gölü (hamle aynalanır), 30 Büyük Hasat (karışık, 300. seviye).

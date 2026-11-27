@@ -86,7 +86,7 @@ export function enAltSatir(t, c) {
 // Mantar (Mantar Ormanı): engel 'mantar', sarmaşık gibi (takas yok; eşleşme / komşu eşleşme / özel parça / çekiç keser, meyve kalır)
 // ama yayılma kuralı farklı: kesilse de kesilmese de her 3 hamlede bir yanındaki bir meyveye yayılır. Düzende 'm'.
 export const MANTAR_ARALIK = 3;
-export const ortuMu = (e) => e === 'buz' || e === 'sarmasik' || e === 'sis' || e === 'mantar' || e === 'lav' || e === 'tas' || e === 'su';
+export const ortuMu = (e) => e === 'buz' || e === 'sarmasik' || e === 'sis' || e === 'mantar' || e === 'lav' || e === 'tas' || e === 'su' || e === 'ag' || e === 'kos';
 // Botun ve ipucunun gördüğü tahta: sisli hücrelerin türü bilinmez (birbirleriyle de eşleşmeyen benzersiz değerler)
 export function gorunurTahta(t, engel) {
   if (!engel) return t;
@@ -1169,7 +1169,7 @@ export function inenDerinligi(t) {
 export const inenDegeri = (s, d0) => INEN_SAYAC.reduce((a, k) => a + (s.sayac[k] || 0) * 400, 0) + (inenDerinligi(s.t) - d0) * 60;
 
 // Bot: hamle sonucunun hedefe katkısı
-export const HEDEF_AGIRLIK = { buz: 150, kasa: 150, kar: 150, sarmasik: 170, fici: 200, sis: 160, cicek: 180, saat: 220, mantar: 180, kafes: 300, bukalemun: 200, balon: 400, bal: 170, fener: 500, ari: 120, domino: 220, istiridye: 380, un: 140, sandik: 160, dev: 600, can: 400, toprak: 150, salyangoz: 500, kazan: 300, vagon: 500, lav: 170, hayalet: 220, boya: 400, toz: 150, sol: 40, sag: 40, kurdele: 150, kristal: 200, pompa: 260, kelebek: 450, kapi: 500, mozaik: 200, miknatis: 500, kaya: 160, karinca: 500, komur: 200, kavanoz: 0 };
+export const HEDEF_AGIRLIK = { buz: 150, kasa: 150, kar: 150, sarmasik: 170, fici: 200, sis: 160, cicek: 180, saat: 220, mantar: 180, kafes: 300, bukalemun: 200, balon: 400, bal: 170, fener: 500, ari: 120, domino: 220, istiridye: 380, un: 140, sandik: 160, dev: 600, can: 400, toprak: 150, salyangoz: 500, kazan: 300, vagon: 500, lav: 170, hayalet: 220, boya: 400, toz: 150, sol: 40, sag: 40, kurdele: 150, kristal: 200, pompa: 260, kelebek: 450, kapi: 500, mozaik: 200, miknatis: 500, kaya: 160, karinca: 500, komur: 200, kavanoz: 0, ag: 170, orumcek: 450, nota: 300, hazine: 700, kostebek: 500, boru: 700, agac: 500, firildak: 260, gunes: 200, ay: 200 };
 export function hamleDegeri(s, hedef, derin0 = 0) {
   if (hedef.puan) return s.puan;
   let d = s.puan / 100;
@@ -1189,6 +1189,8 @@ export function hamleDegeri(s, hedef, derin0 = 0) {
   if (hedef.kartopu) d += (s.sayac.ktBuyu || 0) * 90;
   if (hedef.civciv) d += (s.sayac.vurus || 0) * 70 + (s.sayac.yumurta || 0) * 200;
   if (hedef.kelebek) d += (s.sayac.koza || 0) * 220;
+  if (hedef.agac) d += (s.sayac.fdBuyu || 0) * 200;
+  if (hedef.boru) d += (s.sayac.boruDon || 0) * 60;
   if (hedef.miknatis) d += (s.sayac.mkDol || 0) * 90;
   if (hedef.komur) d += (s.sayac.vurus || 0) * 70;
   if (hedef.su || hedef.pompa) d += (s.sayac.su || 0) * 70;
@@ -1218,7 +1220,7 @@ export function sayacEkle(hedef, ek) {
 }
 
 // Düzen harfi -> hedef anahtarı ve sayısı (düzen ile hedef tutarlı mı denetimi için)
-const DUZEN_HEDEF = { b: ['buz', 1], k: ['kasa', 1], K: ['kasa', 1], s: ['kar', 1], S: ['kar', 2], t: ['tohum', 1], v: ['sarmasik', 1], f: ['fici', 1], F: ['fici', 1], g: ['sis', 1], 1: ['cicek', 1], 2: ['cicek', 1], 3: ['cicek', 1], 4: ['cicek', 1], 5: ['cicek', 1], 6: ['cicek', 1], z: ['saat', 1], m: ['mantar', 1], y: ['civciv', 1], c: ['kafes', 1], u: ['bukalemun', 1], o: ['balon', 1], h: ['bal', 1], q: ['kurbaga', 1], l: ['fener', 1], d: ['domino', 1], D: ['domino', 1], n: ['kartopu', 1], i: ['istiridye', 1], I: ['istiridye', 1], C: ['can', 1], L: ['salyangoz', 1], V: ['vagon', 1], R: ['lav', 1], H: ['hayalet', 1], G: ['hayalet', 1], B: ['boya', 1], p: ['toz', 1], T: ['toprak', 1], e: ['kavanoz', 1], A: ['karinca', 1], Y: ['kapi', 1], O: ['kaya', 2], U: ['kelebek', 1], Z: ['miknatis', 1] };
+const DUZEN_HEDEF = { b: ['buz', 1], k: ['kasa', 1], K: ['kasa', 1], s: ['kar', 1], S: ['kar', 2], t: ['tohum', 1], v: ['sarmasik', 1], f: ['fici', 1], F: ['fici', 1], g: ['sis', 1], 1: ['cicek', 1], 2: ['cicek', 1], 3: ['cicek', 1], 4: ['cicek', 1], 5: ['cicek', 1], 6: ['cicek', 1], z: ['saat', 1], m: ['mantar', 1], y: ['civciv', 1], c: ['kafes', 1], u: ['bukalemun', 1], o: ['balon', 1], h: ['bal', 1], q: ['kurbaga', 1], l: ['fener', 1], d: ['domino', 1], D: ['domino', 1], n: ['kartopu', 1], i: ['istiridye', 1], I: ['istiridye', 1], C: ['can', 1], L: ['salyangoz', 1], V: ['vagon', 1], R: ['lav', 1], H: ['hayalet', 1], G: ['hayalet', 1], B: ['boya', 1], p: ['toz', 1], T: ['toprak', 1], e: ['kavanoz', 1], A: ['karinca', 1], Y: ['kapi', 1], O: ['kaya', 2], U: ['kelebek', 1], Z: ['miknatis', 1], '#': ['ag', 1], '@': ['orumcek', 1], 9: ['agac', 1] };
 export const DUZEN_HEDEF_ANAHTAR = [...new Set(Object.values(DUZEN_HEDEF).map((x) => x[0]))];
 export function duzenSayilari(duzen) {
   const say = {};
@@ -1232,7 +1234,7 @@ export function duzenSayilari(duzen) {
 }
 
 // Tahtada kalanla ölçülen hedefler (yayılabildikleri için): sarmaşık
-const KALAN_ENGEL = { sarmasik: 'sarmasik', mantar: 'mantar' };
+const KALAN_ENGEL = { sarmasik: 'sarmasik', mantar: 'mantar', ag: 'ag' };
 export function kalanlariYaz(toplanan, engel, zemin = null) {
   if (zemin) {
     let n = 0;
@@ -1303,6 +1305,7 @@ export function seviyeKur(seviye) {
   yonAyarla(seviye && seviye.yercekimi ? seviye.yercekimi.yonler[0] : 'asagi');
   siparisSifirla(seviye);
   kapilar = (seviye && seviye.kapilar) || [];
+  gunduz = true;
 }
 export const kapiGirisMi = (r, c) => kapilar.some((k) => k.giris[0] === r && k.giris[1] === c);
 export const kapiCikisMi = (r, c) => kapilar.some((k) => k.cikis[0] === r && k.cikis[1] === c);
@@ -1507,6 +1510,38 @@ export const MOZAIK = 60;
 export const mozaikMi = (z) => z >= MOZAIK && z < MOZAIK + TUR_SAYISI;
 export const kayaMi = (z) => z === KAYA1 || z === KAYA2;
 export const SU_ARALIK = 3;
+// 61-69. bölümler: t ORUMCEK, BORU ('bry' yatay / 'brd' dikey), FIDAN ('fd0'-'fd3'; 3 = ağaç), FIRILDAK ('fr0'-'fr3': yukarı, sağ, aşağı, sol), EJDERHA.
+// Engeller 'ag' (örümcek ağı, örtü), 'kos' (köstebek, örtü). Zemin NOTA 70-73 (1-4. nota), HAZINE 80 (gizli), YUVA 81 (köstebek yuvası), GUNES 82, AY 83.
+export const ORUMCEK = 58;
+export const BORU = 59;
+export const FIDAN = 61;
+export const FIRILDAK = 62;
+export const EJDERHA = 63;
+export const NOTA = 70;
+export const notaMi = (z) => z >= NOTA && z < NOTA + 4;
+export const HAZINE = 80;
+export const YUVA = 81;
+export const GUNES = 82;
+export const AY = 83;
+export const AG_ARALIK = 3;
+export const AGAC_ARALIK = 3;
+export const GUN_ARALIK = 4;
+export const FR_YON = [[-1, 0], [0, 1], [1, 0], [0, -1]];
+export const FR_AD = ['yukarı', 'sağa', 'aşağı', 'sola'];
+let gunduz = true;
+export const gunduzMu = () => gunduz;
+export const gunduzAyarla = (g) => { gunduz = g; };
+export function enKucukNota(zemin) {
+  let m = 99;
+  if (zemin) for (const s of zemin) for (const z of s) if (notaMi(z) && z < m) m = z;
+  return m;
+}
+export function hazineIpucu(zemin, hucreler) {
+  let en = 99;
+  for (let r = 0; r < SATIR; r++) for (let c = 0; c < SUTUN; c++) if (zemin[r][c] === HAZINE) for (const [a, b] of hucreler) en = Math.min(en, Math.abs(a - r) + Math.abs(b - c));
+  if (en === 99) return null;
+  return en <= 1 ? 'çok sıcak' : en <= 2 ? 'sıcak' : en <= 4 ? 'ılık' : 'soğuk';
+}
 export const SELALE_SANS = 0.45;
 export const SU_SINIR = 1; // su bu satıra (üstten 2. satır) ulaşırsa seviye kaybedilir
 export const TIRTIL_ARALIK = 2;
@@ -1520,7 +1555,7 @@ export const LAV_ARALIK = 4;
 export const SINCAP_ARALIK = 3;
 export const PANAYIR_ARALIK = 5;
 export const YILDIZ_ARALIK = 5;
-const NESNE = [DEV, CAN, SALYANGOZ, KAZAN, BOYA, AYNA_T, SINCAP, POMPA, TIRTIL, BASINC, MIKNATIS, KARINCA, PARATONER, AYI];
+const NESNE = [DEV, CAN, SALYANGOZ, KAZAN, BOYA, AYNA_T, SINCAP, POMPA, TIRTIL, BASINC, MIKNATIS, KARINCA, PARATONER, AYI, ORUMCEK, BORU, FIDAN, FIRILDAK, EJDERHA];
 export const nesneMi = (v) => NESNE.includes(v);
 const str = (e) => typeof e === 'string';
 export const dvMi = (e) => str(e) && e.startsWith('dv');
@@ -1565,8 +1600,19 @@ function yeniDuzen(t, oz, engel, zemin, duzen) {
       else if (h === '8') { t[r][c] = PARATONER; engel[r][c] = 'pt0'; }
       else if (h === 'e') t[r][c] = KAVANOZ;
       else if (h === 'j') { t[r][c] = AYI; engel[r][c] = 'ayi'; }
+      else if (h === '@') { t[r][c] = ORUMCEK; engel[r][c] = 'org'; }
+      else if (h === '#') engel[r][c] = 'ag';
+      else if (h === '-' || h === '|') { t[r][c] = BORU; engel[r][c] = h === '-' ? 'bry' : 'brd'; }
+      else if (h === '9') { t[r][c] = FIDAN; engel[r][c] = 'fd0'; }
+      else if (h === '*') { t[r][c] = FIRILDAK; engel[r][c] = 'fr0'; }
+      else if (h === '&') { t[r][c] = EJDERHA; engel[r][c] = 'ejd'; }
+      else if (h === '0') zemin[r][c] = YUVA;
     }
   for (const [r, c, tur] of sv.miknatislar || []) engel[r][c] = 'mk' + tur + '_0';
+  for (const [r, c, k] of sv.notalar || []) zemin[r][c] = NOTA + k - 1;
+  for (const [r, c] of sv.hazineler || []) zemin[r][c] = HAZINE;
+  for (const [r, c] of sv.gunesler || []) zemin[r][c] = GUNES;
+  for (const [r, c] of sv.aylar || []) zemin[r][c] = AY;
   if (sv.mozaik) for (let r = 0; r < SATIR; r++) for (let c = 0; c < SUTUN; c++) { const h = sv.mozaik[r][c]; if (h >= '1' && h <= '6') zemin[r][c] = MOZAIK + Number(h) - 1; }
   for (const [r, c, tur] of sv.devler || []) for (const [a, b] of [[r, c], [r, c + 1], [r + 1, c], [r + 1, c + 1]]) { t[a][b] = DEV; oz[a][b] = null; engel[a][b] = 'dv' + tur + '_' + DEV_KAT; }
   for (const [r, c, tur] of sv.boyalar || []) engel[r][c] = 'by' + tur;
@@ -1622,12 +1668,22 @@ export function ekAdim(t, oz, engel, zemin, adim, rnd = Math.random) {
   const silK = new Set(adim.hucreler.map(([r, c]) => anahtar(r, c)));
   const sv = etkinSeviye || {};
   const sutunVurulan = new Set();
+  const notaSira = enKucukNota(zemin);
   for (const [r, c] of adim.hucreler) {
     const e = engel[r][c];
     if (krMi(e)) { kalan.add(anahtar(r, c)); yaz(r, c, { engel: null }); ekle('kristal'); efekt.push({ tip: 'kristal', r, c }); continue; }
     if (e === 'lav') { kalan.add(anahtar(r, c)); yaz(r, c, { engel: 'tas' }); ekle('lav'); efekt.push({ tip: 'lav', r, c }); continue; }
     if (e === 'tas') { kalan.add(anahtar(r, c)); yaz(r, c, { engel: null }); ekle('lav'); efekt.push({ tip: 'tas', r, c }); continue; }
     if (e === 'su') { kalan.add(anahtar(r, c)); yaz(r, c, { engel: null }); ekle('su'); efekt.push({ tip: 'su', r, c }); continue; }
+    if (e === 'ag') { kalan.add(anahtar(r, c)); yaz(r, c, { engel: null }); ekle('ag'); efekt.push({ tip: 'ag', r, c }); continue; }
+    if (e === 'kos') { kalan.add(anahtar(r, c)); yaz(r, c, { engel: null }); ekle('kostebek'); efekt.push({ tip: 'kostebek', r, c }); continue; }
+    if (zemin && !ortuMu(e) && renkli(t[r][c])) {
+      const z = zemin[r][c];
+      if (notaMi(z) && z === notaSira) { zem.push({ r, c, v: 0 }); ekle('nota'); efekt.push({ tip: 'nota', r, c, k: z - NOTA + 1 }); }
+      else if (z === HAZINE) { zem.push({ r, c, v: 0 }); ekle('hazine'); efekt.push({ tip: 'hazine', r, c }); }
+      else if (z === GUNES && gunduz) { zem.push({ r, c, v: 0 }); ekle('gunes'); efekt.push({ tip: 'gunes', r, c }); }
+      else if (z === AY && !gunduz) { zem.push({ r, c, v: 0 }); ekle('ay'); efekt.push({ tip: 'ay', r, c }); }
+    }
     if (zemin && kayaMi(zemin[r][c]) && !ortuMu(e)) { zem.push({ r, c, v: zemin[r][c] === KAYA2 ? KAYA1 : 0 }); ekle('kaya'); efekt.push({ tip: 'kaya', r, c }); }
     if (zemin && mozaikMi(zemin[r][c]) && !ortuMu(e) && t[r][c] === zemin[r][c] - MOZAIK && !zem.some((z) => z.r === r && z.c === c)) { zem.push({ r, c, v: 0 }); ekle('mozaik'); efekt.push({ tip: 'mozaik', r, c }); }
     if (ortuMu(e)) continue; // eski örtüler (buz vb.) kendi kurallarıyla
@@ -1721,6 +1777,7 @@ export function ekAdim(t, oz, engel, zemin, adim, rnd = Math.random) {
       }
     }
   }
+  const boruSatir = new Set();
   // Pompa: suyu boşaltır (satırındaki ve sütunundaki bütün su)
   const suSil = (i, j) => { if (engel[i][j] === 'su' && !degis.has(anahtar(i, j))) { yaz(i, j, { engel: null }); ekle('su'); } };
   for (const [r, c] of adim.nesneler || []) {
@@ -1757,11 +1814,55 @@ export function ekAdim(t, oz, engel, zemin, adim, rnd = Math.random) {
         efekt.push({ tip: 'miknatis', r, c });
         for (let i = r - 1; i <= r + 1; i++) for (let j = c - 1; j <= c + 1; j++) if (i >= 0 && j >= 0 && i < SATIR && j < SUTUN && !(i === r && j === c)) alan.push([i, j]);
       } else yaz(r, c, { engel: 'mk' + b.tur + '_' + n });
+    } else if (v === ORUMCEK) {
+      sil(r, c);
+      ekle('orumcek');
+      efekt.push({ tip: 'orumcek', r, c });
+    } else if (v === BORU) {
+      yaz(r, c, { engel: engel[r][c] === 'bry' ? 'brd' : 'bry' });
+      ekle('boruDon');
+      boruSatir.add(r);
+    } else if (v === FIDAN) {
+      const n = Number(String(engel[r][c]).slice(2)) || 0;
+      if (n < 3) {
+        yaz(r, c, { engel: 'fd' + (n + 1) });
+        ekle('fdBuyu');
+        efekt.push({ tip: n + 1 === 3 ? 'agac' : 'fidan', r, c });
+        if (n + 1 === 3) ekle('agac');
+      }
+    } else if (v === FIRILDAK) {
+      const y = Number(String(engel[r][c]).slice(2)) || 0;
+      const [dr, dc] = FR_YON[y];
+      for (let i = r + dr, j = c + dc; i >= 0 && j >= 0 && i < SATIR && j < SUTUN; i += dr, j += dc) alan.push([i, j]);
+      ekle('firildak');
+      efekt.push({ tip: 'firildak', r, c, yon: y });
+    } else if (v === EJDERHA) {
+      for (let i = r - 1; i <= r + 1; i++) for (let j = c - 1; j <= c + 1; j++) if (i >= 0 && j >= 0 && i < SATIR && j < SUTUN && !(i === r && j === c)) alan.push([i, j]);
+      ekle('ates');
+      efekt.push({ tip: 'ates', r, c });
     } else if (v === PARATONER) {
       const n = Math.min(3, ptDeger(engel[r][c]) + 1);
       yaz(r, c, { engel: 'pt' + n });
       ekle('ptDol');
       efekt.push({ tip: 'paratoner', r, c });
+    }
+  }
+  // Su boruları: bir satırdaki bitişik boruların hepsi yataysa su akar, borular gider, satır temizlenir
+  for (const r of boruSatir) {
+    const yon = (c) => (degis.get(anahtar(r, c)) || {}).engel || engel[r][c];
+    for (let c = 0; c < SUTUN; c++) {
+      if (t[r][c] !== BORU) continue;
+      let son = c;
+      while (son + 1 < SUTUN && t[r][son + 1] === BORU) son++;
+      let tam = true;
+      for (let j = c; j <= son; j++) if (yon(j) !== 'bry') tam = false;
+      if (tam) {
+        for (let j = c; j <= son; j++) sil(r, j);
+        for (let j = 0; j < SUTUN; j++) if (j < c || j > son) alan.push([r, j]);
+        ekle('boru');
+        efekt.push({ tip: 'boru', r, c });
+      }
+      c = son;
     }
   }
   // Uykucu ayı: bomba ya da gökkuşağı patlaması ayıyı uyandırır; ayı üç meyveyi devirip kasaya çevirir
@@ -2029,9 +2130,74 @@ export function ekKurallar(durum, seviye, ctx, rnd = Math.random) {
       if (h) { t[h[0]][h[1]] = KOMUR; oz[h[0]][h[1]] = null; engel[h[0]][h[1]] = 2; olaylar.push({ tip: 'simsek', hucre: h }); }
     }
   }
+  // Örümcek her AG_ARALIK hamlede yakınındaki bir meyveye ağ örer
+  if (n % AG_ARALIK === 0)
+    for (let r = 0; r < SATIR; r++)
+      for (let c = 0; c < SUTUN; c++) {
+        if (t[r][c] !== ORUMCEK) continue;
+        const a = [];
+        for (let i = r - 2; i <= r + 2; i++) for (let j = c - 2; j <= c + 2; j++) if (icinde(i, j) && bosMeyve(i, j)) a.push([i, j]);
+        if (!a.length) continue;
+        const [i, j] = a[Math.floor(rnd() * a.length)];
+        engel[i][j] = 'ag';
+        olaylar.push({ tip: 'ag', hucre: [i, j] });
+      }
+  // Köstebek: her hamle başka bir yuvadan çıkar
+  if (zemin && seviye.hedef.kostebek) {
+    let eski = null;
+    for (let r = 0; r < SATIR; r++) for (let c = 0; c < SUTUN; c++) if (engel[r][c] === 'kos') { engel[r][c] = null; eski = [r, c]; }
+    const a = [];
+    for (let r = 0; r < SATIR; r++) for (let c = 0; c < SUTUN; c++) if (zemin[r][c] === YUVA && bosMeyve(r, c) && !(eski && eski[0] === r && eski[1] === c)) a.push([r, c]);
+    if (a.length) {
+      const [i, j] = a[Math.floor(rnd() * a.length)];
+      engel[i][j] = 'kos';
+      olaylar.push({ tip: 'kostebek', hucre: [i, j] });
+    }
+  }
+  // Ağaç her AGAC_ARALIK hamlede yanındaki bir meyveyi özel meyveye çevirir
+  if (n % AGAC_ARALIK === 0)
+    for (let r = 0; r < SATIR; r++)
+      for (let c = 0; c < SUTUN; c++) {
+        if (t[r][c] !== FIDAN || engel[r][c] !== 'fd3') continue;
+        const k = [[r - 1, c], [r + 1, c], [r, c - 1], [r, c + 1]].filter(([i, j]) => icinde(i, j) && bosMeyve(i, j));
+        if (!k.length) continue;
+        const [i, j] = k[Math.floor(rnd() * k.length)];
+        oz[i][j] = ['satir', 'sutun', 'bomba'][Math.floor(rnd() * 3)];
+        olaylar.push({ tip: 'agac', hucre: [i, j] });
+      }
+  // Fırıldaklar her hamle bir sonraki yöne döner
+  {
+    let f = 0;
+    for (let r = 0; r < SATIR; r++) for (let c = 0; c < SUTUN; c++) if (t[r][c] === FIRILDAK) { engel[r][c] = 'fr' + ((Number(String(engel[r][c]).slice(2)) + 1) % 4); f++; }
+    if (f) olaylar.push({ tip: 'firildak', yon: Number(String(engel.flat().find((e) => str(e) && e.startsWith('fr'))).slice(2)) });
+  }
+  // Gece ve gündüz her GUN_ARALIK hamlede yer değiştirir
+  if (seviye.gunduzGece && n % GUN_ARALIK === 0) {
+    gunduz = !gunduz;
+    olaylar.push({ tip: 'gunduz', gunduz });
+  }
+  // Ejderha her hamle yanındaki bir meyveyle yer değiştirerek dolaşır
+  {
+    const gitti = new Set();
+    for (let r = 0; r < SATIR; r++)
+      for (let c = 0; c < SUTUN; c++) {
+        if (t[r][c] !== EJDERHA || gitti.has(anahtar(r, c))) continue;
+        const k = [[r - 1, c], [r + 1, c], [r, c - 1], [r, c + 1]].filter(([i, j]) => icinde(i, j) && bosMeyve(i, j));
+        if (!k.length) continue;
+        const h = k[Math.floor(rnd() * k.length)];
+        yerDegis([r, c], h);
+        gitti.add(anahtar(h[0], h[1]));
+        olaylar.push({ tip: 'ejderha' });
+      }
+  }
+  // Hazine haritası: son takasın hazineye uzaklığı
+  if (zemin && ctx.sonHamle && zemin.some((s) => s.includes(HAZINE))) {
+    const soz = hazineIpucu(zemin, ctx.sonHamle);
+    if (soz) olaylar.push({ tip: 'hazineIpucu', soz });
+  }
   if (ceza) olaylar.push({ tip: 'ceza', n: ceza });
   return { t, oz, engel, zemin, olaylar, ek, tasimalar, sayac, puan, ceza, kaybet };
 }
 // Oyun ekranı için: parçada ham olarak tutulan yeni engeller (p.ek)
-export const yeniEngelMi = (e) => str(e) && (dvMi(e) || kdMi(e) || krMi(e) || e.startsWith('kz') || e.startsWith('by') || e === 'ayA' || e === 'ayB' || e === 'lav' || e === 'tas' || e === 'hy1' || hy0Mi(e) || e === 'can' || e === 'sly' || e === 'sn' || e === 'vg' || e === 'su' || e === 'pmp' || e === 'bs' || e === 'krn' || e === 'ayi' || e.startsWith('tr') || e.startsWith('mk') || e.startsWith('pt'));
-export const yeniTurMi = (v) => (v >= DEV && v <= HAYALET) || (v >= KAVANOZ && v <= AYI && v !== 50 && v !== 51);
+export const yeniEngelMi = (e) => str(e) && (dvMi(e) || kdMi(e) || krMi(e) || e.startsWith('kz') || e.startsWith('by') || e === 'ayA' || e === 'ayB' || e === 'lav' || e === 'tas' || e === 'hy1' || hy0Mi(e) || e === 'can' || e === 'sly' || e === 'sn' || e === 'vg' || e === 'su' || e === 'pmp' || e === 'bs' || e === 'krn' || e === 'ayi' || e.startsWith('tr') || e.startsWith('mk') || e.startsWith('pt') || e === 'ag' || e === 'kos' || e === 'org' || e === 'bry' || e === 'brd' || e === 'ejd' || e.startsWith('fd') || e.startsWith('fr'));
+export const yeniTurMi = (v) => (v >= DEV && v <= HAYALET) || (v >= KAVANOZ && v <= EJDERHA && v !== 50 && v !== 51 && v !== 60);
