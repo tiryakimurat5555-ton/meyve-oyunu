@@ -15,6 +15,17 @@ const HAVUZ = IOS ? 3 : 2;
 const SIK = /^(meyve_|zincir_|takas|secim|gecersiz|cizgi|bomba|buz|kasa_vur|kasa_kir|sarmasik_kes|pling)/;
 const havuzBoyu = (ad) => (SIK.test(ad) ? HAVUZ : 1);
 const havuzlar = {};
+const ayar = IOS ? { keepAudioSessionActive: true } : undefined;
+function havuzKur(ad) {
+  if (havuzlar[ad] || !SES_DOSYALARI[ad]) return;
+  havuzlar[ad] = [];
+  sira[ad] = 0;
+  for (let i = 0; i < havuzBoyu(ad); i++) {
+    try {
+      havuzlar[ad].push(ayar ? createAudioPlayer(SES_DOSYALARI[ad], ayar) : createAudioPlayer(SES_DOSYALARI[ad]));
+    } catch (e) {}
+  }
+}
 const sira = {};
 let hazir = false;
 let sesAcik = true;
@@ -32,17 +43,16 @@ export async function sesleriHazirla() {
       await setIsAudioActiveAsync(true);
     } catch (e) {}
   }
-  const ayar = IOS ? { keepAudioSessionActive: true } : undefined;
-  for (const ad of Object.keys(SES_DOSYALARI)) {
-    if (ad === 'sessiz') continue;
-    havuzlar[ad] = [];
-    sira[ad] = 0;
-    for (let i = 0; i < havuzBoyu(ad); i++) {
-      try {
-        havuzlar[ad].push(ayar ? createAudioPlayer(SES_DOSYALARI[ad], ayar) : createAudioPlayer(SES_DOSYALARI[ad]));
-      } catch (e) {}
-    }
-  }
+  // Çalarlar parça parça kurulur: hepsini birden kurmak (150'ye yakın) iPhone'da açılışta arayüzü kilitliyordu (27 Kasım 2026).
+  // Önce sık çalan sesler, sonra kalanlar; her 60 ms'de 3 çalar. Henüz kurulmamış bir ses istenirse o an kurulur.
+  const adlar = Object.keys(SES_DOSYALARI).filter((ad) => ad !== 'sessiz');
+  const sirali = [...adlar.filter((ad) => SIK.test(ad)), ...adlar.filter((ad) => !SIK.test(ad))];
+  let i = 0;
+  const parca = () => {
+    for (let k = 0; k < 3 && i < sirali.length; k++, i++) havuzKur(sirali[i]);
+    if (i < sirali.length) setTimeout(parca, 60);
+  };
+  setTimeout(parca, 300);
   if (IOS && SES_DOSYALARI.sessiz) {
     try {
       sessiz = createAudioPlayer(SES_DOSYALARI.sessiz, ayar);
@@ -89,6 +99,7 @@ function basaSarVeCal(p) {
 
 export function cal(ad, ses = 1) {
   if (!sesAcik) return;
+  if (hazir && !havuzlar[ad]) havuzKur(ad);
   const h = havuzlar[ad];
   if (!h || !h.length) return;
   const p = h[sira[ad] % h.length];
