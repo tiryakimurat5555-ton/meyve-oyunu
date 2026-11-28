@@ -1,0 +1,197 @@
+Commit: 9f52eb2dd07bb167e84d99d64d45301e867cd785
+
+added 460 packages in 18s
+The following packages should be updated for best compatibility with the installed expo version:
+  expo@58.0.26 - expected version: ~58.1.0
+Your project may not work correctly until you install the expected versions of the packages.
+Found outdated dependencies
+- Exporting...
+[expo-cli] --non-interactive is not supported, use $CI=1 instead
+[expo-cli] Starting Metro Bundler
+[expo-cli] iOS Bundled 20653ms index.js (775 modules)
+[expo-cli] Android Bundled 26618ms index.js (773 modules)
+[expo-cli] Creating asset map
+[expo-cli] 
+[expo-cli] › Assets (123):
+[expo-cli] assets/meyve/cilek.png (81KB)
+[expo-cli] assets/meyve/elma.png (86KB)
+[expo-cli] assets/meyve/erik.png (80KB)
+[expo-cli] assets/meyve/limon.png (82KB)
+[expo-cli] assets/meyve/portakal.png (83KB)
+[expo-cli] assets/meyve/uzum.png (73KB)
+[expo-cli] assets/ses/anahtar.wav (52KB)
+[expo-cli] assets/ses/ari_kovan.wav (176KB)
+[expo-cli] assets/ses/ayi_uyan.wav (441KB)
+[expo-cli] assets/ses/ayna_don.wav (97KB)
+[expo-cli] assets/ses/ayna_hamle.wav (65KB)
+[expo-cli] assets/ses/bal_temizle.wav (118KB)
+[expo-cli] assets/ses/bal_yay.wav (141KB)
+[expo-cli] assets/ses/balon_uc.wav (63KB)
+[expo-cli] assets/ses/balon_yuksel.wav (106KB)
+[expo-cli] assets/ses/bomba.wav (162KB)
+[expo-cli] assets/ses/bukalemun.wav (115KB)
+[expo-cli] assets/ses/buz.wav (159KB)
+[expo-cli] assets/ses/can_cal.wav (238KB)
+[expo-cli] assets/ses/cark.wav (168KB)
+[expo-cli] assets/ses/cekic.wav (28KB)
+[expo-cli] assets/ses/cicek.wav (159KB)
+[expo-cli] assets/ses/civciv.wav (150KB)
+[expo-cli] assets/ses/cizgi.wav (45KB)
+[expo-cli] assets/ses/dev_catla.wav (45KB)
+[expo-cli] assets/ses/dev_kir.wav (318KB)
+[expo-cli] assets/ses/domino.wav (3.2KB)
+[expo-cli] assets/ses/dugme_geri.wav (9.1KB)
+[expo-cli] assets/ses/dugme.wav (2.9KB)
+[expo-cli] assets/ses/fener_yan.wav (194KB)
+[expo-cli] assets/ses/fici_odul.wav (79KB)
+[expo-cli] assets/ses/findik.wav (22KB)
+[expo-cli] assets/ses/gecersiz.wav (66KB)
+[expo-cli] assets/ses/gizli_kapi.wav (353KB)
+[expo-cli] assets/ses/gokkusagi.wav (191KB)
+[expo-cli] assets/ses/hayalet.wav (150KB)
+[expo-cli] assets/ses/inci.wav (127KB)
+[expo-cli] assets/ses/isik.wav (168KB)
+[expo-cli] assets/ses/istiridye_don.wav (35KB)
+[expo-cli] assets/ses/kafes.wav (20KB)
+[expo-cli] assets/ses/kapi.wav (150KB)
+[expo-cli] assets/ses/kar_eri.wav (150KB)
+[expo-cli] assets/ses/karistir.wav (181KB)
+[expo-cli] assets/ses/kartopu_buyu.wav (141KB)
+[expo-cli] assets/ses/kartopu_patla.wav (160KB)
+[expo-cli] assets/ses/kasa_kir.wav (168KB)
+[expo-cli] assets/ses/kaybettin.wav (170KB)
+[expo-cli] assets/ses/kazan_dol.wav (11KB)
+[expo-cli] assets/ses/kazan_tasma.wav (96KB)
+[expo-cli] assets/ses/kazandin.wav (297KB)
+[expo-cli] assets/ses/kelebek.wav (265KB)
+[expo-cli] assets/ses/kristal_kir.wav (132KB)
+[expo-cli] assets/ses/kum.wav (141KB)
+[expo-cli] assets/ses/kurbaga_patla.wav (212KB)
+[expo-cli] assets/ses/kurbaga_ye.wav (19KB)
+[expo-cli] assets/ses/kurdele.wav (117KB)
+[expo-cli] assets/ses/lav_sogu.wav (159KB)
+[expo-cli] assets/ses/lav_yay.wav (168KB)
+[expo-cli] assets/ses/mantar.wav (20KB)
+[expo-cli] assets/ses/meyve_cilek_orta.wav (14KB)
+[expo-cli] assets/ses/meyve_cilek_sag.wav (14KB)
+[expo-cli] assets/ses/meyve_cilek_sol.wav (14KB)
+[expo-cli] assets/ses/meyve_elma_orta.wav (7KB)
+[expo-cli] assets/ses/meyve_elma_sag.wav (7KB)
+[expo-cli] assets/ses/meyve_elma_sol.wav (7KB)
+[expo-cli] assets/ses/meyve_erik_orta.wav (36KB)
+[expo-cli] assets/ses/meyve_erik_sag.wav (36KB)
+[expo-cli] assets/ses/meyve_erik_sol.wav (36KB)
+[expo-cli] assets/ses/meyve_limon_orta.wav (9KB)
+[expo-cli] assets/ses/meyve_limon_sag.wav (9KB)
+[expo-cli] assets/ses/meyve_limon_sol.wav (9KB)
+[expo-cli] assets/ses/meyve_portakal_orta.wav (12KB)
+[expo-cli] assets/ses/meyve_portakal_sag.wav (12KB)
+[expo-cli] assets/ses/meyve_portakal_sol.wav (12KB)
+[expo-cli] assets/ses/meyve_uzum_orta.wav (22KB)
+[expo-cli] assets/ses/meyve_uzum_sag.wav (22KB)
+[expo-cli] assets/ses/meyve_uzum_sol.wav (22KB)
+[expo-cli] assets/ses/miknatis.wav (176KB)
+[expo-cli] assets/ses/ovgu_amazing.wav (309KB)
+[expo-cli] assets/ses/ovgu_fantastic.wav (235KB)
+[expo-cli] assets/ses/ovgu_garden.wav (279KB)
+[expo-cli] assets/ses/ovgu_great.wav (178KB)
+[expo-cli] assets/ses/ovgu_level.wav (268KB)
+[expo-cli] assets/ses/ovgu_nice.wav (206KB)
+[expo-cli] assets/ses/ozel_olustu.wav (90KB)
+[expo-cli] assets/ses/panayir.wav (70KB)
+[expo-cli] assets/ses/pling.wav (85KB)
+[expo-cli] assets/ses/pompa.wav (282KB)
+[expo-cli] assets/ses/ruzgar.wav (72KB)
+[expo-cli] assets/ses/saat_alarm.wav (212KB)
+[expo-cli] assets/ses/saat_tik.wav (79KB)
+[expo-cli] assets/ses/salyangoz_adim.wav (66KB)
+[expo-cli] assets/ses/salyangoz_bitis.wav (112KB)
+[expo-cli] assets/ses/sandik.wav (119KB)
+[expo-cli] assets/ses/sarmasik_kes.wav (31KB)
+[expo-cli] assets/ses/sarmasik_yay.wav (82KB)
+[expo-cli] assets/ses/secim.wav (53KB)
+[expo-cli] assets/ses/sessiz.wav (16KB)
+[expo-cli] assets/ses/simsek.wav (353KB)
+[expo-cli] assets/ses/sincap.wav (150KB)
+[expo-cli] assets/ses/siparis.wav (159KB)
+[expo-cli] assets/ses/sis.wav (88KB)
+[expo-cli] assets/ses/su_yuksel.wav (229KB)
+[expo-cli] assets/ses/takas.wav (33KB)
+[expo-cli] assets/ses/tas_kir.wav (168KB)
+[expo-cli] assets/ses/terazi.wav (88KB)
+[expo-cli] assets/ses/tohum_cicek.wav (121KB)
+[expo-cli] assets/ses/toz.wav (90KB)
+[expo-cli] assets/ses/tren_ilerle.wav (77KB)
+[expo-cli] assets/ses/tren_vardi.wav (212KB)
+[expo-cli] assets/ses/un.wav (26KB)
+[expo-cli] assets/ses/yagmur.wav (176KB)
+[expo-cli] assets/ses/yercekimi.wav (91KB)
+[expo-cli] assets/ses/yildiz_1.wav (124KB)
+[expo-cli] assets/ses/yildiz_2.wav (124KB)
+[expo-cli] assets/ses/yildiz_3.wav (94KB)
+[expo-cli] assets/ses/yildiz_dus.wav (139KB)
+[expo-cli] assets/ses/yumurta.wav (22KB)
+[expo-cli] assets/ses/zincir_1.wav (61KB)
+[expo-cli] assets/ses/zincir_2.wav (55KB)
+[expo-cli] assets/ses/zincir_3.wav (52KB)
+[expo-cli] assets/ses/zincir_4.wav (47KB)
+[expo-cli] assets/ses/zincir_5.wav (44KB)
+[expo-cli] › ios bundles (2):
+[expo-cli] _expo/static/js/ios/index-1336178d531eb0f967eef693c7185070.hbc (1.9MB)
+[expo-cli] _expo/static/js/ios/index-1336178d531eb0f967eef693c7185070.hbc.map (5.1MB)
+[expo-cli] › android bundles (2):
+[expo-cli] _expo/static/js/android/index-4defe313130c644c9aae1d2e9c7c9beb.hbc (1.9MB)
+[expo-cli] _expo/static/js/android/index-4defe313130c644c9aae1d2e9c7c9beb.hbc.map (5.1MB)
+[expo-cli] › Files (2):
+[expo-cli] assetmap.json (49KB)
+[expo-cli] metadata.json (16KB)
+[expo-cli] 
+[expo-cli] Exported: dist
+✔ Exported bundle(s)
+- Uploading...
+- Uploading assetmap.json (0 / 47.6 KB)
+✔ Uploaded assetmap.json 
+✔ Uploaded 2 app bundles
+✔ Uploading assets skipped - no new assets found
+ℹ 124 iOS assets, 124 Android assets (maximum: 2000 total per update). Learn more about asset limits: https://expo.fyi/eas-update-asset-limits
+- Computing project fingerprints
+✔ Computed project fingerprints
+- Publishing...
+✔ Published!
+[
+  {
+    "id": "01a22098-c07e-7183-a607-8e5e7aca4b2f",
+    "createdAt": "2026-11-28T05:20:11.390Z",
+    "group": "a7a8fa46-1ebf-4822-8006-041a7bf02cb3",
+    "branch": "main",
+    "message": "91-100. bölümler (901-1000): Bilardo Masası, Köpük Banyosu, Renkli Kapılar, Bataklık, Kaçak Tavuklar, Zincirli Meyveler, Hırsız Saksağan, Patlamış Mısır, Kelime Bahçesi, Bin Meyve Şenliği",
+    "runtimeVersion": "1.0.0",
+    "platform": "android",
+    "manifestPermalink": "https://u.expo.dev/update/01a22098-c07e-7183-a607-8e5e7aca4b2f",
+    "isRollBackToEmbedded": false,
+    "gitCommitHash": "9f52eb2dd07bb167e84d99d64d45301e867cd785"
+  },
+  {
+    "id": "01a22098-c07e-7e6b-b1d5-80ee5afd4fe7",
+    "createdAt": "2026-11-28T05:20:11.390Z",
+    "group": "a7a8fa46-1ebf-4822-8006-041a7bf02cb3",
+    "branch": "main",
+    "message": "91-100. bölümler (901-1000): Bilardo Masası, Köpük Banyosu, Renkli Kapılar, Bataklık, Kaçak Tavuklar, Zincirli Meyveler, Hırsız Saksağan, Patlamış Mısır, Kelime Bahçesi, Bin Meyve Şenliği",
+    "runtimeVersion": "1.0.0",
+    "platform": "ios",
+    "manifestPermalink": "https://u.expo.dev/update/01a22098-c07e-7e6b-b1d5-80ee5afd4fe7",
+    "isRollBackToEmbedded": false,
+    "gitCommitHash": "9f52eb2dd07bb167e84d99d64d45301e867cd785"
+  }
+]
+✔ Channel main is now set to branch main.
+
+Users with builds on channel main will now receive the active update on main.
+✔ Channel preview is now set to branch main.
+
+Users with builds on channel preview will now receive the active update on main.
+✔ Channel production is now set to branch main.
+
+Users with builds on channel production will now receive the active update on main.
+EXPO_GO_BAGLANTISI=exp://u.expo.dev/ca9c080d-eb2a-46f0-a46d-dde0454c4ab4/group/a7a8fa46-1ebf-4822-8006-041a7bf02cb3
+Sonuc: success
