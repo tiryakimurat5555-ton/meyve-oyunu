@@ -670,7 +670,17 @@ RENKLER.push(
   tret(3, { gok: ['#a8d8f0', '#f4fbff'] }), // 77 Buz Pisti
   tret(8, { gok: ['#0c1424', '#2a3a4a'] }), // 78 Ateşböcekleri
   tret(13, { gok: ['#5a4a6a', '#c8b8d8'] }), // 79 Yankı Mağarası
-  tret(29, { gok: ['#ffb84d', '#fff2c4'] }) // 80 Seksen Fener Şenliği
+  tret(29, { gok: ['#ffb84d', '#fff2c4'] }), // 80 Seksen Fener Şenliği
+  tret(13, { gok: ['#7ac85a', '#f0ffe0'] }), // 81 Yılan Bahçesi
+  tret(24, { gok: ['#0a0618', '#3a1a6a'] }), // 82 Kara Delik
+  tret(18, { gok: ['#e8786a', '#fff0e8'] }), // 83 Matruşka Bebekleri
+  tret(26, { gok: ['#e8c070', '#fff8e0'] }), // 84 Kum Saatleri
+  tret(9, { gok: ['#4a8ae8', '#e8f4ff'] }), // 85 Işınlanma Kapıları
+  tret(11, { gok: ['#f0d040', '#fffbe0'] }), // 86 Elektrik Devresi
+  tret(8, { gok: ['#3a1a6a', '#8a5ad8'] }), // 87 Sihirli Şapka
+  tret(4, { gok: ['#a8d870', '#f8ffe8'] }), // 88 Çit Labirenti
+  tret(9, { gok: ['#a8e0ff', '#ffffff'] }), // 89 Prizma Bahçesi
+  tret(29, { gok: ['#ff8ad0', '#fff0f8'] }) // 90 Doksan Prizma Şenliği
 );
 
 // Bölümün gök renkleri (harita bantları için)

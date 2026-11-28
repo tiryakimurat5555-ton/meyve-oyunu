@@ -5,8 +5,8 @@ import { Image, Text, View } from 'react-native';
 
 const TAM2 = { position: 'absolute', left: 0, top: 0, right: 0, bottom: 0 };
 // mantik.js ile aynı sayılar
-export const YENI_TUR = { DEV: 35, CAN: 36, SALYANGOZ: 37, KAZAN: 38, VAGON: 39, BOYA: 41, AYNA_T: 42, SINCAP: 43, FINDIK: 44, HAYALET: 45, KAVANOZ: 46, KAPALI: 47, BASINC: 48, POMPA: 49, TIRTIL: 52, MIKNATIS: 53, KARINCA: 54, KOMUR: 55, PARATONER: 56, AYI: 57, ORUMCEK: 58, BORU: 59, FIDAN: 61, FIRILDAK: 62, EJDERHA: 63, KART: 64, HAYVAN: 65, FISEK: 66, LABUT: 67, TOP: 68 };
-export const yeniParcaMi = (v) => (v >= 35 && v <= 49) || (v >= 52 && v <= 59) || (v >= 61 && v <= 68);
+export const YENI_TUR = { DEV: 35, CAN: 36, SALYANGOZ: 37, KAZAN: 38, VAGON: 39, BOYA: 41, AYNA_T: 42, SINCAP: 43, FINDIK: 44, HAYALET: 45, KAVANOZ: 46, KAPALI: 47, BASINC: 48, POMPA: 49, TIRTIL: 52, MIKNATIS: 53, KARINCA: 54, KOMUR: 55, PARATONER: 56, AYI: 57, ORUMCEK: 58, BORU: 59, FIDAN: 61, FIRILDAK: 62, EJDERHA: 63, KART: 64, HAYVAN: 65, FISEK: 66, LABUT: 67, TOP: 68, YILAN: 69, KARADELIK: 70, MATRUSKA: 71, AMPUL: 72, SAPKA: 73, PRIZMA: 74 };
+export const yeniParcaMi = (v) => (v >= 35 && v <= 49) || (v >= 52 && v <= 59) || (v >= 61 && v <= 74);
 const KART_E = ['⭐', '❤️', '🌙', '☀️', '🌸', '🍀'];
 const HAYVAN_E = ['🦔', '🐒', '🦊', '🐰', '🐴', '🐻'];
 export const RENK = ['#e8323c', '#f5c400', '#8b3fc8', '#ff8a1f', '#5cbf2a', '#2d3f9e'];
@@ -39,6 +39,53 @@ export function YeniParca({ p, H }) {
         <Text style={{ fontSize: H * 0.34, opacity: 0.8 }}>🌿</Text>
       </View>
     );
+  if (p.tur === T.YILAN) {
+    const bas = Number(e.slice(e.indexOf('_') + 1)) === 0;
+    return bas ? (
+      <Emoji H={H} e="🐍" zemin="#bfe8a0" kenar="#3a8a2a" />
+    ) : (
+      <View style={{ width: H * 0.8, height: H * 0.8, borderRadius: H * 0.4, backgroundColor: '#6ac04a', borderWidth: 2.5, borderColor: '#2f7a22', alignItems: 'center', justifyContent: 'center' }}>
+        <View style={{ width: H * 0.36, height: H * 0.36, borderRadius: H, backgroundColor: '#f0d84a', borderWidth: 2, borderColor: '#2f7a22' }} />
+      </View>
+    );
+  }
+  if (p.tur === T.KARADELIK) {
+    const n = Number(e.slice(2)) || 1;
+    const b = H * (0.5 + n * 0.08);
+    return (
+      <View style={{ width: H, height: H, alignItems: 'center', justifyContent: 'center' }}>
+        <View style={{ width: b, height: b, borderRadius: b, backgroundColor: '#0c0618', borderWidth: 3, borderColor: '#9a5af0', shadowColor: '#b07aff', shadowOpacity: 0.9, shadowRadius: 6 }} />
+        <Text style={{ position: 'absolute', right: 2, bottom: 0, fontWeight: '900', fontSize: H * 0.24, color: '#fff', textShadowColor: '#000', textShadowRadius: 3 }}>{n}</Text>
+      </View>
+    );
+  }
+  if (p.tur === T.MATRUSKA) {
+    const n = Number(e.slice(2)) || 1;
+    return (
+      <View style={{ width: H, height: H, alignItems: 'center', justifyContent: 'center' }}>
+        <Text style={{ fontSize: H * (0.34 + n * 0.12), lineHeight: H * (0.44 + n * 0.12) }}>🪆</Text>
+        <Text style={{ position: 'absolute', right: 2, bottom: 0, fontWeight: '900', fontSize: H * 0.22, color: '#c8282a', textShadowColor: '#fff', textShadowRadius: 3 }}>{n}</Text>
+      </View>
+    );
+  }
+  if (p.tur === T.AMPUL) {
+    const yandi = e.slice(e.indexOf('_') + 1) === '1';
+    return <Emoji H={H} e="💡" zemin={yandi ? '#fff27a' : '#c8ccd4'} kenar={yandi ? '#e0a800' : '#6a7080'} />;
+  }
+  if (p.tur === T.SAPKA) return <Emoji H={H} e="🎩" zemin="#e8dcff" kenar="#6a3ab8" />;
+  if (p.tur === T.PRIZMA) {
+    const b = Number(e.slice(2)) || 0;
+    return (
+      <View style={{ width: H * 0.88, height: H * 0.88, borderRadius: H * 0.18, backgroundColor: '#f4fbff', borderWidth: 2.5, borderColor: '#7ab0d8', alignItems: 'center', justifyContent: 'center' }}>
+        <Text style={{ fontSize: H * 0.4, lineHeight: H * 0.48, color: '#5a9ad8' }}>◆</Text>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', width: H * 0.6, justifyContent: 'center' }}>
+          {RENK.map((r, i) => (
+            <View key={i} style={{ width: H * 0.13, height: H * 0.13, margin: 1, borderRadius: H, backgroundColor: b & (1 << i) ? r : 'transparent', borderWidth: 1.5, borderColor: r }} />
+          ))}
+        </View>
+      </View>
+    );
+  }
   if (p.tur === T.BASINC) return <Emoji H={H} e="🔘" zemin="#d8d2c4" kenar="#7a7060" />;
   if (p.tur === T.POMPA) return <Emoji H={H} e="🚰" zemin="#d6ecff" kenar="#3a7ac8" />;
   if (p.tur === T.TIRTIL) return e === 'tr1' ? <Emoji H={H} e="🥚" boy={0.5} zemin="#f2ead2" kenar="#b89a5a" /> : <Emoji H={H} e="🐛" zemin="#e2f5d0" kenar="#6aa83a" />;
@@ -411,6 +458,56 @@ export function KaranlikKatman({ H, r, c }) {
   return <View pointerEvents="none" style={{ position: 'absolute', left: c * H, top: r * H, width: H, height: H, backgroundColor: 'rgba(8,10,30,0.95)' }} />;
 }
 
+// Kum saati karesi, çitler, ışınlanma kapıları, elektrik kabloları
+export function KumSaatZemin({ H, r, c }) {
+  const b = H - 3;
+  return <View pointerEvents="none" style={{ position: 'absolute', left: c * H + 1.5, top: r * H + 1.5, width: b, height: b, borderRadius: H * 0.22, backgroundColor: 'rgba(240,200,110,0.55)', borderWidth: 2, borderColor: '#c8962a' }} />;
+}
+export function CitCizgi({ zemin, H }) {
+  const l = [];
+  zemin.forEach((s, r) =>
+    s.forEach((z, c) => {
+      if (!(z > 90 && z <= 93)) return;
+      const bit = z - 90;
+      if (bit & 1) l.push(<View key={`s${r}-${c}`} pointerEvents="none" style={{ position: 'absolute', left: (c + 1) * H - 3, top: r * H + 1, width: 6, height: H - 2, borderRadius: 3, backgroundColor: '#8a5a2a', borderWidth: 1, borderColor: '#4a2a0a' }} />);
+      if (bit & 2) l.push(<View key={`a${r}-${c}`} pointerEvents="none" style={{ position: 'absolute', left: c * H + 1, top: (r + 1) * H - 3, width: H - 2, height: 6, borderRadius: 3, backgroundColor: '#8a5a2a', borderWidth: 1, borderColor: '#4a2a0a' }} />);
+    })
+  );
+  return <>{l}</>;
+}
+const PORTAL_RENK = ['#2ab0ff', '#ff6ad0', '#ffb020'];
+export function PortalIsareti({ portallar, H }) {
+  return (
+    <>
+      {portallar.map((pp, i) =>
+        pp.map(([r, c], j) => (
+          <View key={`${i}-${j}`} pointerEvents="none" style={{ position: 'absolute', left: c * H + H * 0.04, top: r * H + H * 0.04, width: H * 0.92, height: H * 0.92, borderRadius: H, borderWidth: 4, borderColor: PORTAL_RENK[i % PORTAL_RENK.length], backgroundColor: 'rgba(255,255,255,0.18)' }}>
+            <Text style={{ position: 'absolute', left: -2, top: -4, fontSize: H * 0.22, fontWeight: '900', color: PORTAL_RENK[i % PORTAL_RENK.length] }}>{i + 1}</Text>
+          </View>
+        ))
+      )}
+    </>
+  );
+}
+export function DevreKablo({ devreler, H, var: varMi }) {
+  const l = [];
+  devreler.forEach((d, i) => {
+    for (let k = 0; k + 1 < d.length; k++) {
+      const [r1, c1] = d[k];
+      const [r2, c2] = d[k + 1];
+      if (!varMi(r1, c1) || !varMi(r2, c2)) continue;
+      const x1 = (c1 + 0.5) * H;
+      const y1 = (r1 + 0.5) * H;
+      const x2 = (c2 + 0.5) * H;
+      const y2 = (r2 + 0.5) * H;
+      const u = Math.hypot(x2 - x1, y2 - y1);
+      const a = Math.atan2(y2 - y1, x2 - x1);
+      l.push(<View key={`${i}-${k}`} pointerEvents="none" style={{ position: 'absolute', left: (x1 + x2) / 2 - u / 2, top: (y1 + y2) / 2 - 2, width: u, height: 4, borderRadius: 2, backgroundColor: 'rgba(230,160,0,0.75)', transform: [{ rotate: `${a}rad` }] }} />);
+    }
+  });
+  return <>{l}</>;
+}
+
 // Hedef simgeleri
 const ik = (e) =>
   function Ikon({ boy = 26 }) {
@@ -456,3 +553,10 @@ export const RecelIkon = ik('🍓');
 export const FisekIkon = ik('🎆');
 export const BalikIkon = ik('🐟');
 export const LabutIkon = ik('🎳');
+export const YilanIkon = ik('🐍');
+export const KaraDelikIkon = ik('🕳️');
+export const MatruskaIkon = ik('🪆');
+export const DevreIkon = ik('💡');
+export const SihirIkon = ik('🎩');
+export const CitIkon = ik('🚧');
+export const PrizmaIkon = ik('🔷');

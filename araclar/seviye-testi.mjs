@@ -96,10 +96,10 @@ for (const sv of DENENECEK) {
       // Oyuncu sisin altını göremez: bot kararını görünür tahtada verir
       const gercek = t;
       t = M.gorunurTahta(gercek, engel);
-      let hl = M.tumHamleler(t, oz, engel);
+      let hl = M.tumHamleler(t, oz, engel, zemin);
       if (!hl.length && t !== gercek) {
         t = gercek;
-        hl = M.tumHamleler(t, oz, engel);
+        hl = M.tumHamleler(t, oz, engel, zemin);
       }
       if (!hl.length) {
         t = gercek;
@@ -124,7 +124,7 @@ for (const sv of DENENECEK) {
         sonuclar.sort((a, b) => b.deger - a.deger);
         let en2 = null;
         for (const x of sonuclar.slice(0, 6)) {
-          const hl2 = M.tumHamleler(x.s.t, x.s.oz, x.s.engel).slice(0, 20);
+          const hl2 = M.tumHamleler(x.s.t, x.s.oz, x.s.engel, x.s.zemin).slice(0, 20);
           let iki = 0;
           const dd = M.inenDerinligi(x.s.t);
           for (const h2 of hl2) {
@@ -141,6 +141,7 @@ for (const sv of DENENECEK) {
       puan += en.s.puan;
       M.sayacEkle(top, en.s.sayac);
       hamle--;
+      hamle += (en.s.sayac.kumsaati || 0) * M.KUM_HAMLE;
       yapilan++;
       // Hamle sonrası kurallar (sarmaşık/mantar yayılır, bant kayar, bukalemun renk değiştirir, saatler azalır)
       const k = M.hamleSonrasiKurallar({ t, oz, engel, zemin }, sv, { yapilan, kesilen: en.s.sayac, top, puan, hedefTamam, sonHamle: en.h }, rnd);

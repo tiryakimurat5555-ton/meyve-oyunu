@@ -181,6 +181,16 @@ Murat'ın meyve temalı 3'lü eşleştirme oyunu (Kasım 2026). Global ad "Prism
   Buz pisti: düzende '_' (seviyeKur → pistHucre); pistHareket/pistTakasla: itilen meyve pistte kayar (hamleSonucu, tumHamleler iki yön, Oyun hamleYap animasyonlu).
   Düzen: '?' kart (resimler çift çift karışık), '^' hayvan (seviye.hayvanlar [[r,c,tür]]), '%' fişek, '!' labut, '$' top, '~' balık, '+' ateşböceği, '=' reçel.
   Oyun: ekDuyuru ref (açılan kart duyurusu), karanlıkta VO "Karanlık", KaranlikKatman, PistZemin, OltaSerit. Seviyeler /tmp/sv/uret71.py, bot %72-100. Telefonda denenmedi.
+- 81-90. BÖLÜMLER (801-900; 28 Kasım 2026, Murat "Yayınla"; yeni ses yok): 81 Yılan Bahçesi, 82 Kara Delik, 83 Matruşka Bebekleri, 84 Kum Saatleri, 85 Işınlanma Kapıları,
+  86 Elektrik Devresi, 87 Sihirli Şapka, 88 Çit Labirenti, 89 Prizma Bahçesi, 90 Doksan Prizma Şenliği. mantik.js "81-89. bölümler": t YILAN 69 ('yl<id>_<k>', k 0 baş; seviye.yilanlar
+  [[r,c]...] baş önce; ekKurallar her hamle başı komşu meyveye ilerletir (tasimalar her eski hücreden bir kez), YILAN_ARALIK 3'te uzar (en çok 6); herhangi parçası vurulunca kuyruk düşer,
+  tek parça kalmışsa kaçar = hedef yilan), KARADELIK 70 ('kb<n>', düzen '{', başta 3, KARADELIK_ARALIK 2'de +1 en çok 5; komşu eşleşme -1, özel parça alanı -2), MATRUSKA 71 ('mt3'-'mt1',
+  düzen '(', en küçüğü yerinde özel meyve), AMPUL 72 ('el<devre>_<0|1>', seviye.devreler; devrenin hepsi yanınca ampuller gider + artı alanları), SAPKA 73 ('spk', düzen '}', sayaç/hedef
+  sihir: tavşan 3x3 alan, güvercin 2 rastgele engel, konfeti 2 özel meyve; efekt tavsan/guvercin/konfeti → ekDuyuru), PRIZMA 74 ('pz<bit>', düzen '<'; komşu grup rengi bit, etkinTur
+  bitin hepsi → satır+sütun+çaprazlar). Zemin KUMSAAT 88 (düzen ':'; patlayınca +KUM_HAMLE 2: Oyun ekA bloğunda hamleRef, seviye-testi hamle += sayac.kumsaati), CIT 90+bit (1 sağ, 2 alt;
+  seviye.citler [[r,c,'s'|'a']]; citArasi takası engeller: tumHamleler(t,oz,engel,zemin), Oyun hamleYap + ipucu/hamleVar; temizlenen karenin kenar çitleri kırılır, hedef cit).
+  Işınlanma seviye.portallar [[[r,c],[r,c]]]: bir kapıya komşu grup öbür kapıya kaydırılıp alan olur. Çizim gorsel2 (YeniParca, KumSaatZemin, CitCizgi, PortalIsareti, DevreKablo).
+  Seviyeler /tmp/sv/uret81.py, bot %66-100 (818 ve 884 elle +4 hamle). Telefonda denenmedi.
 - 26 Kasım Murat onayı ("Yap"): 19 Balon, 20 Hasat Pazarı (sırayla sipariş), 21 Bal Kovanı (bal lekesi yayılır), 22 Kış Dönüşü (karışık),
   23 Kurbağa Gölü, 24 Fener Bahçesi (yalnız özel parça yakar), 25 Uzay Bahçesi (yerçekimi yönü), 26 Kovan Arıları (yardımcı arılar),
   27 Yaz Dönüşü (karışık), 28 Domino, 29 Ayna Gölü (hamle aynalanır), 30 Büyük Hasat (karışık, 300. seviye).
