@@ -5,8 +5,8 @@ import { Image, Text, View } from 'react-native';
 
 const TAM2 = { position: 'absolute', left: 0, top: 0, right: 0, bottom: 0 };
 // mantik.js ile aynı sayılar
-export const YENI_TUR = { DEV: 35, CAN: 36, SALYANGOZ: 37, KAZAN: 38, VAGON: 39, BOYA: 41, AYNA_T: 42, SINCAP: 43, FINDIK: 44, HAYALET: 45, KAVANOZ: 46, KAPALI: 47, BASINC: 48, POMPA: 49, TIRTIL: 52, MIKNATIS: 53, KARINCA: 54, KOMUR: 55, PARATONER: 56, AYI: 57, ORUMCEK: 58, BORU: 59, FIDAN: 61, FIRILDAK: 62, EJDERHA: 63, KART: 64, HAYVAN: 65, FISEK: 66, LABUT: 67, TOP: 68, YILAN: 69, KARADELIK: 70, MATRUSKA: 71, AMPUL: 72, SAPKA: 73, PRIZMA: 74 };
-export const yeniParcaMi = (v) => (v >= 35 && v <= 49) || (v >= 52 && v <= 59) || (v >= 61 && v <= 74);
+export const YENI_TUR = { DEV: 35, CAN: 36, SALYANGOZ: 37, KAZAN: 38, VAGON: 39, BOYA: 41, AYNA_T: 42, SINCAP: 43, FINDIK: 44, HAYALET: 45, KAVANOZ: 46, KAPALI: 47, BASINC: 48, POMPA: 49, TIRTIL: 52, MIKNATIS: 53, KARINCA: 54, KOMUR: 55, PARATONER: 56, AYI: 57, ORUMCEK: 58, BORU: 59, FIDAN: 61, FIRILDAK: 62, EJDERHA: 63, KART: 64, HAYVAN: 65, FISEK: 66, LABUT: 67, TOP: 68, YILAN: 69, KARADELIK: 70, MATRUSKA: 71, AMPUL: 72, SAPKA: 73, PRIZMA: 74, BILARDO: 75, RKAPI: 76, CAMUR: 77, TAVUK: 78, KILIT: 79, SAKSAGAN: 80, MISIR: 81 };
+export const yeniParcaMi = (v) => (v >= 35 && v <= 49) || (v >= 52 && v <= 59) || (v >= 61 && v <= 81);
 const KART_E = ['⭐', '❤️', '🌙', '☀️', '🌸', '🍀'];
 const HAYVAN_E = ['🦔', '🐒', '🦊', '🐰', '🐴', '🐻'];
 export const RENK = ['#e8323c', '#f5c400', '#8b3fc8', '#ff8a1f', '#5cbf2a', '#2d3f9e'];
@@ -85,6 +85,46 @@ export function YeniParca({ p, H }) {
         </View>
       </View>
     );
+  }
+  if (p.tur === T.BILARDO)
+    return (
+      <View style={{ width: H * 0.8, height: H * 0.8, borderRadius: H, backgroundColor: '#1a1a1a', borderWidth: 2, borderColor: '#000', alignItems: 'center', justifyContent: 'center' }}>
+        <View style={{ width: H * 0.38, height: H * 0.38, borderRadius: H, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center' }}>
+          <Text style={{ fontWeight: '900', fontSize: H * 0.24, color: '#111' }}>8</Text>
+        </View>
+      </View>
+    );
+  if (p.tur === T.RKAPI) {
+    const tur = Number(e.slice(2, e.indexOf('_'))) || 0;
+    const n = Number(e.slice(e.indexOf('_') + 1)) || 0;
+    return (
+      <View style={{ width: H * 0.9, height: H * 0.9, borderRadius: H * 0.12, backgroundColor: RENK[tur], borderWidth: 3, borderColor: '#5a3a1a', alignItems: 'center', justifyContent: 'center' }}>
+        <Text style={{ fontSize: H * 0.3 }}>🚪</Text>
+        <Text style={{ fontWeight: '900', fontSize: H * 0.26, color: '#fff', textShadowColor: '#000', textShadowRadius: 3 }}>{n}</Text>
+      </View>
+    );
+  }
+  if (p.tur === T.CAMUR)
+    return (
+      <View style={{ width: H * 0.86, height: H * 0.86, borderRadius: H * 0.3, backgroundColor: '#6a4a2a', borderWidth: 2.5, borderColor: '#3a2410', alignItems: 'center', justifyContent: 'center' }}>
+        <View style={{ position: 'absolute', left: H * 0.18, top: H * 0.22, width: H * 0.22, height: H * 0.14, borderRadius: H, backgroundColor: '#8a6a40' }} />
+        <View style={{ position: 'absolute', right: H * 0.16, bottom: H * 0.2, width: H * 0.26, height: H * 0.14, borderRadius: H, backgroundColor: '#8a6a40' }} />
+      </View>
+    );
+  if (p.tur === T.TAVUK) return <Emoji H={H} e="🐔" zemin="#fff6dc" kenar="#d88a2a" />;
+  if (p.tur === T.KILIT) return <Emoji H={H} e="🔒" zemin="#e6e6ee" kenar="#6a6a7a" />;
+  if (p.tur === T.SAKSAGAN) {
+    const n = Number(e.slice(3)) || 0;
+    return (
+      <View style={{ width: H, height: H, alignItems: 'center', justifyContent: 'center' }}>
+        <Emoji H={H} e="🐦‍⬛" zemin="#e8eef6" kenar="#2a3a5a" />
+        {n ? <Text style={{ position: 'absolute', right: 1, bottom: 0, fontWeight: '900', fontSize: H * 0.24, color: '#e0402a', textShadowColor: '#fff', textShadowRadius: 3 }}>{n}</Text> : null}
+      </View>
+    );
+  }
+  if (p.tur === T.MISIR) {
+    const n = Number(e.slice(2)) || 0;
+    return <Emoji H={H} e="🌽" zemin={['#fff6c8', '#ffd28a', '#ff8a5a'][n]} kenar={['#d8b020', '#e8801a', '#e0402a'][n]} />;
   }
   if (p.tur === T.BASINC) return <Emoji H={H} e="🔘" zemin="#d8d2c4" kenar="#7a7060" />;
   if (p.tur === T.POMPA) return <Emoji H={H} e="🚰" zemin="#d6ecff" kenar="#3a7ac8" />;
@@ -205,6 +245,21 @@ export function YeniParca({ p, H }) {
 // Meyvenin üstündeki yeni örtüler: kristal, kurdele, lav, taş, görünür hayalet
 export function EkKatman({ p, H }) {
   const e = p.ek || '';
+  if (e === 'kpk')
+    return (
+      <View pointerEvents="none" style={{ ...TAM2 }}>
+        {[[0.08, 0.1, 0.3], [0.6, 0.06, 0.26], [0.1, 0.62, 0.24], [0.62, 0.6, 0.3]].map(([x, y, b], i) => (
+          <View key={i} style={{ position: 'absolute', left: H * x, top: H * y, width: H * b, height: H * b, borderRadius: H, backgroundColor: 'rgba(255,255,255,0.7)', borderWidth: 1.5, borderColor: 'rgba(120,190,255,0.9)' }} />
+        ))}
+      </View>
+    );
+  if (e.startsWith('zn'))
+    return (
+      <View pointerEvents="none" style={{ ...TAM2, alignItems: 'center', justifyContent: 'center' }}>
+        <View style={{ position: 'absolute', width: H * 1.0, height: 5, backgroundColor: '#7a7a88', borderRadius: 2 }} />
+        <Text style={{ fontSize: H * 0.34 }}>⛓️</Text>
+      </View>
+    );
   if (e.startsWith('kr')) {
     const r = RENK[Number(e.slice(2)) || 0];
     return (
@@ -508,6 +563,11 @@ export function DevreKablo({ devreler, H, var: varMi }) {
   return <>{l}</>;
 }
 
+export function BatakZemin({ H, r, c }) {
+  const b = H - 3;
+  return <View pointerEvents="none" style={{ position: 'absolute', left: c * H + 1.5, top: r * H + 1.5, width: b, height: b, borderRadius: H * 0.24, backgroundColor: 'rgba(80,110,50,0.55)', borderWidth: 2, borderColor: '#4a6a2a' }} />;
+}
+
 // Hedef simgeleri
 const ik = (e) =>
   function Ikon({ boy = 26 }) {
@@ -560,3 +620,12 @@ export const DevreIkon = ik('💡');
 export const SihirIkon = ik('🎩');
 export const CitIkon = ik('🚧');
 export const PrizmaIkon = ik('🔷');
+export const BilardoIkon = ik('🎱');
+export const KopukIkon = ik('🫧');
+export const RenkKapiIkon = ik('🚪');
+export const BataklikIkon = ik('🐸');
+export const TavukIkon = ik('🐔');
+export const ZincirIkon = ik('⛓️');
+export const SaksaganIkon = ik('🐦‍⬛');
+export const MisirIkon = ik('🌽');
+export const KelimeIkon = ik('🔤');

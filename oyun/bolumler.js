@@ -90,6 +90,16 @@ export const BOLUMLER = [
   { ad: 'Çit Labirenti', ilk: 871, son: 880, renk: '#8a5a2a' },
   { ad: 'Prizma Bahçesi', ilk: 881, son: 890, renk: '#5ab0e8' },
   { ad: 'Doksan Prizma Şenliği', ilk: 891, son: 900, renk: '#e05ab0' },
+  { ad: 'Bilardo Masası', ilk: 901, son: 910, renk: '#1a7a3a' },
+  { ad: 'Köpük Banyosu', ilk: 911, son: 920, renk: '#5ab8e8' },
+  { ad: 'Renkli Kapılar', ilk: 921, son: 930, renk: '#c84a8a' },
+  { ad: 'Bataklık', ilk: 931, son: 940, renk: '#4a6a2a' },
+  { ad: 'Kaçak Tavuklar', ilk: 941, son: 950, renk: '#d88a2a' },
+  { ad: 'Zincirli Meyveler', ilk: 951, son: 960, renk: '#6a6a7a' },
+  { ad: 'Hırsız Saksağan', ilk: 961, son: 970, renk: '#2a3a5a' },
+  { ad: 'Patlamış Mısır', ilk: 971, son: 980, renk: '#e8b020' },
+  { ad: 'Kelime Bahçesi', ilk: 981, son: 990, renk: '#3a6ac8' },
+  { ad: 'Bin Meyve Şenliği', ilk: 991, son: 1000, renk: '#e0402a' },
 ];
 
 export const bolumBul = (no) => BOLUMLER.find((b) => no >= b.ilk && no <= b.son) || BOLUMLER[BOLUMLER.length - 1];

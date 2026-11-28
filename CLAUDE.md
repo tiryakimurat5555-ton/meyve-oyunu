@@ -191,6 +191,14 @@ Murat'ın meyve temalı 3'lü eşleştirme oyunu (Kasım 2026). Global ad "Prism
   seviye.citler [[r,c,'s'|'a']]; citArasi takası engeller: tumHamleler(t,oz,engel,zemin), Oyun hamleYap + ipucu/hamleVar; temizlenen karenin kenar çitleri kırılır, hedef cit).
   Işınlanma seviye.portallar [[[r,c],[r,c]]]: bir kapıya komşu grup öbür kapıya kaydırılıp alan olur. Çizim gorsel2 (YeniParca, KumSaatZemin, CitCizgi, PortalIsareti, DevreKablo).
   Seviyeler /tmp/sv/uret81.py, bot %66-100 (818 ve 884 elle +4 hamle). Telefonda denenmedi.
+- 91-100. BÖLÜMLER (901-1000; 28 Kasım 2026, Murat "Onayladım"; yeni ses yok): 91 Bilardo Masası, 92 Köpük Banyosu, 93 Renkli Kapılar, 94 Bataklık, 95 Kaçak Tavuklar,
+  96 Zincirli Meyveler, 97 Hırsız Saksağan, 98 Patlamış Mısır, 99 Kelime Bahçesi, 100 Bin Meyve Şenliği (1000. seviye). mantik.js "91-99. bölümler" (KUMSAAT'ın altında): t BILARDO 75
+  (düzen ')', 'bil'; vurulunca çapraz 12 adım seker, alan), RKAPI 76 ('rk<tür>_<kalan>', seviye.renkKapilari [[r,c,tür,n]], o renkten patlayan meyveyle azalır, sıfırda komşu KAPALI
+  bölge açılır), CAMUR 77 (kasaMi; bataklıkta batan meyve; sayac camur, Oyun kasa sayılmaz), TAVUK 78 (düzen '/', ekKurallar son takastan (ctx.sonHamle) uzaklaşan komşuya kaçar),
+  KILIT 79 ('kl<id>', seviye.zincirler [{ kilit, hucreler }]; zincirli 'zn<id>' kafes gibi: kafesliMi cozumAdimi'nde), SAKSAGAN 80 (düzen ']', 'ssk<n>'; SAKSAGAN_ARALIK 3'te bir
+  özel meyveyi çalar, vurulunca n özel geri saçar), MISIR 81 (düzen ',', 'ms<ısı>', 3. vuruşta 3x3 alan → komşu mısırlar zincirleme). Engel 'kpk' köpük (düzen ';', serbest; patlayınca
+  komşu köpüklüler alan). Zemin BATAK 89 (düzen '[', seviye.batak; BATAK_ARALIK 2'de sade meyve çamur olur; üstünde ya da yanında eşleşme kurutur, hedef bataklik), HARF 100+i
+  (seviye.kelime + harfler [[r,c]], nota gibi yalnız sıradaki; M.etkinKelime, ZeminRozet harf, sıradaki kırmızı). Seviyeler /tmp/sv/uret91.py, bot %70-100 (922, 927 elle +2/+3). Telefonda denenmedi.
 - 26 Kasım Murat onayı ("Yap"): 19 Balon, 20 Hasat Pazarı (sırayla sipariş), 21 Bal Kovanı (bal lekesi yayılır), 22 Kış Dönüşü (karışık),
   23 Kurbağa Gölü, 24 Fener Bahçesi (yalnız özel parça yakar), 25 Uzay Bahçesi (yerçekimi yönü), 26 Kovan Arıları (yardımcı arılar),
   27 Yaz Dönüşü (karışık), 28 Domino, 29 Ayna Gölü (hamle aynalanır), 30 Büyük Hasat (karışık, 300. seviye).

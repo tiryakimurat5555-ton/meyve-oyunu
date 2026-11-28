@@ -680,7 +680,17 @@ RENKLER.push(
   tret(8, { gok: ['#3a1a6a', '#8a5ad8'] }), // 87 Sihirli Şapka
   tret(4, { gok: ['#a8d870', '#f8ffe8'] }), // 88 Çit Labirenti
   tret(9, { gok: ['#a8e0ff', '#ffffff'] }), // 89 Prizma Bahçesi
-  tret(29, { gok: ['#ff8ad0', '#fff0f8'] }) // 90 Doksan Prizma Şenliği
+  tret(29, { gok: ['#ff8ad0', '#fff0f8'] }), // 90 Doksan Prizma Şenliği
+  tret(19, { gok: ['#2a8a4a', '#d8f8e0'] }), // 91 Bilardo Masası
+  tret(16, { gok: ['#8ad0f0', '#ffffff'] }), // 92 Köpük Banyosu
+  tret(6, { gok: ['#e88ab8', '#fff0f8'] }), // 93 Renkli Kapılar
+  tret(13, { gok: ['#6a8a4a', '#e0f0c8'] }), // 94 Bataklık
+  tret(14, { gok: ['#f0c070', '#fff8e0'] }), // 95 Kaçak Tavuklar
+  tret(12, { gok: ['#9aa0b0', '#f0f2f6'] }), // 96 Zincirli Meyveler
+  tret(11, { gok: ['#5a6a9a', '#e8ecf8'] }), // 97 Hırsız Saksağan
+  tret(4, { gok: ['#f8d060', '#fffbe8'] }), // 98 Patlamış Mısır
+  tret(0, { gok: ['#7ab0f0', '#f0f8ff'] }), // 99 Kelime Bahçesi
+  tret(29, { gok: ['#ff6a4a', '#fff0e0'] }) // 100 Bin Meyve Şenliği
 );
 
 // Bölümün gök renkleri (harita bantları için)
